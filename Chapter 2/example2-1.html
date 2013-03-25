@@ -6,19 +6,26 @@
 <script src="../libs/gl-matrix/gl-matrix.js"></script>
 <script type="text/javascript">
 
+
     function initWebGL(canvas) {
 
-        var gl;
-        try 
-        {
-            gl = canvas.getContext("experimental-webgl");
-        } 
-        catch (e)
-        {
-            var msg = "Error creating WebGL Context!: " + e.toString();
-            alert(msg);
-            throw Error(msg);
-        }
+	    var gl = null;
+	    var msg = "Your browser does not support WebGL, " +
+	    	"or it is not enabled by default.";
+	    try 
+	    {
+	        gl = canvas.getContext("experimental-webgl");
+	    } 
+	    catch (e)
+	    {
+	        msg = "Error creating WebGL Context!: " + e.toString();
+	    }
+	
+	    if (!gl)
+	    {
+		    alert(msg);
+	    	throw new Error(msg);
+	    }
 
         return gl;        
      }
@@ -125,30 +132,29 @@
         }
     }
 
-     function draw(gl, obj) {
+    function draw(gl, obj) {
 
-         // clear the background (with black)
-         gl.clearColor(0.0, 0.0, 0.0, 1.0);
-         gl.clear(gl.COLOR_BUFFER_BIT);
+       // clear the background (with black)
+       gl.clearColor(0.0, 0.0, 0.0, 1.0);
+       gl.clear(gl.COLOR_BUFFER_BIT);
 
-    	 // set the vertex buffer to be drawn
-         gl.bindBuffer(gl.ARRAY_BUFFER, obj.buffer);
+       // set the shader to use
+       gl.useProgram(shaderProgram);
 
-         // set the shader to use
-         gl.useProgram(shaderProgram);
+	   // connect up the shader parameters: vertex position and projection/model matrices
+  	   // set the vertex buffer to be drawn
+       gl.bindBuffer(gl.ARRAY_BUFFER, obj.buffer);
+       gl.vertexAttribPointer(shaderVertexPositionAttribute, obj.vertSize, gl.FLOAT, false, 0, 0);
+       gl.uniformMatrix4fv(shaderProjectionMatrixUniform, false, projectionMatrix);
+       gl.uniformMatrix4fv(shaderModelViewMatrixUniform, false, modelViewMatrix);
 
- 		// connect up the shader parameters: vertex position and projection/model matrices
-         gl.vertexAttribPointer(shaderVertexPositionAttribute, obj.vertSize, gl.FLOAT, false, 0, 0);
-         gl.uniformMatrix4fv(shaderProjectionMatrixUniform, false, projectionMatrix);
-         gl.uniformMatrix4fv(shaderModelViewMatrixUniform, false, modelViewMatrix);
-
-         // draw the object
-         gl.drawArrays(obj.primtype, 0, obj.nVerts);
-      }
+       // draw the object
+       gl.drawArrays(obj.primtype, 0, obj.nVerts);
+    }
           
     function onLoad() {
         var canvas = document.getElementById("webglcanvas");
-        var gl = initWebGL(canvas);
+	    var gl = initWebGL(canvas);
         initViewport(gl, canvas);
         initMatrices(canvas);
         var square = createSquare(gl);
