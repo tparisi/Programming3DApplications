@@ -242,10 +242,22 @@
         gl.drawElements(obj.primtype, obj.nIndices, gl.UNSIGNED_SHORT, 0);
     }
 
-    function run(gl, square) {
-        requestAnimationFrame(function() { run(gl, square); });
-        draw(gl, square);
-        mat4.rotate(modelViewMatrix, modelViewMatrix, 0.02, rotationAxis);
+    var duration = 5000; // ms
+    var currentTime = Date.now();
+	function animate() {
+        var now = Date.now();
+        var deltat = now - currentTime;
+        currentTime = now;
+        var fract = deltat / duration;
+        var angle = Math.PI * 2 * fract;
+        mat4.rotate(modelViewMatrix, modelViewMatrix, angle, rotationAxis);
+	}
+	
+    function run(gl, cube) {
+
+        requestAnimationFrame(function() { run(gl, cube); });
+        draw(gl, cube);
+        animate();
     }
           
     function onLoad() {
@@ -253,9 +265,9 @@
 	    var gl = initWebGL(canvas);
         initViewport(gl, canvas);
         initMatrices(canvas);
-        var square = createCube(gl);
+        var cube = createCube(gl);
         initShader(gl);
-        run(gl, square);
+        run(gl, cube);
     }
 
 
