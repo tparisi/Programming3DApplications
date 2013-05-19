@@ -1,8 +1,9 @@
 <html>
 
 <head>
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; Example 1</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Example 2-1</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/gl-matrix/gl-matrix.js"></script>
 <script type="text/javascript">
 
@@ -152,16 +153,17 @@
        gl.drawArrays(obj.primtype, 0, obj.nVerts);
     }
           
-    function onLoad() {
-        var canvas = document.getElementById("webglcanvas");
-	    var gl = initWebGL(canvas);
-        initViewport(gl, canvas);
-        initMatrices(canvas);
-        var square = createSquare(gl);
-        initShader(gl);
-        draw(gl, square);
-    }
-
+	$(document).ready(
+			function() {
+		        var canvas = document.getElementById("webglcanvas");
+			    var gl = initWebGL(canvas);
+		        initViewport(gl, canvas);
+		        initMatrices(canvas);
+		        var square = createSquare(gl);
+		        initShader(gl);
+		        draw(gl, square);
+			}
+	);
 
 </script>
 
@@ -169,7 +171,7 @@
 </head>
 
 
-<body onload="onLoad();">
+<body>
 
     <canvas id="webglcanvas" style="border: none;" width="500" height="500"></canvas>
 
