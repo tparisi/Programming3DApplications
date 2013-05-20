@@ -13,14 +13,26 @@
 	camera = null,
 	cube = null;
 	
-    function run() {
+    var duration = 5000; // ms
+    var currentTime = Date.now();
+	function animate() {
+		
+        var now = Date.now();
+        var deltat = now - currentTime;
+        currentTime = now;
+        var fract = deltat / duration;
+        var angle = Math.PI * 2 * fract;
+		cube.rotation.y += angle;
+	}
+
+	function run() {
         requestAnimationFrame(function() { run(); });
         
 			// Render the scene
 			renderer.render( scene, camera );
 
 			// Spin the cube for next frame
-			cube.rotation.y -= 0.01;
+			animate();
 				
     }
     
@@ -29,18 +41,23 @@
 
 				var canvas = document.getElementById("webglcanvas");
 
-		        // Create the Three.js renderer, add it to our div
+		        // Create the Three.js renderer and attach it to our canvas
 			    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+			    // Set the viewport size
 			    renderer.setSize(canvas.width, canvas.height);
 
 			    // Create a new Three.js scene
 			    scene = new THREE.Scene();
 
-			    // Put in a camera
+			    // Add  a camera so we can view the scene
 		        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-
-		        // Create a directional light to show off the object
+				scene.add(camera);
+				
+		        // Add a directional light to show off the object
 				var light = new THREE.DirectionalLight( 0xffffff, 1.5);
+
+				// Position the light out from the scene, pointing at the origin
 				light.position.set(0, 0, 1);
 				scene.add( light );
 
@@ -63,10 +80,10 @@
 		        cube.rotation.x = Math.PI / 5;
 		        cube.rotation.y = Math.PI / 5;
 
-		        // Add the cube to our scene
+		        // Finally, add the mesh to our scene
 		        scene.add( cube );
 
-		        // Start the run loop
+		        // Run the run loop
 		        run();
 			}
 	);
