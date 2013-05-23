@@ -1,0 +1,289 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Scene Graph</title>
+
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejsshaders.css" />
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+		<script id="fragmentShader" type="x-shader/x-fragment">
+
+			uniform float time;
+			uniform sampler2D texture1;
+			uniform sampler2D texture2;
+
+			varying vec2 texCoord;
+
+			void main( void ) {
+
+				vec4 noise = texture2D( texture1, texCoord );
+				
+				vec2 T1 = texCoord + vec2( 1.5, -1.5 ) * time; //  * 0.01;
+				vec2 T2 = texCoord + vec2( -0.5, 2.0 ) * time; // *  0.01;
+
+				T1.x -= noise.r * 2.0;
+				T1.y += noise.g * 4.0;
+				T2.x += noise.g * 0.2;
+				T2.y += noise.b * 0.2;
+				T2.x -= 0.0667;
+
+				float p = texture2D( texture1, T1 * 2.0 ).a + 0.1;// + 0.25;
+
+				vec4 color = texture2D( texture2, T2 );
+				vec4 temp = color * ( vec4( p, p, p, p ) ) + ( color * color );
+				gl_FragColor = temp;
+			}
+
+		</script>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+
+			varying vec2 texCoord;
+
+			void main()
+			{
+				texCoord = uv;
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+
+		</script>
+
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	cubeGroup = null,
+	cube = null,
+	sphereGroup = null,
+	sphere = null,
+	cone = null,
+	uniforms = null;
+	
+    var duration = 5000; // ms
+    var currentTime = Date.now();
+	function animate() {
+
+        var now = Date.now();
+        var deltat = now - currentTime;
+        currentTime = now;
+        var fract = deltat / duration;
+        var angle = Math.PI * 2 * fract;
+
+        // Rotate the cube about its Y axis
+		cube.rotation.y += angle;
+
+		// Rotate the sphere group about its Y axis
+		sphereGroup.rotation.y -= angle / 2;
+
+		// Rotate the cone about its X axis (tumble forward)
+		cone.rotation.x += angle;
+
+		uniforms.time.value += fract;
+	}
+
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			// Spin the cube for next frame
+			animate();
+				
+    }
+
+    function createScene(canvas) {
+        
+        // Create the Three.js renderer and attach it to our canvas
+	    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.z = 10;
+		scene.add(camera);
+		
+        // Add a directional light to show off the object
+		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
+
+		// Position the light out from the scene, pointing at the origin
+		light.position.set(.5, .2, 1);
+		scene.add( light );
+
+		cubeGroup = new THREE.Object3D;
+		
+		var GLOWMAP = THREE.ImageUtils.loadTexture("../images/ash_uvgrid01.jpg");
+		var NOISEMAP = THREE.ImageUtils.loadTexture("../images/noisy-texture-128x128-o23-d18-c-000000-t1.png");
+		uniforms = {
+
+				time: { type: "f", value: 1.0 },
+				texture1: { type: "t", value: NOISEMAP },
+				texture2: { type: "t", value: GLOWMAP }
+
+			};
+
+		uniforms.texture1.value.wrapS = uniforms.texture1.value.wrapT = THREE.RepeatWrapping;
+		uniforms.texture2.value.wrapS = uniforms.texture2.value.wrapT = THREE.RepeatWrapping;
+
+		var material = new THREE.ShaderMaterial( {
+
+			uniforms: uniforms,
+			vertexShader: document.getElementById( 'vertexShader' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+			transparent:true,
+		} );
+		
+        // Create the cube geometry
+        var geometry = new THREE.CubeGeometry(2, 2, 2);
+
+        // And put the geometry and material together into a mesh
+        cube = new THREE.Mesh(geometry, material);
+
+        // Tilt the mesh toward the viewer
+        cube.rotation.x = Math.PI / 5;
+        cube.rotation.y = Math.PI / 5;
+
+        // Add the cube mesh to our group
+        cubeGroup.add( cube );
+
+        // Create a group for the sphere
+        sphereGroup = new THREE.Object3D;
+        cubeGroup.add(sphereGroup);
+        
+        // Move the sphere group up and back from the cube
+        sphereGroup.position.set(0, 3, -4);
+
+        // Create the sphere geometry
+        geometry = new THREE.SphereGeometry(1, 20, 20);
+        
+        // And put the geometry and material together into a mesh
+        sphere = new THREE.Mesh(geometry, material);
+
+        // Add the sphere mesh to our group
+        sphereGroup.add( sphere );
+
+        // Create the cone geometry
+        geometry = new THREE.CylinderGeometry(0, .333, .444, 20, 5);
+
+        // And put the geometry and material together into a mesh
+        cone = new THREE.Mesh(geometry, material);
+
+        // Move the cone up and out from the sphere
+        cone.position.set(1, 1, -.667);
+            
+        // Add the cone mesh to our group
+        sphereGroup.add( cone );
+        
+        // Now add the group to our scene
+        scene.add( cubeGroup );
+    }
+
+    var mouseDown = false,
+    pageX = 0;
+
+    function rotateScene(deltax)
+    {
+        cubeGroup.rotation.y += deltax / 100;
+		$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
+    }
+    
+    function scaleScene(scale)
+    {
+        cubeGroup.scale.set(scale, scale, scale);
+		$("#scale").html("scale: " + scale);
+    }
+        
+    function onMouseMove(evt)
+    {
+        if (!mouseDown)
+            return;
+
+        evt.preventDefault();
+        
+        var deltax = evt.pageX - pageX;
+        pageX = evt.pageX;
+        rotateScene(deltax);
+    }
+
+    function onMouseDown(evt)
+    {
+        evt.preventDefault();
+        
+        mouseDown = true;
+        pageX = evt.pageX;
+    }
+
+    function onMouseUp(evt)
+    {
+        evt.preventDefault();
+        
+        mouseDown = false;
+
+        cubeGroup.visible = false;
+    }
+    
+    function addMouseHandler(canvas)
+    {
+    	canvas.addEventListener( 'mousemove', 
+    			function(e) { onMouseMove(e); }, false );
+    	canvas.addEventListener( 'mousedown', 
+    			function(e) { onMouseDown(e); }, false );
+    	canvas.addEventListener( 'mouseup', 
+    			function(e) { onMouseUp(e); }, false );
+    }
+    
+	$(document).ready(
+			function() {
+
+				$("#slider").slider({min: 0, max: 2, value: 1, step: 0.01, animate: false});
+				$("#slider").on("slide", function(e, u) { console.log(u.value); 
+					scaleScene(u.value);
+					});
+				
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				// add mouse handling so we can rotate the scene
+				addMouseHandler(canvas);
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+	<div id="container">
+	    <canvas id="webglcanvas" width=800 height=600></canvas>
+		<div id="title">
+			Three.js Scene Graph/Transform Hierarchy
+		</div>
+		<div id="prompt">
+			Drag the mouse to rotate the scene<br>Drag the slider to scale.
+		</div>
+	    <div id="status">
+		    <div id="rotation">rotation: 0,0,0</div>
+		    <div id="scale">scale: 1</div>
+	    </div>
+	</div>
+
+	<div style="position:absolute; top:610px; height:10px; width:	800px;" id="slider"></div>
+</body>
+
+</html>
