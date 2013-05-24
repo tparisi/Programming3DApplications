@@ -90,6 +90,7 @@ body {
 	position:absolute;
 	left:810px;
 	top:10px;
+    margin-left:10px;
 }
 
 #texturePicker {
@@ -98,6 +99,7 @@ body {
 	position:absolute;
 	left:810px;
 	top:120px;
+    margin-left:10px;
 }
 
 #textureUrl {
@@ -110,6 +112,23 @@ body {
   margin-left: 160px;
   margin-top:-20px;
   background-size:100% 100%;
+}
+
+#materialPicker {
+	color:DarkBlue;
+	font-size:14px;
+	position:absolute;
+	left:810px;
+	top:240px;
+    margin-left:10px;
+}
+
+#materialRBGroup {
+	font-size:14px;
+	position:absolute;
+    margin-top:-20px;
+	left:160px;
+	width:240px;
 }
 
 #red .ui-slider-range { background: #ef2929; }

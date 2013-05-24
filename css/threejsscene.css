@@ -44,19 +44,17 @@ body {
 	top:20px;
 }
 
-.ui-slider {
-	position:absolute;
-	height:.2em;
-}
-
-.ui-slider .ui-slider-handle {
-	height:.3em;
-	top:-.1em;
-	width:1em;
-}
-
 #slider {
+	position:absolute;
 	width:800px;
 	top:610px;
+	height:10px;
 }
+
+#slider .ui-slider-handle {
+	height:10px;
+	top:-1px;
+	width:16px;
+}
+
 

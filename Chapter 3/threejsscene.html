@@ -15,7 +15,7 @@
 	var renderer = null, 
 	scene = null, 
 	camera = null,
-	cubeGroup = null,
+	root = null,
 	cube = null,
 	sphereGroup = null,
 	sphere = null,
@@ -63,20 +63,19 @@
 	    // Create a new Three.js scene
 	    scene = new THREE.Scene();
 
+		root = new THREE.Object3D;
+		
 	    // Add  a camera so we can view the scene
         camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
         camera.position.z = 10;
 		scene.add(camera);
 		
-        // Add a directional light to show off the object
+        // Add a directional light to show off the objects
 		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
-
 		// Position the light out from the scene, pointing at the origin
 		light.position.set(.5, .2, 1);
-		scene.add( light );
+		root.add(light);
 
-		cubeGroup = new THREE.Object3D;
-		
         // Create a textre phong material for the cube
         // First, create the texture map
         var mapUrl = "../images/ash_uvgrid01.jpg";
@@ -94,11 +93,11 @@
         cube.rotation.y = Math.PI / 5;
 
         // Add the cube mesh to our group
-        cubeGroup.add( cube );
+        root.add( cube );
 
         // Create a group for the sphere
         sphereGroup = new THREE.Object3D;
-        cubeGroup.add(sphereGroup);
+        root.add(sphereGroup);
         
         // Move the sphere group up and back from the cube
         sphereGroup.position.set(0, 3, -4);
@@ -125,7 +124,7 @@
         sphereGroup.add( cone );
         
         // Now add the group to our scene
-        scene.add( cubeGroup );
+        scene.add( root );
     }
 
     var mouseDown = false,
@@ -133,13 +132,13 @@
 
     function rotateScene(deltax)
     {
-        cubeGroup.rotation.y += deltax / 100;
-		$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
+        root.rotation.y += deltax / 100;
+		$("#rotation").html("rotation: 0," + root.rotation.y.toFixed(2) + ",0");
     }
     
     function scaleScene(scale)
     {
-        cubeGroup.scale.set(scale, scale, scale);
+        root.scale.set(scale, scale, scale);
 		$("#scale").html("scale: " + scale);
     }
         
@@ -168,8 +167,6 @@
         evt.preventDefault();
         
         mouseDown = false;
-
-        cubeGroup.visible = false;
     }
     
     function addMouseHandler(canvas)

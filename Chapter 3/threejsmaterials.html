@@ -88,6 +88,9 @@
 	var mapUrl = "../images/moon_1024.jpg";
 	var map = null;
     var bumpMapUrl = "../images/moon_1024.jpg";
+	var basicMaterial;
+	var phongMaterial;
+	var lambertMaterial;
 	
 	function createMaterials()
 	{
@@ -97,24 +100,9 @@
 
         var bumpMap = THREE.ImageUtils.loadTexture(bumpMapUrl);
 
-    	var path = "../images/cube/skyenvmap/";
-    	var urls = [ path + "posx.jpg", path + "negx.jpg",
-    				 path + "posy.jpg", path + "negy.jpg",
-    				 path + "posz.jpg", path + "negz.jpg" ];
-
-    	var path = "../images/cube/Park3Med/";
-    	var urls2 = [ path + "px.jpg", path + "nx.jpg",
-    				 path + "py.jpg", path + "ny.jpg",
-    				 path + "pz.jpg", path + "nz.jpg" ];
-    	
-    	var envMap = THREE.ImageUtils.loadTextureCube( urls2 );
-    	envMap.format = THREE.RGBFormat;
-    	envMap.wrapS = envMap.wrapT = THREE.RepeatWrapping;
-        envMap.repeat.set(.1, .1);
-        
-		materials["basic"] = new THREE.MeshBasicMaterial({ map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap*/ });
-		materials["phong"] = new THREE.MeshPhongMaterial({ ambient:0xffffff, map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap*/ });
-		materials["lambert"] = new THREE.MeshLambertMaterial({ ambient:0xffffff, map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap */ });
+		materials["basic"] = basicMaterial = new THREE.MeshBasicMaterial({ map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap*/ });
+		materials["phong"] = phongMaterial = new THREE.MeshPhongMaterial({ ambient:0xffffff, map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap*/ });
+		materials["lambert"] = lambertMaterial = new THREE.MeshLambertMaterial({ ambient:0xffffff, map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap */ });
 	}
 
 	function setMaterialColor(r, g, b)
@@ -128,12 +116,25 @@
 		materials["lambert"].color.setRGB(r, g, b);
 	}
 
+	function setMaterial(name)
+	{
+		sphere.material = materials[name];
+	}
+
 	function toggleTexture()
 	{
 		materials["basic"].bumpMap = bumpMap;
 		materials["phong"].bumpMap = bumpMap;
 		materials["lambert"].bumpMap = bumpMap;
 	}
+
+	function toggleWireframe()
+	{
+		materials["basic"].wireframe = !materials["basic"].wireframe;
+		materials["phong"].wireframe = !materials["phong"].wireframe;
+		materials["lambert"].wireframe = !materials["lambert"].wireframe;
+	}
+	
 	
    function createScene(canvas) {
         
@@ -152,13 +153,13 @@
 		scene.add(camera);
 		
         // Add a directional light to show off the object
-		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
+		var light = new THREE.DirectionalLight( 0xffffff, 2);
 
 		// Position the light out from the scene, pointing at the origin
 		light.position.set(.5, 0, 1);
 		scene.add( light );
 
-		light = new THREE.AmbientLight ( 0x676767 );
+		light = new THREE.AmbientLight ( 0 ); // 0x222222 );
 		scene.add(light);
 		
 		createMaterials();
@@ -170,9 +171,8 @@
         geometry = new THREE.SphereGeometry(2, 20, 20);
         
         // And put the geometry and material together into a mesh
-        sphere = new THREE.Mesh(geometry, materials["basic"]);
-        sphere.material = materials["phong"];
-		// sphere.material.wireframe = true;
+        sphere = new THREE.Mesh(geometry, materials["phong"]);
+        // sphere.material = materials["basic"];
 		
         // Add the sphere mesh to our group
         group.add( sphere );
@@ -186,55 +186,6 @@
     var mouseDown = false,
     pageX = 0;
 
-    function rotateScene(deltax)
-    {
-        //group.rotation.y += deltax / 100;
-		//$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
-    }
-    
-    function scaleScene(scale)
-    {
-        group.scale.set(scale, scale, scale);
-		$("#scale").html("scale: " + scale);
-    }
-        
-    function onMouseMove(evt)
-    {
-        if (!mouseDown)
-            return;
-
-        evt.preventDefault();
-        
-        var deltax = evt.pageX - pageX;
-        pageX = evt.pageX;
-        rotateScene(deltax);
-    }
-
-    function onMouseDown(evt)
-    {
-        evt.preventDefault();
-        
-        mouseDown = true;
-        pageX = evt.pageX;
-    }
-
-    function onMouseUp(evt)
-    {
-        evt.preventDefault();
-        
-        mouseDown = false;
-    }
-    
-    function addMouseHandler(canvas)
-    {
-    	canvas.addEventListener( 'mousemove', 
-    			function(e) { onMouseMove(e); }, false );
-    	canvas.addEventListener( 'mousedown', 
-    			function(e) { onMouseDown(e); }, false );
-    	canvas.addEventListener( 'mouseup', 
-    			function(e) { onMouseUp(e); }, false );
-    }
-    
 	$(document).ready(
 			function() {
 
@@ -244,14 +195,23 @@
 				$("#textureCheckbox").click(
 						function() { toggleTexture(); }
 					);
+				$("#wireframeCheckbox").click(
+						function() { toggleWireframe(); }
+					);
+
+				$("input[name=materialRBGroup]").click(
+							function() {
+								var id = $("input[name=materialRBGroup]:checked").attr('value');
+								setMaterial(id);
+							}
+						);
+				
+				
 				var canvas = document.getElementById("webglcanvas");
 
 				// create the scene
 				createScene(canvas);
 
-				// add mouse handling so we can rotate the scene
-				addMouseHandler(canvas);
-				
 		        // Run the run loop
 		        run();
 			}
@@ -282,10 +242,20 @@ Color
 </div>
 
 <div id="texturePicker">
-<input type="checkbox" unchecked id="textureCheckbox"></input> Texture 
+Texture 
+<input type="checkbox" checked id="textureCheckbox"></input> 
 <div id="textureUrl"></div> 
 <div id="texture" class="ui-widget-content ui-corner-all"></div>
 </div> 
+<div id="materialPicker">
+Material
+<div id="materialRBGroup">
+<input type="radio" name="materialRBGroup" value="basic"> Basic (Unlit)<br>
+<input type="radio" name="materialRBGroup" value="phong" checked> Phong<br>
+<input type="radio" name="materialRBGroup" value="lambert"> Lambert
+</div>
+<input type="checkbox" id="wireframeCheckbox">Wireframe</input>
+</div>
 
 </body>
 
