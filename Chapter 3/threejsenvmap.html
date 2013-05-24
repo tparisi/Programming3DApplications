@@ -1,0 +1,277 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Textures: Normal Mapping</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejsenvmap.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script src="../libs/colorpicker/js/colorpicker.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	root = null,
+	group = null,
+	sphere = null,
+	sphereEnvMapped = null,
+	orbitControls = null;
+	
+    var duration = 10000; // ms
+    var currentTime = Date.now();
+	function animate() {
+
+        var now = Date.now();
+        var deltat = now - currentTime;
+        currentTime = now;
+        var fract = deltat / duration;
+        var angle = Math.PI * 2 * fract;
+
+		// Rotate the sphere group about its Y axis
+		group.rotation.y += angle;
+	}
+
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			// Spin the cube for next frame
+			animate();
+
+			// Update the camera controller
+			orbitControls.update();
+    }
+
+	var materials = {};
+	var mapUrl = "";
+	var map = null;
+	var envMapUrl = "../images/cubemap/skybox/nx.jpg";
+	var envMap = null;
+	
+	function createMaterials()
+	{
+		map = null; // THREE.ImageUtils.loadTexture(mapUrl);
+		
+		var path = "../images/cubemap/skybox/";
+
+		var urls = [ path + "px.jpg", path + "nx.jpg",
+					 path + "py.jpg", path + "ny.jpg",
+					 path + "pz.jpg", path + "nz.jpg" ];
+
+		envMap = THREE.ImageUtils.loadTextureCube( urls );
+		
+		materials["phong"] = new THREE.MeshBasicMaterial( { color: 0xffffff, map: map } );
+		materials["phong-envmapped"] = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap : envMap,
+			map: map, reflectivity:1.3} );
+	}
+
+	function setMaterialColor(r, g, b)
+	{
+		r /= 255;
+		g /= 255;
+		b /= 255;
+		
+		materials["phong"].color.setRGB(r, g, b);
+		materials["phong-envmapped"].color.setRGB(r, g, b);
+	}
+
+	var materialName = "phong-envmapped";	
+	var envMapOn = true;
+	function setMaterial(name)
+	{
+		materialName = name;
+		if (envMapOn)
+		{
+			sphere.visible = false;
+			sphereEnvMapped.visible = true;
+			sphereEnvMapped.material = materials[name];
+		}
+		else
+		{
+			sphere.visible = true;
+			sphereEnvMapped.visible = false;
+			sphere.material = materials[name];
+		}
+	}
+
+	function toggleNormalMap()
+	{
+		envMapOn = !envMapOn;
+		var names = materialName.split("-");
+		if (!envMapOn)
+		{
+			setMaterial(names[0]);
+		}
+		else
+		{
+			setMaterial(names[0] + "-envmapped");
+		}
+	}
+
+   function createScene(canvas) {
+        
+        // Create the Three.js renderer and attach it to our canvas
+	    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.z = 10;
+		scene.add(camera);
+		
+		// Create a group to hold all the objects
+		root = new THREE.Object3D;
+		
+        // Add a directional light to show off the object
+		var light = new THREE.DirectionalLight( 0xffffff, 2);
+
+		// Position the light out from the scene, pointing at the origin
+		light.position.set(.5, 0, 1);
+		root.add( light );
+
+		light = new THREE.AmbientLight ( 0 );
+		root.add(light);
+		
+		// Create a group to hold the spheres
+		group = new THREE.Object3D;
+		root.add(group);
+		
+		// Create all the materials
+		createMaterials();
+		
+        // Create the sphere geometry
+        geometry = new THREE.SphereGeometry(2, 20, 20);
+        
+        // And put the geometry and material together into a mesh
+        sphere = new THREE.Mesh(geometry, materials["phong"]);
+		sphere.visible = false;
+
+        // Create the sphere geometry
+        geometry = new THREE.SphereGeometry(2, 20, 20);
+
+        // And put the geometry and material together into a mesh
+        sphereEnvMapped = new THREE.Mesh(geometry, materials["phong-envmapped"]);
+        sphereEnvMapped.visible = true;
+        setMaterial("phong-envmapped");
+
+        // Add the sphere mesh to our group
+        group.add( sphere );
+        group.add( sphereEnvMapped );
+
+		// Create the skybox
+		var shader = THREE.ShaderLib[ "cube" ];
+		shader.uniforms[ "tCube" ].value = envMap;
+
+		var material = new THREE.ShaderMaterial( {
+
+			fragmentShader: shader.fragmentShader,
+			vertexShader: shader.vertexShader,
+			uniforms: shader.uniforms,
+			side: THREE.BackSide
+
+		} ),
+
+		mesh = new THREE.Mesh( new THREE.CubeGeometry( 500, 500, 500 ), material );
+		scene.add( mesh );
+        
+        // Now add the group to our scene
+        scene.add( root );
+    }
+
+   function initControls()
+   {
+		$('#diffuseColor').ColorPicker({
+			color: '#ffffff',
+			onShow: function (colpkr) {
+				$(colpkr).fadeIn(500);
+				return false;
+			},
+			onHide: function (colpkr) {
+				$(colpkr).fadeOut(500);
+				return false;
+			},
+			onChange: function (hsb, hex, rgb) {
+				$('#diffuseColor div').css('backgroundColor', '#' + hex);
+				setMaterialColor(rgb.r, rgb.g, rgb.b);
+			},
+			onSubmit: function(hsb, hex, rgb, el) {
+				$(el).val(hex);
+				$('#diffuseColor div').css( "background-color", "#" + hex );
+				setMaterialColor(rgb.r, rgb.g, rgb.b);
+				$(el).ColorPickerHide();
+			},
+		});
+		var diffuseHex = "#ffffff";
+		$('#diffuseColor').ColorPickerSetColor(diffuseHex);
+		$('#diffuseColor div').css( "background-color", diffuseHex );
+		
+        $("#textureUrl").html(envMapUrl);
+        $("#texture").css( "background-image", "url(" + envMapUrl + ")");
+        
+		$("#textureCheckbox").click(
+				function() { toggleNormalMap(); }
+			);
+
+		orbitControls = new THREE.OrbitControls(camera);
+   }
+   
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				// initialize the controls
+				initControls();
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+	<div id="title">
+		Three.js Textures: Normal Mapping
+	</div>
+	<div id="prompt">
+		Drag the mouse to rotate the camera<br>Use the scroll wheel to zoom.
+	</div>
+</div>
+
+<div id="properties">
+Use these controls to change properties
+<div id="texturePicker">
+Normal Map 
+<input type="checkbox" checked id="textureCheckbox"></input> 
+<div id="textureUrl"></div> 
+<div id="texture" class="ui-widget-content ui-corner-all swatch"></div>
+</div> 
+
+<div id="diffuseColor" class="colorSelector">Diffuse color<div style="background-color: #00ff00"></div></div>
+
+</div>
+
+
+</html>
