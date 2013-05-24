@@ -53,8 +53,8 @@ body {
 }
 
 #slider .ui-slider-handle {
-	height:10px;
-	top:-1px;
+	height:12px;
+	top:-2px;
 	width:16px;
 }
 
@@ -90,128 +90,6 @@ body {
 	width:240px;
 }
 
-#colorPicker {
-	font-size:14px;
-	position:absolute;
-	top:160px;
-    margin-left:10px;
-}
-
-
-#red, #green, #blue {
-  position:absolute;
-  float: left;
-  clear: left;
-  width: 100px;
-  margin-top:10px;
-  height:6px;
-}
-
-#red {
-	top:16px;
-}
-
-#green {
-	top:32px;
-}
-
-#blue {
-	top:48px;
-}
-
-
-#red .ui-slider-range { background: #ef2929; }
-#red .ui-slider-handle {
-	border-color: #ef2929;
- 	height:8px;
-	top:-1px;
-	width:16px;
-}
-
-#green .ui-slider-range { background: #8ae234; }
-#green .ui-slider-handle { 
-	border-color: #8ae234; 
- 	height:8px;
-	top:-1px;
-	width:16px;
-}
-#blue .ui-slider-range { background: #729fcf; }
-#blue .ui-slider-handle { 
-	border-color: #729fcf; 
- 	height:8px;
-	top:-1px;
-	width:16px;
-}
-
-#colorPicker .swatch {
-  width: 100px;
-  height: 80px;
-  margin-left: 160px;
-  margin-top:-20px;
-  background-image: none;
-}
-
-#colorPickerSpecular {
-	font-size:14px;
-	position:absolute;
-	top:280px;
-    margin-left:10px;
-}
-
-
-#redSpecular, #greenSpecular, #blueSpecular {
-  position:absolute;
-  float: left;
-  clear: left;
-  width: 100px;
-  margin-top:10px;
-  height:6px;
-}
-
-#redSpecular {
-	top:16px;
-}
-
-#greenSpecular {
-	top:32px;
-}
-
-#blueSpecular {
-	top:48px;
-}
-
-
-#redSpecular .ui-slider-range { background: #ef2929; }
-#redSpecular .ui-slider-handle {
-	border-color: #ef2929;
- 	height:8px;
-	top:-1px;
-	width:16px;
-}
-
-#greenSpecular .ui-slider-range { background: #8ae234; }
-#greenSpecular .ui-slider-handle { 
-	border-color: #8ae234; 
- 	height:8px;
-	top:-1px;
-	width:16px;
-}
-#blueSpecular .ui-slider-range { background: #729fcf; }
-#blueSpecular .ui-slider-handle { 
-	border-color: #729fcf; 
- 	height:8px;
-	top:-1px;
-	width:16px;
-}
-
-#colorPickerSpecular .swatch {
-  width: 100px;
-  height: 80px;
-  margin-left: 160px;
-  margin-top:-20px;
-  background-image: none;
-}
-
 #texturePicker {
 	font-size:14px;
 	position:absolute;
@@ -231,3 +109,27 @@ body {
   background-size:100% 100%;
 }
 
+.colorSelector {
+	position: absolute;
+	font-size:14px;
+    margin-left:10px;
+}
+
+.colorSelector div {
+	position: absolute;
+	top: 4px;
+	left: 160px;
+	width: 28px;
+	height: 28px;
+	background: url(../libs/colorpicker/images/select2.png) center;
+}
+
+#diffuseColor {
+	position: absolute;
+	top:180px;
+}
+
+#specularColor {
+	position: absolute;
+	top:220px;
+}

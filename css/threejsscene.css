@@ -52,8 +52,8 @@ body {
 }
 
 #slider .ui-slider-handle {
-	height:10px;
-	top:-1px;
+	height:12px;
+	top:-2px;
 	width:16px;
 }
 

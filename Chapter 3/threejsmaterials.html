@@ -4,73 +4,14 @@
 <title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Materials</title>
 
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/threejsmaterials.css" />
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
-  <script>
-  function hexFromRGB(r, g, b) {
-    var hex = [
-      r.toString( 16 ),
-      g.toString( 16 ),
-      b.toString( 16 )
-    ];
-    $.each( hex, function( nr, val ) {
-      if ( val.length === 1 ) {
-        hex[ nr ] = "0" + val;
-      }
-    });
-    return hex.join( "" ).toUpperCase();
-  }
-  function refreshSwatch() {
-    var red = $( "#red" ).slider( "value" ),
-      green = $( "#green" ).slider( "value" ),
-      blue = $( "#blue" ).slider( "value" ),
-      hex = hexFromRGB( red, green, blue );
-    $( "#colorSwatch" ).css( "background-color", "#" + hex );
-    if (materials["basic"])
-        setMaterialColor(red, green, blue);
-  }
-  $(function() {
-    $( "#red, #green, #blue" ).slider({
-      orientation: "horizontal",
-      range: "min",
-      max: 255,
-      value: 127,
-      slide: refreshSwatch,
-      change: refreshSwatch
-    });
-    $( "#red" ).slider( "value", 255 );
-    $( "#green" ).slider( "value", 255 );
-    $( "#blue" ).slider( "value", 255 );
-  });
-
-  function refreshSwatchSpecular() {
-	    var red = $( "#redSpecular" ).slider( "value" ),
-	      green = $( "#greenSpecular" ).slider( "value" ),
-	      blue = $( "#blueSpecular" ).slider( "value" ),
-	      hex = hexFromRGB( red, green, blue );
-	    $( "#colorSwatchSpecular" ).css( "background-color", "#" + hex );
-	    if (materials["basic"])
-	        setMaterialSpecular(red, green, blue);
-	  }
-  $(function() {
-    $( "#redSpecular, #greenSpecular, #blueSpecular" ).slider({
-      orientation: "horizontal",
-      range: "min",
-      max: 255,
-      value: 127,
-      slide: refreshSwatchSpecular,
-      change: refreshSwatchSpecular
-    });
-    $( "#redSpecular" ).slider( "value", 0x11 );
-    $( "#greenSpecular" ).slider( "value", 0x11 );
-    $( "#blueSpecular" ).slider( "value", 0x11 );
-  });
-	    
-  </script>
+<script src="../libs/colorpicker/js/colorpicker.js"></script>
 <script type="text/javascript">
 
 	var renderer = null, 
@@ -292,8 +233,57 @@
 								setMaterial(id);
 							}
 						);
+
+				$('#diffuseColor').ColorPicker({
+					color: '#ffffff',
+					onShow: function (colpkr) {
+						$(colpkr).fadeIn(500);
+						return false;
+					},
+					onHide: function (colpkr) {
+						$(colpkr).fadeOut(500);
+						return false;
+					},
+					onChange: function (hsb, hex, rgb) {
+						$('#diffuseColor div').css('backgroundColor', '#' + hex);
+						setMaterialColor(rgb.r, rgb.g, rgb.b);
+					},
+					onSubmit: function(hsb, hex, rgb, el) {
+						$(el).val(hex);
+						$('#diffuseColor div').css( "background-color", "#" + hex );
+						setMaterialColor(rgb.r, rgb.g, rgb.b);
+						$(el).ColorPickerHide();
+					},
+				});
+				var diffuseHex = "#ffffff";
+				$('#diffuseColor').ColorPickerSetColor(diffuseHex);
+				$('#diffuseColor div').css( "background-color", diffuseHex );
 				
-				
+				$('#specularColor').ColorPicker({
+					color: '#ffffff',
+					onShow: function (colpkr) {
+						$(colpkr).fadeIn(500);
+						return false;
+					},
+					onHide: function (colpkr) {
+						$(colpkr).fadeOut(500);
+						return false;
+					},
+					onChange: function (hsb, hex, rgb) {
+						$('#specularColor div').css('backgroundColor', '#' + hex);
+						setMaterialSpecular(rgb.r, rgb.g, rgb.b);
+					},
+					onSubmit: function(hsb, hex, rgb, el) {
+						$(el).val(hex);
+						$('#specularColor div').css( "background-color", "#" + hex );
+						setMaterialSpecular(rgb.r, rgb.g, rgb.b);
+						$(el).ColorPickerHide();
+					},
+				});
+				var specularHex = "#111111";
+				$('#specularColor').ColorPickerSetColor(specularHex);
+				$('#specularColor div').css( "background-color", specularHex );
+								
 				var canvas = document.getElementById("webglcanvas");
 
 				// create the scene
@@ -341,23 +331,6 @@ Material
 </div>
 </div>
 
-<div id="colorPicker">
-Color
-<div id="red"></div>
-<div id="green"></div>
-<div id="blue"></div>
- 
-<div id="colorSwatch" class="ui-widget-content ui-corner-all swatch"></div>
-</div>
-
-<div id="colorPickerSpecular">
-Specular
-<div id="redSpecular"></div>
-<div id="greenSpecular"></div>
-<div id="blueSpecular"></div>
- 
-<div id="colorSwatchSpecular" class="ui-widget-content ui-corner-all swatch"></div>
-</div>
 
 <div id="texturePicker">
 Texture 
@@ -365,8 +338,11 @@ Texture
 <div id="textureUrl"></div> 
 <div id="texture" class="ui-widget-content ui-corner-all swatch"></div>
 </div> 
+
+<div id="diffuseColor" class="colorSelector">Diffuse color<div style="background-color: #00ff00"></div></div>
+<div id="specularColor" class="colorSelector">Specular color<div style="background-color: #00ff00"></div></div>
+
 </div>
 
-</body>
 
 </html>
