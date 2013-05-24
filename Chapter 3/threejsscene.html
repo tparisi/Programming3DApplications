@@ -63,12 +63,13 @@
 	    // Create a new Three.js scene
 	    scene = new THREE.Scene();
 
-		root = new THREE.Object3D;
-		
 	    // Add  a camera so we can view the scene
         camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
         camera.position.z = 10;
 		scene.add(camera);
+
+		// Create a group to hold all the objects
+		root = new THREE.Object3D;
 		
         // Add a directional light to show off the objects
 		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
@@ -127,9 +128,6 @@
         scene.add( root );
     }
 
-    var mouseDown = false,
-    pageX = 0;
-
     function rotateScene(deltax)
     {
         root.rotation.y += deltax / 100;
@@ -142,6 +140,9 @@
 		$("#scale").html("scale: " + scale);
     }
         
+    var mouseDown = false,
+    pageX = 0;
+
     function onMouseMove(evt)
     {
         if (!mouseDown)
@@ -183,7 +184,7 @@
 			function() {
 
 				$("#slider").slider({min: 0, max: 2, value: 1, step: 0.01, animate: false});
-				$("#slider").on("slide", function(e, u) { console.log(u.value); 
+				$("#slider").on("slide", function(e, u) {
 					scaleScene(u.value);
 					});
 				
@@ -218,7 +219,6 @@
 		    <div id="scale">scale: 1</div>
 	    </div>
 	</div>
-
 	<div id="slider"></div>
 </body>
 

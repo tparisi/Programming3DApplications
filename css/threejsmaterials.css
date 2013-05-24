@@ -45,73 +45,17 @@ body {
 	top:20px;
 }
 
-.ui-slider {
+#slider {
 	position:absolute;
-	height:.2em;
+	width:800px;
+	top:610px;
+	height:10px;
 }
 
-.ui-slider .ui-slider-handle {
-	height:.3em;
-	top:-.1em;
-	width:1em;
-}
-
-
-#red, #green, #blue {
-  float: left;
-  clear: left;
-  width: 100px;
-  margin-top:10px;
-}
-#red {
-	top:16px;
-	position:absolute;
-}
-#green {
-	top:32px;
-	position:absolute;
-}
-#blue {
-	top:48px;
-	position:absolute;
-}
-
-#swatch {
-  width: 100px;
-  height: 80px;
-  margin-left: 160px;
-  margin-top:-20px;
-  background-image: none;
-}
-
-#colorPicker {
-	color:DarkBlue;
-	font-size:14px;
-	position:absolute;
-	left:810px;
-	top:10px;
-    margin-left:10px;
-}
-
-#texturePicker {
-	color:DarkBlue;
-	font-size:14px;
-	position:absolute;
-	left:810px;
-	top:120px;
-    margin-left:10px;
-}
-
-#textureUrl {
-	font-size:10px;
-}
-
-#texture {
-  width: 100px;
-  height: 80px;
-  margin-left: 160px;
-  margin-top:-20px;
-  background-size:100% 100%;
+#slider .ui-slider-handle {
+	height:10px;
+	top:-1px;
+	width:16px;
 }
 
 #materialPicker {
@@ -119,7 +63,7 @@ body {
 	font-size:14px;
 	position:absolute;
 	left:810px;
-	top:240px;
+	top:20px;
     margin-left:10px;
 }
 
@@ -131,11 +75,95 @@ body {
 	width:240px;
 }
 
-#red .ui-slider-range { background: #ef2929; }
-#red .ui-slider-handle { border-color: #ef2929; }
-#green .ui-slider-range { background: #8ae234; }
-#green .ui-slider-handle { border-color: #8ae234; }
-#blue .ui-slider-range { background: #729fcf; }
-#blue .ui-slider-handle { border-color: #729fcf; }
+#materialWireframe {
+	font-size:14px;
+	position:absolute;
+	top:66px;
+	left:160px;
+	width:240px;
+}
 
+#colorPicker {
+	color:DarkBlue;
+	font-size:14px;
+	position:absolute;
+	left:810px;
+	top:140px;
+    margin-left:10px;
+}
+
+
+#red, #green, #blue {
+  position:absolute;
+  float: left;
+  clear: left;
+  width: 100px;
+  margin-top:10px;
+  height:6px;
+}
+
+#red {
+	top:16px;
+}
+
+#green {
+	top:32px;
+}
+
+#blue {
+	top:48px;
+}
+
+
+#red .ui-slider-range { background: #ef2929; }
+#red .ui-slider-handle {
+	border-color: #ef2929;
+ 	height:8px;
+	top:-1px;
+	width:16px;
+}
+
+#green .ui-slider-range { background: #8ae234; }
+#green .ui-slider-handle { 
+	border-color: #8ae234; 
+ 	height:8px;
+	top:-1px;
+	width:16px;
+}
+#blue .ui-slider-range { background: #729fcf; }
+#blue .ui-slider-handle { 
+	border-color: #729fcf; 
+ 	height:8px;
+	top:-1px;
+	width:16px;
+}
+
+#colorPicker .swatch {
+  width: 100px;
+  height: 80px;
+  margin-left: 160px;
+  margin-top:-20px;
+  background-image: none;
+}
+
+#texturePicker {
+	color:DarkBlue;
+	font-size:14px;
+	position:absolute;
+	left:810px;
+	top:260px;
+    margin-left:10px;
+}
+
+#textureUrl {
+	font-size:10px;
+}
+
+#texturePicker .swatch {
+  width: 100px;
+  height: 80px;
+  margin-left: 160px;
+  margin-top:-20px;
+  background-size:100% 100%;
+}
 
