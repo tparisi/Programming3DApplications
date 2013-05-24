@@ -58,12 +58,19 @@ body {
 	width:16px;
 }
 
-#materialPicker {
-	color:DarkBlue;
-	font-size:14px;
+#properties {
+	color:DimGray;
 	position:absolute;
 	left:810px;
-	top:20px;
+	font-size:14px;
+	margin-top:10px;
+	margin-left:10px;
+}
+	
+#materialPicker {
+	font-size:14px;
+	position:absolute;
+	top:40px;
     margin-left:10px;
 }
 
@@ -84,11 +91,9 @@ body {
 }
 
 #colorPicker {
-	color:DarkBlue;
 	font-size:14px;
 	position:absolute;
-	left:810px;
-	top:140px;
+	top:160px;
     margin-left:10px;
 }
 
@@ -146,12 +151,71 @@ body {
   background-image: none;
 }
 
-#texturePicker {
-	color:DarkBlue;
+#colorPickerSpecular {
 	font-size:14px;
 	position:absolute;
-	left:810px;
-	top:260px;
+	top:280px;
+    margin-left:10px;
+}
+
+
+#redSpecular, #greenSpecular, #blueSpecular {
+  position:absolute;
+  float: left;
+  clear: left;
+  width: 100px;
+  margin-top:10px;
+  height:6px;
+}
+
+#redSpecular {
+	top:16px;
+}
+
+#greenSpecular {
+	top:32px;
+}
+
+#blueSpecular {
+	top:48px;
+}
+
+
+#redSpecular .ui-slider-range { background: #ef2929; }
+#redSpecular .ui-slider-handle {
+	border-color: #ef2929;
+ 	height:8px;
+	top:-1px;
+	width:16px;
+}
+
+#greenSpecular .ui-slider-range { background: #8ae234; }
+#greenSpecular .ui-slider-handle { 
+	border-color: #8ae234; 
+ 	height:8px;
+	top:-1px;
+	width:16px;
+}
+#blueSpecular .ui-slider-range { background: #729fcf; }
+#blueSpecular .ui-slider-handle { 
+	border-color: #729fcf; 
+ 	height:8px;
+	top:-1px;
+	width:16px;
+}
+
+#colorPickerSpecular .swatch {
+  width: 100px;
+  height: 80px;
+  margin-left: 160px;
+  margin-top:-20px;
+  background-image: none;
+}
+
+#texturePicker {
+	font-size:14px;
+	position:absolute;
+	top:400px;
     margin-left:10px;
 }
 

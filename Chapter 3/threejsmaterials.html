@@ -46,6 +46,30 @@
     $( "#green" ).slider( "value", 255 );
     $( "#blue" ).slider( "value", 255 );
   });
+
+  function refreshSwatchSpecular() {
+	    var red = $( "#redSpecular" ).slider( "value" ),
+	      green = $( "#greenSpecular" ).slider( "value" ),
+	      blue = $( "#blueSpecular" ).slider( "value" ),
+	      hex = hexFromRGB( red, green, blue );
+	    $( "#colorSwatchSpecular" ).css( "background-color", "#" + hex );
+	    if (materials["basic"])
+	        setMaterialSpecular(red, green, blue);
+	  }
+  $(function() {
+    $( "#redSpecular, #greenSpecular, #blueSpecular" ).slider({
+      orientation: "horizontal",
+      range: "min",
+      max: 255,
+      value: 127,
+      slide: refreshSwatchSpecular,
+      change: refreshSwatchSpecular
+    });
+    $( "#redSpecular" ).slider( "value", 0x11 );
+    $( "#greenSpecular" ).slider( "value", 0x11 );
+    $( "#blueSpecular" ).slider( "value", 0x11 );
+  });
+	    
   </script>
 <script type="text/javascript">
 
@@ -112,6 +136,15 @@
 		materials["lambert"].color.setRGB(r, g, b);
 	}
 
+	function setMaterialSpecular(r, g, b)
+	{
+		r /= 255;
+		g /= 255;
+		b /= 255;
+		
+		materials["phong"].specular.setRGB(r, g, b);
+	}
+		
 	function setMaterial(name)
 	{
 		sphere.material = materials[name];
@@ -294,6 +327,8 @@
 	<div id="slider"></div>
 </div>
 
+<div id="properties">
+Use these controls to change properties
 <div id="materialPicker">
 Material
 <div id="materialRBGroup">
@@ -315,12 +350,22 @@ Color
 <div id="colorSwatch" class="ui-widget-content ui-corner-all swatch"></div>
 </div>
 
+<div id="colorPickerSpecular">
+Specular
+<div id="redSpecular"></div>
+<div id="greenSpecular"></div>
+<div id="blueSpecular"></div>
+ 
+<div id="colorSwatchSpecular" class="ui-widget-content ui-corner-all swatch"></div>
+</div>
+
 <div id="texturePicker">
 Texture 
 <input type="checkbox" checked id="textureCheckbox"></input> 
 <div id="textureUrl"></div> 
 <div id="texture" class="ui-widget-content ui-corner-all swatch"></div>
 </div> 
+</div>
 
 </body>
 
