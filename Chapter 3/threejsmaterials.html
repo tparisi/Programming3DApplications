@@ -3,25 +3,62 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Scene Graph</title>
 
-<link rel="stylesheet" href="../css/main.css" />
-<link rel="stylesheet" href="../css/threejsscene.css" />
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejsmaterials.css" />
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+  <script>
+  function hexFromRGB(r, g, b) {
+    var hex = [
+      r.toString( 16 ),
+      g.toString( 16 ),
+      b.toString( 16 )
+    ];
+    $.each( hex, function( nr, val ) {
+      if ( val.length === 1 ) {
+        hex[ nr ] = "0" + val;
+      }
+    });
+    return hex.join( "" ).toUpperCase();
+  }
+  function refreshSwatch() {
+    var red = $( "#red" ).slider( "value" ),
+      green = $( "#green" ).slider( "value" ),
+      blue = $( "#blue" ).slider( "value" ),
+      hex = hexFromRGB( red, green, blue );
+    $( "#swatch" ).css( "background-color", "#" + hex );
+    if (materials["basic"])
+        setMaterialColor(red, green, blue);
+  }
+  $(function() {
+    $( "#red, #green, #blue" ).slider({
+      orientation: "horizontal",
+      range: "min",
+      max: 255,
+      value: 127,
+      slide: refreshSwatch,
+      change: refreshSwatch
+    });
+    $( "#red" ).slider( "value", 255 );
+    $( "#green" ).slider( "value", 255 );
+    $( "#blue" ).slider( "value", 255 );
+  });
+  </script>
 <script type="text/javascript">
 
 	var renderer = null, 
 	scene = null, 
 	camera = null,
-	cubeGroup = null,
-	cube = null,
+	group = null,
 	sphereGroup = null,
-	sphere = null,
-	cone = null;
+	spheres = null,
+	controls = null;
 	
-    var duration = 5000; // ms
+    var duration = 10000; // ms
     var currentTime = Date.now();
 	function animate() {
 
@@ -31,14 +68,8 @@
         var fract = deltat / duration;
         var angle = Math.PI * 2 * fract;
 
-        // Rotate the cube about its Y axis
-		cube.rotation.y += angle;
-
 		// Rotate the sphere group about its Y axis
-		sphereGroup.rotation.y -= angle / 2;
-
-		// Rotate the cone about its X axis (tumble forward)
-		cone.rotation.x += angle;
+		group.rotation.y += angle;
 	}
 
 	function run() {
@@ -49,20 +80,62 @@
 
 			// Spin the cube for next frame
 			animate();
-				
+
+			controls.update();
     }
 
-	function generateUV2s(geometry)
+	var materials = {};
+	var mapUrl = "../images/moon_1024.jpg";
+	var map = null;
+    var bumpMapUrl = "../images/moon_1024.jpg";
+	
+	function createMaterials()
 	{
-		geometry.faceVertexUvs[1] = [];
-		var i, len = geometry.faceVertexUvs[0].length;
-		for (i = 0; i < len; i++)
-		{
-			geometry.faceVertexUvs[1].push(geometry.faceVertexUvs[0][i]);
-		}
+        // Create a textre phong material for the cube
+        // First, create the texture map
+        map = THREE.ImageUtils.loadTexture(mapUrl);
+
+        var bumpMap = THREE.ImageUtils.loadTexture(bumpMapUrl);
+
+    	var path = "../images/cube/skyenvmap/";
+    	var urls = [ path + "posx.jpg", path + "negx.jpg",
+    				 path + "posy.jpg", path + "negy.jpg",
+    				 path + "posz.jpg", path + "negz.jpg" ];
+
+    	var path = "../images/cube/Park3Med/";
+    	var urls2 = [ path + "px.jpg", path + "nx.jpg",
+    				 path + "py.jpg", path + "ny.jpg",
+    				 path + "pz.jpg", path + "nz.jpg" ];
+    	
+    	var envMap = THREE.ImageUtils.loadTextureCube( urls2 );
+    	envMap.format = THREE.RGBFormat;
+    	envMap.wrapS = envMap.wrapT = THREE.RepeatWrapping;
+        envMap.repeat.set(.1, .1);
+        
+		materials["basic"] = new THREE.MeshBasicMaterial({ map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap*/ });
+		materials["phong"] = new THREE.MeshPhongMaterial({ ambient:0xffffff, map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap*/ });
+		materials["lambert"] = new THREE.MeshLambertMaterial({ ambient:0xffffff, map: map, /*bumpMap : bumpMap,*/ /*envMap : envMap */ });
+	}
+
+	function setMaterialColor(r, g, b)
+	{
+		r /= 255;
+		g /= 255;
+		b /= 255;
+		
+		materials["basic"].color.setRGB(r, g, b);
+		materials["phong"].color.setRGB(r, g, b);
+		materials["lambert"].color.setRGB(r, g, b);
+	}
+
+	function toggleTexture()
+	{
+		materials["basic"].bumpMap = bumpMap;
+		materials["phong"].bumpMap = bumpMap;
+		materials["lambert"].bumpMap = bumpMap;
 	}
 	
-    function createScene(canvas) {
+   function createScene(canvas) {
         
         // Create the Three.js renderer and attach it to our canvas
 	    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
@@ -82,65 +155,32 @@
 		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
 
 		// Position the light out from the scene, pointing at the origin
-		light.position.set(.5, .2, 1);
+		light.position.set(.5, 0, 1);
 		scene.add( light );
 
-		cubeGroup = new THREE.Object3D;
+		light = new THREE.AmbientLight ( 0x676767 );
+		scene.add(light);
 		
-        // Create a textre phong material for the cube
-        // First, create the texture map
-        var mapUrl = "../images/earth_atmos_2048.jpg";
-        var map = THREE.ImageUtils.loadTexture(mapUrl);
-        var lightMapUrl = "../images/ash_uvgrid01-lm.jpg";
-        var lightMap = THREE.ImageUtils.loadTexture(lightMapUrl);
-        var material = new THREE.MeshPhongMaterial({ map: map, /*lightMap : lightMap bumpMap : lightMap,*/ });
-
-        // Create the cube geometry
-        var geometry = new THREE.CubeGeometry(2, 2, 2);
-		generateUV2s(geometry);
+		createMaterials();
 		
-        // And put the geometry and material together into a mesh
-        cube = new THREE.Mesh(geometry, material);
-
-        // Tilt the mesh toward the viewer
-        cube.rotation.x = Math.PI / 5;
-        cube.rotation.y = Math.PI / 5;
-
-        // Add the cube mesh to our group
-        cubeGroup.add( cube );
-
-        // Create a group for the sphere
-        sphereGroup = new THREE.Object3D;
-        cubeGroup.add(sphereGroup);
+        // Create a group for the spheres
+		group = new THREE.Object3D;		
         
-        // Move the sphere group up and back from the cube
-        sphereGroup.position.set(0, 3, -4);
-
         // Create the sphere geometry
-        geometry = new THREE.SphereGeometry(1, 20, 20);
-		generateUV2s(geometry);
+        geometry = new THREE.SphereGeometry(2, 20, 20);
         
         // And put the geometry and material together into a mesh
-        sphere = new THREE.Mesh(geometry, material);
-
+        sphere = new THREE.Mesh(geometry, materials["basic"]);
+        sphere.material = materials["phong"];
+		// sphere.material.wireframe = true;
+		
         // Add the sphere mesh to our group
-        sphereGroup.add( sphere );
+        group.add( sphere );
 
-        // Create the cone geometry
-        geometry = new THREE.CylinderGeometry(0, .333, .444, 20, 5);
-		generateUV2s(geometry);
-
-        // And put the geometry and material together into a mesh
-        cone = new THREE.Mesh(geometry, material);
-
-        // Move the cone up and out from the sphere
-        cone.position.set(1, 1, -.667);
-            
-        // Add the cone mesh to our group
-        sphereGroup.add( cone );
-        
         // Now add the group to our scene
-        scene.add( cubeGroup );
+        scene.add( group );
+
+        controls = new THREE.OrbitControls(camera, canvas);
     }
 
     var mouseDown = false,
@@ -148,13 +188,13 @@
 
     function rotateScene(deltax)
     {
-        cubeGroup.rotation.y += deltax / 100;
-		$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
+        //group.rotation.y += deltax / 100;
+		//$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
     }
     
     function scaleScene(scale)
     {
-        cubeGroup.scale.set(scale, scale, scale);
+        group.scale.set(scale, scale, scale);
 		$("#scale").html("scale: " + scale);
     }
         
@@ -183,8 +223,6 @@
         evt.preventDefault();
         
         mouseDown = false;
-
-        cubeGroup.visible = false;
     }
     
     function addMouseHandler(canvas)
@@ -200,11 +238,12 @@
 	$(document).ready(
 			function() {
 
-				$("#slider").slider({min: 0, max: 2, value: 1, step: 0.01, animate: false});
-				$("#slider").on("slide", function(e, u) { console.log(u.value); 
-					scaleScene(u.value);
-					});
-				
+		        $("#textureUrl").html(mapUrl);
+		        $("#texture").css( "background-image", "url(" + mapUrl + ")");
+		        
+				$("#textureCheckbox").click(
+						function() { toggleTexture(); }
+					);
 				var canvas = document.getElementById("webglcanvas");
 
 				// create the scene
@@ -223,21 +262,31 @@
 </head>
 <body>
 
-	<div id="container">
-	    <canvas id="webglcanvas" width=800 height=600></canvas>
-		<div id="title">
-			Three.js Scene Graph/Transform Hierarchy
-		</div>
-		<div id="prompt">
-			Drag the mouse to rotate the scene<br>Drag the slider to scale.
-		</div>
-	    <div id="status">
-		    <div id="rotation">rotation: 0,0,0</div>
-		    <div id="scale">scale: 1</div>
-	    </div>
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+	<div id="title">
+		Three.js Materials
 	</div>
+	<div id="prompt">
+		Drag to rotate the scene<br>Use mouse wheel to zoom
+	</div>
+</div>
 
-	<div style="position:absolute; top:610px; height:10px; width:	800px;" id="slider"></div>
+<div id="colorPicker">
+Color
+<div id="red"></div>
+<div id="green"></div>
+<div id="blue"></div>
+ 
+<div id="swatch" class="ui-widget-content ui-corner-all"></div>
+</div>
+
+<div id="texturePicker">
+<input type="checkbox" unchecked id="textureCheckbox"></input> Texture 
+<div id="textureUrl"></div> 
+<div id="texture" class="ui-widget-content ui-corner-all"></div>
+</div> 
+
 </body>
 
 </html>
