@@ -1,12 +1,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Materials</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Textures: Bump-Mapping</title>
 
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
-<link rel="stylesheet" href="../css/threejsmaterials.css" />
+<link rel="stylesheet" href="../css/threejsbumpmap.css" />
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
@@ -49,19 +49,18 @@
 	var materials = {};
 	var mapUrl = "../images/moon_1024.jpg";
 	var map = null;
+	var bumpMapUrl = "../images/cloud.png";
+	var bumpMap = null;
 	
 	function createMaterials()
 	{
         // Create a textre phong material for the cube
         // First, create the texture map
         map = THREE.ImageUtils.loadTexture(mapUrl);
+        bumpMap = THREE.ImageUtils.loadTexture(bumpMapUrl);
 
-		materials["basic"] = new THREE.MeshBasicMaterial();
-		materials["phong"] = new THREE.MeshPhongMaterial();
-		materials["lambert"] = new THREE.MeshLambertMaterial();
-		materials["basic-textured"] = new THREE.MeshBasicMaterial({ map: map });
-		materials["phong-textured"] = new THREE.MeshPhongMaterial({ map: map });
-		materials["lambert-textured"] = new THREE.MeshLambertMaterial({ map: map });
+		materials["phong"] = new THREE.MeshPhongMaterial({ bumpMap: bumpMap });
+		materials["phong-textured"] = new THREE.MeshPhongMaterial({ map: map, bumpMap: bumpMap });
 	}
 
 	function setMaterialColor(r, g, b)
@@ -70,12 +69,8 @@
 		g /= 255;
 		b /= 255;
 		
-		materials["basic"].color.setRGB(r, g, b);
 		materials["phong"].color.setRGB(r, g, b);
-		materials["lambert"].color.setRGB(r, g, b);
-		materials["basic-textured"].color.setRGB(r, g, b);
 		materials["phong-textured"].color.setRGB(r, g, b);
-		materials["lambert-textured"].color.setRGB(r, g, b);
 	}
 
 	function setMaterialSpecular(r, g, b)
@@ -121,17 +116,6 @@
 		}
 	}
 
-	function toggleWireframe()
-	{
-		materials["basic"].wireframe = !materials["basic"].wireframe;
-		materials["phong"].wireframe = !materials["phong"].wireframe;
-		materials["lambert"].wireframe = !materials["lambert"].wireframe;
-		materials["basic-textured"].wireframe = !materials["basic-textured"].wireframe;
-		materials["phong-textured"].wireframe = !materials["phong-textured"].wireframe;
-		materials["lambert-textured"].wireframe = !materials["lambert-textured"].wireframe;
-	}
-	
-	
    function createScene(canvas) {
         
         // Create the Three.js renderer and attach it to our canvas
@@ -356,7 +340,7 @@
 <div id="container">
     <canvas id="webglcanvas" width=800 height=600></canvas>
 	<div id="title">
-		Three.js Materials
+		Three.js Textures: Bump-Mapping
 	</div>
 	<div id="prompt">
 		Drag the mouse to rotate the scene<br>Drag the slider to scale.
@@ -370,19 +354,6 @@
 
 <div id="properties">
 Use these controls to change properties
-<div id="materialPicker">
-Material
-<div id="materialRBGroup">
-<input type="radio" name="materialRBGroup" value="basic"> Basic (Unlit)<br>
-<input type="radio" name="materialRBGroup" value="phong" checked> Phong<br>
-<input type="radio" name="materialRBGroup" value="lambert"> Lambert
-</div>
-<div id="materialWireframe">
-<input type="checkbox" id="wireframeCheckbox">Wireframe</input>
-</div>
-</div>
-
-
 <div id="texturePicker">
 Texture 
 <input type="checkbox" checked id="textureCheckbox"></input> 

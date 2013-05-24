@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Materials</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Textures</title>
 
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
@@ -49,18 +49,21 @@
 	var materials = {};
 	var mapUrl = "../images/moon_1024.jpg";
 	var map = null;
+	var bumpMapUrl = "../images/cloud.png";
+	var bumpMap = null;
 	
 	function createMaterials()
 	{
         // Create a textre phong material for the cube
         // First, create the texture map
         map = THREE.ImageUtils.loadTexture(mapUrl);
+        bumpMap = THREE.ImageUtils.loadTexture(bumpMapUrl);
 
-		materials["basic"] = new THREE.MeshBasicMaterial();
-		materials["phong"] = new THREE.MeshPhongMaterial();
-		materials["lambert"] = new THREE.MeshLambertMaterial();
+		materials["basic"] = new THREE.MeshBasicMaterial({ bumpMap: bumpMap });
+		materials["phong"] = new THREE.MeshPhongMaterial({ bumpMap: bumpMap });
+		materials["lambert"] = new THREE.MeshLambertMaterial({ bumpMap: bumpMap });
 		materials["basic-textured"] = new THREE.MeshBasicMaterial({ map: map });
-		materials["phong-textured"] = new THREE.MeshPhongMaterial({ map: map });
+		materials["phong-textured"] = new THREE.MeshPhongMaterial({ map: map, bumpMap: bumpMap });
 		materials["lambert-textured"] = new THREE.MeshLambertMaterial({ map: map });
 	}
 

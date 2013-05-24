@@ -69,33 +69,10 @@ body {
 	margin-left:10px;
 }
 	
-#materialPicker {
-	font-size:16px;
-	position:absolute;
-	top:40px;
-    margin-left:10px;
-}
-
-#materialRBGroup {
-	font-size:16px;
-	position:absolute;
-    margin-top:-20px;
-	left:120px;
-	width:140px;
-}
-
-#materialWireframe {
-	font-size:16px;
-	position:absolute;
-	top:66px;
-	left:120px;
-	width:140px;
-}
-
 #texturePicker {
 	font-size:16px;
 	position:absolute;
-	top:300px;
+	top:200px;
     margin-left:10px;
 }
 
@@ -128,10 +105,10 @@ body {
 
 #diffuseColor {
 	position: absolute;
-	top:180px;
+	top:80px;
 }
 
 #specularColor {
 	position: absolute;
-	top:220px;
+	top:120px;
 }
