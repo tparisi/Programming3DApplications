@@ -1,0 +1,91 @@
+@CHARSET "UTF-8";
+
+body {
+	color:White;
+}
+
+#container {
+	position:absolute;
+}
+
+#webglcanvas {
+	border:none;
+	background-color:#000000;
+}
+
+#title {
+	position:absolute;
+	left:20px;
+	top:20px;
+}
+
+#prompt {
+	position:absolute;
+	bottom:20px;
+	left:20px;
+}
+
+#properties {
+	color:MidnightBlue;
+	position:absolute;
+	left:810px;
+	top:20px;
+	font-size:16px;
+	margin-top:10px;
+	margin-left:10px;
+}
+	
+#texturePicker {
+	font-size:16px;
+	position:absolute;
+	top:140px;
+    margin-left:10px;
+}
+
+#textureUrl {
+	font-size:10px;
+}
+
+#texturePicker .swatch {
+  width: 320px;
+  height: 240px;
+  margin-left: 20px;
+  margin-top:30px;
+  background-size:100% 100%;
+}
+
+.colorSelector {
+	position: absolute;
+	font-size:16px;
+    margin-left:10px;
+}
+
+.colorSelector div {
+	position: absolute;
+	top: 4px;
+	left: 140px;
+	width: 28px;
+	height: 28px;
+	background: url(../libs/colorpicker/images/select2.png) center;
+}
+
+#directional {
+	position: absolute;
+	top:80px;
+}
+
+#point {
+	position: absolute;
+	top:120px;
+}
+
+#spot {
+	position: absolute;
+	top:160px;
+}
+
+#ambient {
+	position: absolute;
+	top:200px;
+}
+

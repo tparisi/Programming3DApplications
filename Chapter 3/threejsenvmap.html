@@ -226,7 +226,7 @@
 				function() { toggleNormalMap(); }
 			);
 
-		orbitControls = new THREE.OrbitControls(camera);
+		orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
    }
    
 	$(document).ready(
