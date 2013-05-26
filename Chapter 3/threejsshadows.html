@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
-<link rel="stylesheet" href="../css/threejslights.css" />
+<link rel="stylesheet" href="../css/threejsshadows.css" />
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
@@ -249,6 +249,7 @@
 			onChange: function (hsb, hex, rgb) {
 				$('#spot div').css('backgroundColor', '#' + hex);
 				setLightColor(spotLight, rgb.r, rgb.g, rgb.b);
+				setShadowDarkness(spotLight, rgb.r, rgb.g, rgb.b);
 			},
 			onSubmit: function(hsb, hex, rgb, el) {
 				$(el).val(hex);
