@@ -15,7 +15,7 @@
 	var renderer = null, 
 	scene = null, 
 	camera = null,
-	root = null,
+	cubeGroup = null,
 	cube = null,
 	sphereGroup = null,
 	sphere = null,
@@ -69,13 +69,13 @@
 		scene.add(camera);
 
 		// Create a group to hold all the objects
-		root = new THREE.Object3D;
+		cubeGroup = new THREE.Object3D;
 		
         // Add a directional light to show off the objects
 		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
 		// Position the light out from the scene, pointing at the origin
 		light.position.set(.5, .2, 1);
-		root.add(light);
+		cubeGroup.add(light);
 
         // Create a textre phong material for the cube
         // First, create the texture map
@@ -94,11 +94,11 @@
         cube.rotation.y = Math.PI / 5;
 
         // Add the cube mesh to our group
-        root.add( cube );
+        cubeGroup.add( cube );
 
         // Create a group for the sphere
         sphereGroup = new THREE.Object3D;
-        root.add(sphereGroup);
+        cubeGroup.add(sphereGroup);
         
         // Move the sphere group up and back from the cube
         sphereGroup.position.set(0, 3, -4);
@@ -125,18 +125,18 @@
         sphereGroup.add( cone );
         
         // Now add the group to our scene
-        scene.add( root );
+        scene.add( cubeGroup );
     }
 
     function rotateScene(deltax)
     {
-        root.rotation.y += deltax / 100;
-		$("#rotation").html("rotation: 0," + root.rotation.y.toFixed(2) + ",0");
+        cubeGroup.rotation.y += deltax / 100;
+		$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
     }
     
     function scaleScene(scale)
     {
-        root.scale.set(scale, scale, scale);
+        cubeGroup.scale.set(scale, scale, scale);
 		$("#scale").html("scale: " + scale);
     }
         

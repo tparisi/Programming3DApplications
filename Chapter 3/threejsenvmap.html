@@ -103,7 +103,7 @@
 		}
 	}
 
-	function toggleNormalMap()
+	function toggleEnvironmentMap()
 	{
 		envMapOn = !envMapOn;
 		var names = materialName.split("-");
@@ -223,7 +223,7 @@
         $("#texture").css( "background-image", "url(" + envMapUrl + ")");
         
 		$("#textureCheckbox").click(
-				function() { toggleNormalMap(); }
+				function() { toggleEnvironmentMap(); }
 			);
 
 		orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -263,7 +263,7 @@
 <div id="properties">
 Use these controls to change properties
 <div id="texturePicker">
-Normal Map 
+Environment Map 
 <input type="checkbox" checked id="textureCheckbox"></input> 
 <div id="textureUrl"></div> 
 <div id="texture" class="ui-widget-content ui-corner-all swatch"></div>
