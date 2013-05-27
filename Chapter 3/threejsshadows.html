@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Lights</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Shadows</title>
 
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
@@ -19,6 +19,7 @@
 	scene = null, 
 	camera = null,
 	root = null,
+	cube = null,
 	group = null,
 	orbitControls = null;
 	
@@ -34,6 +35,9 @@
 
 		// Rotate the sphere group about its Y axis
 		group.rotation.y += angle;
+
+		// Rotate the cube to show the real-time shadow
+		cube.rotation.x += angle / 2;
 	}
 
 	function run() {
@@ -178,6 +182,9 @@
         // Add the mesh to our group
         group.add( mesh );
 
+        // Save this one away so we can rotate it
+        cube = mesh;
+
         // Create the sphere geometry
         geometry = new THREE.SphereGeometry(Math.sqrt(2), 50, 50);
         
@@ -316,7 +323,7 @@
 <div id="container">
     <canvas id="webglcanvas" width=800 height=600></canvas>
 	<div id="title">
-		Three.js Lights
+		Three.js Shadows
 	</div>
 	<div id="prompt">
 		Drag the mouse to rotate the camera<br>Use the scroll wheel to zoom.
