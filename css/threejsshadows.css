@@ -21,25 +21,6 @@
 	margin-top:10px;
 	margin-left:10px;
 }
-	
-#texturePicker {
-	font-size:16px;
-	position:absolute;
-	top:140px;
-    margin-left:10px;
-}
-
-#textureUrl {
-	font-size:10px;
-}
-
-#texturePicker .swatch {
-  width: 320px;
-  height: 240px;
-  margin-left: 20px;
-  margin-top:30px;
-  background-size:100% 100%;
-}
 
 .colorSelector {
 	position: absolute;
