@@ -1,12 +1,5 @@
 @CHARSET "UTF-8";
 
-body {
-}
-
-#container {
-	position:absolute;
-}
-
 #webglcanvas {
 	border:none;
 	background-color:#aaaaaa;

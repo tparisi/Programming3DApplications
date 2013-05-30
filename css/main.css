@@ -5,3 +5,17 @@
     font-size:20px;
     font-style: italic;
 }
+
+body {
+	color:White;
+}
+
+#container {
+	position:absolute;
+}
+
+#webglcanvas {
+	border:none;
+	background-color:#000000;
+}
+

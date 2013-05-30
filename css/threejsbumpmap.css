@@ -4,15 +4,6 @@ body {
 	color:LightBlue;
 }
 
-#container {
-	position:absolute;
-}
-
-#webglcanvas {
-	border:none;
-	background-color:#000000;
-}
-
 #title {
 	position:absolute;
 	left:20px;
