@@ -10,6 +10,7 @@
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/tween.js/tween.min.js"></script>
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
 <script type="text/javascript">
 
@@ -25,9 +26,10 @@
 	
 	function animate() {
 
-		var delta = clock.getDelta();
+//		var delta = clock.getDelta();
 
-		THREE.AnimationHandler.update( delta );
+//		THREE.AnimationHandler.update( delta );
+		TWEEN.update();
 	}
 
 	function run() {
@@ -84,36 +86,32 @@
         scene.add( root );
     }
 
-	var duration = 5; // sec
+	var duration = 2000; // msec
 	function createAnimations()
 	{
-		clock = new THREE.Clock();
-
-		var name = "cubeAnim";
 		
-		var animationData = {
+		var cubeAnim1 = 
 
-				   name: name,
-				   fps: 1,
-				   length: duration,
+			new TWEEN.Tween( cube.position ).to( { x: [1, 2, 1, 0], y: [0, .333, .666, 1] }, duration )
+			.interpolation(TWEEN.Interpolation.Bezier)
+			.delay( 250 )
+			.start();
 
-				   hierarchy: []
+		/*
+		var cubeAnim2 = 
 
-				};
-		
-		var parentAnimation = { parent: -1, keys: [] };
-		parentAnimation.keys[ 0 ] = { time: 0, pos: [0, 0, 0], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
-		parentAnimation.keys[ 1 ] = { time: 1.25, pos: [1, 0, 0], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
-		parentAnimation.keys[ 2 ] = { time: 2.5, pos: [1, 0, -1], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
-		parentAnimation.keys[ 3 ] = { time: 3.75, pos: [1, 0, 0], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
-		parentAnimation.keys[ 4 ] = { time: 5, pos: [0, 0, 0], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
+			new TWEEN.Tween( cube2.position ).to( { x: [1, 2, 1], y: [0, .5, 1] }, 3000 )
+			.interpolation(TWEEN.Interpolation.Bezier)
+			.delay( 250 )
+			.start();
 
-		animationData.hierarchy[ 0 ] = parentAnimation;
+		var cubeAnim3 = 
 
-		THREE.AnimationHandler.add( animationData );
-
-		cubeKeyFrame = new THREE.Animation( cube, name, THREE.AnimationHandler.CATMULLROM );
-		cubeKeyFrame.play();		
+			new TWEEN.Tween( cube3.position ).to( { x: [1, 2, 1], y: [0, .5, 1] }, 3000 )
+			.interpolation(TWEEN.Interpolation.CatmullRom)
+			.delay( 250 )
+			.start();
+		*/
 	}
 	
 	$(document).ready(
