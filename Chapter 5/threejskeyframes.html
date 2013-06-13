@@ -84,13 +84,18 @@
         scene.add( root );
     }
 
-	var duration = 5; // sec
+	var duration = 5, // sec
+	loopAnimation = true,
+	animatePosition = true,
+	animateRotation = true,
+	animateScale = true;
+	
 	function createAnimations()
 	{
 		clock = new THREE.Clock();
 
 		var name = "cubeAnim";
-		
+
 		var animationData = {
 
 				   name: name,
@@ -103,18 +108,17 @@
 		
 		var parentAnimation = { parent: -1, keys: [] };
 		parentAnimation.keys[ 0 ] = { time: 0, pos: [0, 0, 0], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
-		parentAnimation.keys[ 1 ] = { time: 1.25, pos: [1, 0, 0] };
-		parentAnimation.keys[ 2 ] = { time: 2.5, pos: [1, 1, -1] };
-		parentAnimation.keys[ 3 ] = { time: 3.75, pos: [1, 0, 0] };
+		parentAnimation.keys[ 1 ] = { time: 2.75, pos: [2, 0, 0], rot:[0, 0.7071, 0, 0.7071]  };
+		parentAnimation.keys[ 2 ] = { time: 3.25, pos: [2, 1, -1], rot:[0, 1, 0, 0] };
+		parentAnimation.keys[ 3 ] = { time: 3.75, pos: [2, 0, 0], rot:[0, 0.7071, 0, -0.7071] };
 		parentAnimation.keys[ 4 ] = { time: 5, pos: [0, 0, 0], rot:[0, 0, 0, 1], scl:[1, 1, 1] };
 
 		animationData.hierarchy[ 0 ] = parentAnimation;
 
 		THREE.AnimationHandler.add( animationData );
 
-		var animType = THREE.AnimationHandler.CATMULLROM;
-		cubeKeyFrame = new THREE.Animation( cube, name, animType );
-		cubeKeyFrame.play();		
+		cubeKeyFrame = new THREE.Animation( cube, name );
+		cubeKeyFrame.play(loopAnimation);		
 	}
 	
 	$(document).ready(

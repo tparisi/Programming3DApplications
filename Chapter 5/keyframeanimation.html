@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; Tweening with Tween.js</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Simple Key Frame Animation</title>
 
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
@@ -12,6 +12,7 @@
 <script src="../libs/three.js.r58/three.js"></script>
 <script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
 <script src="../libs/tween.js/tween.min.js"></script>
+<script src="../libs/keyframe.js/keyframe.js"></script>
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
 <script type="text/javascript">
 
@@ -21,6 +22,7 @@
 	root = null,
 	group = null,
 	cube = null,
+	floor = null,
 	directionalLight = null;
 	
 	function run() {
@@ -31,6 +33,7 @@
 
 			// Update the animations
 			TWEEN.update();
+			KF.update();
 
 			// Update the camera controller
 			orbitControls.update();
@@ -80,13 +83,13 @@
 		
 		// Put in a ground plane to show off the lighting
         geometry = new THREE.PlaneGeometry(200, 200, 50, 50);
-        var mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
+        floor = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
         	ambient:ambient, map:map, side:THREE.DoubleSide}));
-        mesh.rotation.x = -Math.PI / 2;
-        mesh.position.y = -4.02;
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -4.02;
         
-        // Add the mesh to our group
-        root.add( mesh );
+        // Add the floor to our group
+        root.add( floor );
 
         // Create the cube geometry
 		map = THREE.ImageUtils.loadTexture("../images/wooden_crate_1_store.jpg");		
@@ -99,6 +102,7 @@
             ambient:ambient, 
             map:map,
             transparent:true}));
+//		cube.rotation.x = Math.PI / 8;
 		
         // Add the mesh to our group
         group.add( cube );
@@ -177,7 +181,7 @@
 
 		$("#loopCheckbox").click(
 				function() {
-					repeatCount = isFinite(repeatCount) ? Infinity : 0;
+					loopAnimation = !loopAnimation;
 					playAnimations();
 					}
 			);
@@ -193,38 +197,50 @@
 	}
 	   	
 	var duration = 2, // sec
-	delayTime = .25, // sec
-	positionTween = null,
+	positionAnimator = null,
 	rotationTween = null,
 	colorTween = null,
 	opacityTween = null,
-	tweenPosition = true,
+	animatePosition = true,
 	tweenRotation = true,
 	tweenColor = true,
 	tweenOpacity = true,
-	repeatCount = 0,
+	loopAnimation = false,
 	interpolationType = TWEEN.Interpolation.Linear,
 	easingFunction = TWEEN.Easing.Quadratic.InOut;
 
 	function playAnimations()
 	{
-		// position tween
-		if (positionTween)
-			positionTween.stop();
-
+		// position animation
+		if (positionAnimator)
+			positionAnimator.stop();
+		
 		group.position.set(0, 0, 0);
 
-		if (tweenPosition)
+		if (animatePosition)
 		{
-			positionTween = 
-	
-				new TWEEN.Tween( group.position ).to( { x: 2, y: 2, z:-3 }, duration * 1000)
-				.interpolation(interpolationType)
-				.delay( delayTime * 1000 )
-				.easing(easingFunction)
-				.repeat(repeatCount)
-				.start();
-			}
+			positionAnimator = new KF.KeyFrameAnimator;
+			positionAnimator.init({ 
+				interps:
+					[
+					    { 
+					    	keys:[0, .25, .5, .75, 1], 
+					    	values:[
+					    	        { x : -1, z : 0 },
+					    	        { x : 0, z : 0 },
+					    	        { x : 0, z : 0 },
+					    	        { x : 2, z : -3 },
+					    	        { x : 3, z : -5 },
+					    	        ],
+					    	target:cube.position
+					    },
+					],
+				loop: true,
+				duration:duration * 1000
+			});
+			positionAnimator.start();
+			
+		}
 		
 		// rotation tween
 		if (rotationTween)
@@ -318,9 +334,6 @@
 
 <div id="properties">
 Use these controls to change properties
-<div id="delayLabel">Delay</div>
-<div class="slider" id="delaySlider"></div>
-<div id="delayValue">0.25s</div>
 <div id="durationLabel">Duration</div>
 <div class="slider" id="durationSlider"></div>
 <div id="durationValue">2s</div>
