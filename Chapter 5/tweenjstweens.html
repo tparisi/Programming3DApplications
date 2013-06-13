@@ -36,7 +36,7 @@
 			orbitControls.update();
 	}
 
-	var mapUrl = "../images/checker_large.gif";
+	var mapUrl = "../images/floor15.jpg";
 	function createScene(canvas) {
 		
 		// Create the Three.js renderer and attach it to our canvas
@@ -73,7 +73,7 @@
 		// Create a texture map
 		var map = THREE.ImageUtils.loadTexture(mapUrl);
 		map.wrapS = map.wrapT = THREE.RepeatWrapping;
-		map.repeat.set(8, 8);
+		map.repeat.set(16, 16);
 
 		var color = 0xffffff;
 		var ambient = 0x888888;
@@ -89,13 +89,17 @@
         root.add( mesh );
 
         // Create the cube geometry
-        geometry = new THREE.CubeGeometry(2, 2, 2);
+		map = THREE.ImageUtils.loadTexture("../images/wooden_crate_1_store.jpg");		
+        geometry = new THREE.CubeGeometry(4, 4, 4);
         
         // And put the geometry and material together into a mesh
-        var color = 0x0000ff;
+        var color = 0xffffff;
         ambient = 0x111111;
-        cube = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, ambient:ambient, transparent:true}));
-		cube.rotation.x = Math.PI / 8;
+        cube = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
+            ambient:ambient, 
+            map:map,
+            transparent:true}));
+//		cube.rotation.x = Math.PI / 8;
 		
         // Add the mesh to our group
         group.add( cube );
@@ -128,35 +132,63 @@
 				$("#delayValue").html(delayTime + "s");
 				
 			});
+		$("#delaySlider").on("slidechange", function(e, u) {
+				delayTime = u.value;
+				playAnimations();
+		});
 		
 		
 		$("#durationSlider").slider({min: 0.2, max: 5, value: duration, step: 0.1, animate: false});
 		$("#durationSlider").on("slide", function(e, u) {
 				duration = u.value;
-				$("#durationValue").html(duration + "s");
-				
+				$("#durationValue").html(duration + "s");				
 			});
+		$("#durationSlider").on("slidechange", function(e, u) {
+				duration = u.value;
+				playAnimations();
+		});
 		
 		$("#tweenPositionCheckbox").click(
-				function() { tweenPosition = !tweenPosition }
+				function() { 
+					tweenPosition = !tweenPosition;
+					playAnimations();
+				}
 			);
 
 		$("#tweenRotationCheckbox").click(
-				function() { tweenRotation = !tweenRotation }
+				function() {
+					tweenRotation = !tweenRotation;
+					playAnimations();
+				}
 			);
 
-		$("#tweenScaleCheckbox").click(
-				function() { tweenScale = !tweenScale }
+		$("#tweenColorCheckbox").click(
+				function() {
+					tweenColor = !tweenColor;
+					playAnimations();
+				}
 			);
 
 		$("#tweenOpacityCheckbox").click(
-				function() { tweenOpacity = !tweenOpacity }
+				function() {
+					tweenOpacity = !tweenOpacity;
+					playAnimations();
+					}
 			);
+
+		$("#loopCheckbox").click(
+				function() {
+					repeatCount = isFinite(repeatCount) ? Infinity : 0;
+					playAnimations();
+					}
+			);
+		
 		
 		$("input[name=easingRBGroup]").click(
 				function() {
 					var id = $("input[name=easingRBGroup]:checked").attr('value');
 					easingFunction = easingFunctions[id];
+					playAnimations();
 				}
 			);
 	}
@@ -165,25 +197,16 @@
 	delayTime = .25, // sec
 	positionTween = null,
 	rotationTween = null,
-	scaleTween = null,
+	colorTween = null,
 	opacityTween = null,
 	tweenPosition = true,
 	tweenRotation = true,
-	tweenScale = true,
+	tweenColor = true,
 	tweenOpacity = true,
+	repeatCount = 0,
 	interpolationType = TWEEN.Interpolation.Linear,
 	easingFunction = TWEEN.Easing.Quadratic.InOut;
 
-	function positionUpdate()
-	{
-//		console.log("New position: ", group.position);
-	}
-
-	function rotationUpdate()
-	{
-//		console.log("New rotation: ", group.rotation);
-	}
-	
 	function playAnimations()
 	{
 		// position tween
@@ -200,7 +223,7 @@
 				.interpolation(interpolationType)
 				.delay( delayTime * 1000 )
 				.easing(easingFunction)
-				.onUpdate(positionUpdate)
+				.repeat(repeatCount)
 				.start();
 			}
 		
@@ -218,25 +241,25 @@
 				.interpolation(interpolationType)
 				.delay( delayTime * 1000 )
 				.easing(easingFunction)
-				.onUpdate(rotationUpdate)
+				.repeat(repeatCount)
 				.start();
 		}
 		
 		// scale tween
-		if (scaleTween)
-			scaleTween.stop();
+		if (colorTween)
+			colorTween.stop();
 
-		cube.scale.set(1, 1, 1);
+		cube.material.color.setRGB(1, 1, 1);
 
-		if (tweenScale)
+		if (tweenColor)
 		{
-			scaleTween = 
+			colorTween = 
 	
-				new TWEEN.Tween( cube.scale ).to( { y: 2 }, duration * 1000)
+				new TWEEN.Tween( cube.material.color ).to( { r:1, g:0, b:0 }, duration * 1000)
 				.interpolation(interpolationType)
 				.delay( delayTime * 1000 )
 				.easing(easingFunction)
-				.onUpdate(rotationUpdate)
+				.repeat(repeatCount)
 				.start();
 		}
 					
@@ -250,11 +273,11 @@
 		{
 			opacityTween = 
 						
-				new TWEEN.Tween( cube.material ).to( { opacity:0.5 }, duration * 1000)
+				new TWEEN.Tween( cube.material ).to( { opacity:0.8 }, duration * 1000)
 				.interpolation(interpolationType)
 				.delay( delayTime * 1000 )
 				.easing(easingFunction)
-				.onUpdate(rotationUpdate)
+				.repeat(repeatCount)
 				.start();
 		}		
 	}
@@ -311,8 +334,8 @@ Tween Position<input type="checkbox" id="tweenPositionCheckbox" checked>
 Tween Rotation<input type="checkbox" id="tweenRotationCheckbox" checked>
 </div>
 
-<div id="tweenScale">
-Tween Scale<input type="checkbox" id="tweenScaleCheckbox" checked>
+<div id="tweenColor">
+Tween Color<input type="checkbox" id="tweenColorCheckbox" checked>
 </div>
 
 <div id="tweenOpacity">
@@ -337,6 +360,10 @@ Easing Function
 </div>
 
 <button id="playButton" onClick="playAnimations();">Play</button>
+
+<div id="loop">
+Loop Animation<input type="checkbox" id="loopCheckbox" unchecked>
+</div>
 
 </div>
 
