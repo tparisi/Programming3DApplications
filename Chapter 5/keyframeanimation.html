@@ -52,7 +52,7 @@
 
 	    // Add  a camera so we can view the scene
         camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-        camera.position.set(-1, 4, 8);
+        camera.position.set(0, 4, 8);
 		scene.add(camera);
 		
 		// Create a group to hold all the objects
@@ -75,6 +75,7 @@
 		// Create a texture map
 		var map = THREE.ImageUtils.loadTexture(mapUrl);
 		map.wrapS = map.wrapT = THREE.RepeatWrapping;
+		map.repeat.set(2, 2);
 
 		var color = 0xffffff;
 		var ambient = 0x888888;
