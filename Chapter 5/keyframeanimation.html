@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
-<link rel="stylesheet" href="../css/tweenjstweens.css" />
+<link rel="stylesheet" href="../css/keyframeanimation.css" />
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
@@ -22,7 +22,7 @@
 	root = null,
 	group = null,
 	cube = null,
-	floor = null,
+	waves = null,
 	directionalLight = null;
 	
 	function run() {
@@ -32,14 +32,13 @@
 			renderer.render( scene, camera );
 
 			// Update the animations
-			TWEEN.update();
 			KF.update();
 
 			// Update the camera controller
 			orbitControls.update();
 	}
 
-	var mapUrl = "../images/floor15.jpg";
+	var mapUrl = "../images/Tileable classic water texture.jpg";
 	function createScene(canvas) {
 		
 		// Create the Three.js renderer and attach it to our canvas
@@ -53,7 +52,7 @@
 
 	    // Add  a camera so we can view the scene
         camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-        camera.position.set(0, 4, 10);
+        camera.position.set(-1, 4, 8);
 		scene.add(camera);
 		
 		// Create a group to hold all the objects
@@ -76,33 +75,31 @@
 		// Create a texture map
 		var map = THREE.ImageUtils.loadTexture(mapUrl);
 		map.wrapS = map.wrapT = THREE.RepeatWrapping;
-		map.repeat.set(16, 16);
 
 		var color = 0xffffff;
 		var ambient = 0x888888;
 		
 		// Put in a ground plane to show off the lighting
         geometry = new THREE.PlaneGeometry(200, 200, 50, 50);
-        floor = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
+        waves = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
         	ambient:ambient, map:map, side:THREE.DoubleSide}));
-        floor.rotation.x = -Math.PI / 2;
-        floor.position.y = -4.02;
+        waves.rotation.x = -Math.PI / 2;
+        waves.position.y = -1.02;
         
-        // Add the floor to our group
-        root.add( floor );
+        // Add the waves to our group
+        root.add( waves );
 
         // Create the cube geometry
 		map = THREE.ImageUtils.loadTexture("../images/wooden_crate_1_store.jpg");		
-        geometry = new THREE.CubeGeometry(4, 4, 4);
+        geometry = new THREE.CubeGeometry(2, 2, 2);
         
         // And put the geometry and material together into a mesh
         var color = 0xffffff;
-        ambient = 0x111111;
+        ambient = 0x888888;
         cube = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
             ambient:ambient, 
             map:map,
             transparent:true}));
-//		cube.rotation.x = Math.PI / 8;
 		
         // Add the mesh to our group
         group.add( cube );
@@ -111,37 +108,11 @@
         scene.add( root );
     }
 
-	var easingFunctions = {
-			none : TWEEN.Easing.Linear.None,
-			quadratic : TWEEN.Easing.Quadratic.InOut,
-			cubic : TWEEN.Easing.Cubic.InOut,
-			quartic : TWEEN.Easing.Quartic.InOut,
-			quintic : TWEEN.Easing.Quintic.InOut,
-			sinusoidal : TWEEN.Easing.Sinusoidal.InOut,
-			exponential : TWEEN.Easing.Exponential.InOut,
-			circular : TWEEN.Easing.Circular.InOut,
-			elastic : TWEEN.Easing.Elastic.InOut,
-			back : TWEEN.Easing.Back.InOut,
-			bounce : TWEEN.Easing.Bounce.InOut,
-	};
-	
 	function initControls()
 	{
 		orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
 
-		$("#delaySlider").slider({min: 0, max: 1, value: delayTime, step: 0.05, animate: false});
-		$("#delaySlider").on("slide", function(e, u) {
-				delayTime = u.value;
-				$("#delayValue").html(delayTime + "s");
-				
-			});
-		$("#delaySlider").on("slidechange", function(e, u) {
-				delayTime = u.value;
-				playAnimations();
-		});
-		
-		
-		$("#durationSlider").slider({min: 0.2, max: 5, value: duration, step: 0.1, animate: false});
+		$("#durationSlider").slider({min: 2, max: 10, value: duration, step: 0.1, animate: false});
 		$("#durationSlider").on("slide", function(e, u) {
 				duration = u.value;
 				$("#durationValue").html(duration + "s");				
@@ -151,30 +122,30 @@
 				playAnimations();
 		});
 		
-		$("#tweenPositionCheckbox").click(
+		$("#animateCrateCheckbox").click(
 				function() { 
-					tweenPosition = !tweenPosition;
+					animateCrate = !animateCrate;
 					playAnimations();
 				}
 			);
 
-		$("#tweenRotationCheckbox").click(
+		$("#animateWavesCheckbox").click(
 				function() {
-					tweenRotation = !tweenRotation;
+					animateWaves = !animateWaves;
 					playAnimations();
 				}
 			);
 
-		$("#tweenColorCheckbox").click(
+		$("#animateLightCheckbox").click(
 				function() {
-					tweenColor = !tweenColor;
+					animateLight = !animateLight;
 					playAnimations();
 				}
 			);
 
-		$("#tweenOpacityCheckbox").click(
+		$("#animateWaterCheckbox").click(
 				function() {
-					tweenOpacity = !tweenOpacity;
+					animateWater = !animateWater;
 					playAnimations();
 					}
 			);
@@ -184,117 +155,154 @@
 					loopAnimation = !loopAnimation;
 					playAnimations();
 					}
-			);
-		
-		
-		$("input[name=easingRBGroup]").click(
-				function() {
-					var id = $("input[name=easingRBGroup]:checked").attr('value');
-					easingFunction = easingFunctions[id];
-					playAnimations();
-				}
-			);
+			);		
 	}
 	   	
-	var duration = 2, // sec
-	positionAnimator = null,
-	rotationTween = null,
-	colorTween = null,
-	opacityTween = null,
-	animatePosition = true,
-	tweenRotation = true,
-	tweenColor = true,
-	tweenOpacity = true,
-	loopAnimation = false,
-	interpolationType = TWEEN.Interpolation.Linear,
-	easingFunction = TWEEN.Easing.Quadratic.InOut;
+	var duration = 10, // sec
+	crateAnimator = null,
+	waveAnimator = null,
+	lightAnimator = null,
+	waterAnimator = null,
+	animateCrate = true,
+	animateWaves = true,
+	animateLight = true,
+	animateWater = true,
+	loopAnimation = false;
 
 	function playAnimations()
 	{
 		// position animation
-		if (positionAnimator)
-			positionAnimator.stop();
+		if (crateAnimator)
+			crateAnimator.stop();
 		
 		group.position.set(0, 0, 0);
+		group.rotation.set(0, 0, 0);
 
-		if (animatePosition)
+		if (animateCrate)
 		{
-			positionAnimator = new KF.KeyFrameAnimator;
-			positionAnimator.init({ 
+			crateAnimator = new KF.KeyFrameAnimator;
+			crateAnimator.init({ 
 				interps:
 					[
 					    { 
+					    	keys:[0, .2, .25, .375, .5, .9, 1], 
+					    	values:[
+					    	        { x : 0, y:0, z: 0 },
+					    	        { x : .5, y:0, z: .5 },
+					    	        { x : 0, y:0, z: 0 },
+					    	        { x : .5, y:-.25, z: .5 },
+					    	        { x : 0, y:0, z: 0 },
+					    	        { x : .5, y:-.25, z: .5 },
+					    	        { x : 0, y:0, z: 0 },
+					    	        ],
+					    	target:group.position
+					    },
+					    { 
 					    	keys:[0, .25, .5, .75, 1], 
 					    	values:[
-					    	        { x : -1, z : 0 },
 					    	        { x : 0, z : 0 },
+					    	        { x : Math.PI / 12, z : Math.PI / 12 },
+					    	        { x : 0, z : Math.PI / 12 },
+					    	        { x : -Math.PI / 12, z : -Math.PI / 12 },
 					    	        { x : 0, z : 0 },
-					    	        { x : 2, z : -3 },
-					    	        { x : 3, z : -5 },
 					    	        ],
-					    	target:cube.position
+					    	target:group.rotation
 					    },
 					],
-				loop: true,
-				duration:duration * 1000
+				loop: loopAnimation,
+				duration:duration * 1000,
+				easing:TWEEN.Easing.Bounce.InOut,
 			});
-			positionAnimator.start();
+			crateAnimator.start();
 			
 		}
 		
-		// rotation tween
-		if (rotationTween)
-			rotationTween.stop();
+		// rotation animation
+		if (waveAnimator)
+			waveAnimator.stop();
 
-		group.rotation.set(0, 0, 0);
+		waves.rotation.set(-Math.PI / 2, 0, 0);
 
-		if (tweenRotation)
+		if (animateWaves)
 		{
-			rotationTween = 
-	
-				new TWEEN.Tween( group.rotation ).to( { y: Math.PI * 2 }, duration * 1000)
-				.interpolation(interpolationType)
-				.delay( delayTime * 1000 )
-				.easing(easingFunction)
-				.repeat(repeatCount)
-				.start();
+			waveAnimator = new KF.KeyFrameAnimator;
+			waveAnimator.init({ 
+				interps:
+					[
+					    { 
+					    	keys:[0, .5, 1], 
+					    	values:[
+					    	        { x : -Math.PI / 2, y : 0 },
+					    	        { x : -Math.PI / 2.2, y : 0 },
+					    	        { x : -Math.PI / 2, y: 0 },
+					    	        ],
+					    	target:waves.rotation
+					    },
+					],
+				loop: loopAnimation,
+				duration:duration * 1000,
+			});
+			waveAnimator.start();
 		}
 		
-		// scale tween
-		if (colorTween)
-			colorTween.stop();
+		// color animation
+		if (lightAnimator)
+			lightAnimator.stop();
 
-		cube.material.color.setRGB(1, 1, 1);
+		directionalLight.color.setRGB(1, 1, 1);
 
-		if (tweenColor)
+		if (animateLight)
 		{
-			colorTween = 
-	
-				new TWEEN.Tween( cube.material.color ).to( { r:1, g:0, b:0 }, duration * 1000)
-				.interpolation(interpolationType)
-				.delay( delayTime * 1000 )
-				.easing(easingFunction)
-				.repeat(repeatCount)
-				.start();
+			lightAnimator = new KF.KeyFrameAnimator;
+			lightAnimator.init({ 
+				interps:
+					[
+					    { 
+					    	keys:[0, .4, .6, .7, .8, 1], 
+					    	values:[
+					    	        { r: 1, g : 1, b: 1 },
+					    	        { r: 1, g : 1, b: 1 },
+					    	        { r: .333, g : .333, b: .333 },
+					    	        { r: 1, g : 1, b: 1 },
+					    	        { r: .667, g : .667, b: .667 },
+					    	        { r: 1, g : 1, b: 1 },
+					    	        ],
+					    	target:directionalLight.color
+					    },
+					],
+				loop: loopAnimation,
+				duration:duration * 1000,
+			});
+			lightAnimator.start();
 		}
 					
-		// opacity tween
-		if (opacityTween)
-			opacityTween.stop();
+		// opacity animation
+		if (waterAnimator)
+			waterAnimator.stop();
 		
 		cube.material.opacity = 1;	
 
-		if (tweenOpacity)
+		if (animateWater)
 		{
-			opacityTween = 
-						
-				new TWEEN.Tween( cube.material ).to( { opacity:0.8 }, duration * 1000)
-				.interpolation(interpolationType)
-				.delay( delayTime * 1000 )
-				.easing(easingFunction)
-				.repeat(repeatCount)
-				.start();
-		}		
+			waterAnimator = new KF.KeyFrameAnimator;
+			waterAnimator.init({ 
+				interps:
+					[
+					    { 
+					    	keys:[0, 1], 
+					    	values:[
+					    	        { x : 0, y : 0 },
+					    	        { x : 1, y : 0 },
+					    	        ],
+					    	target:waves.material.map.offset
+					    },
+					],
+				loop: loopAnimation,
+				duration:duration * 1000,
+			});
+			waterAnimator.start();
+		}
+
 	}
 	
 	$(document).ready(
@@ -324,7 +332,7 @@
 <div id="container">
     <canvas id="webglcanvas" width=800 height=600></canvas>
 	<div id="title">
-		Tweening with Tween.js
+		Key Frame Animation
 	</div>
 
 	<div id="prompt">
@@ -336,39 +344,22 @@
 Use these controls to change properties
 <div id="durationLabel">Duration</div>
 <div class="slider" id="durationSlider"></div>
-<div id="durationValue">2s</div>
+<div id="durationValue">10s</div>
 
-<div id="tweenPosition">
-Tween Position<input type="checkbox" id="tweenPositionCheckbox" checked>
+<div id="animateCrate">
+Animate Crate<input type="checkbox" id="animateCrateCheckbox" checked>
 </div>
 
-<div id="tweenRotation">
-Tween Rotation<input type="checkbox" id="tweenRotationCheckbox" checked>
+<div id="animateWaves">
+Animate Waves<input type="checkbox" id="animateWavesCheckbox" checked>
 </div>
 
-<div id="tweenColor">
-Tween Color<input type="checkbox" id="tweenColorCheckbox" checked>
+<div id="animateLight">
+Animate Light<input type="checkbox" id="animateLightCheckbox" checked>
 </div>
 
-<div id="tweenOpacity">
-Tween Opacity<input type="checkbox" id="tweenOpacityCheckbox" checked>
-</div>
-
-<div id="easingPicker">
-Easing Function
-<div id="easingRBGroup">
-<input type="radio" name="easingRBGroup" value="none" checked> None<br>
-<input type="radio" name="easingRBGroup" value="quadratic"> Quadratic<br>
-<input type="radio" name="easingRBGroup" value="cubic" > Cubic<br>
-<input type="radio" name="easingRBGroup" value="quartic"> Quartic<br>
-<input type="radio" name="easingRBGroup" value="quintic"> Quintic<br>
-<input type="radio" name="easingRBGroup" value="sinusoidal"> Sinusoidal<br>
-<input type="radio" name="easingRBGroup" value="exponential"> Exponential<br>
-<input type="radio" name="easingRBGroup" value="circular"> Circular<br>
-<input type="radio" name="easingRBGroup" value="elastic"> Elastic<br>
-<input type="radio" name="easingRBGroup" value="back"> Back<br>
-<input type="radio" name="easingRBGroup" value="bounce"> Bounce<br>
-</div>
+<div id="animateWater">
+Animate Water<input type="checkbox" id="animateWaterCheckbox" checked>
 </div>
 
 <button id="playButton" onClick="playAnimations();">Play</button>

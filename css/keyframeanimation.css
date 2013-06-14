@@ -1,0 +1,164 @@
+@CHARSET "UTF-8";
+
+body {
+	color:MidnightBlue;
+}
+
+#webglcanvas {
+	border:none;
+	background-color:DeepSkyBlue;
+}
+
+#title {
+	position:absolute;
+	left:20px;
+	top:20px;
+	color:Ivory;
+}
+
+#prompt {
+	position:absolute;
+	bottom:20px;
+	left:20px;
+	color:Ivory;
+}
+
+#properties {
+	color:MidnightBlue;
+	position:absolute;
+	left:810px;
+	top:10px;
+	font-size:16px;
+	margin-top:10px;
+	margin-left:10px;
+}
+
+#delayLabel {
+	position:absolute;
+	left:20px;
+	top:46px;
+	font-size:12px;
+}
+
+#delaySlider {
+	position:absolute;
+	left:120px;
+	top:50px;
+	width:80px;
+	height:6px;
+	background:MidnightBlue;
+}
+
+#delayValue {
+	position:absolute;
+	left:220px;
+	top:46px;
+	font-size:12px;
+}
+
+#durationLabel {
+	position:absolute;
+	left:20px;
+	top:76px;
+	font-size:12px;
+}
+
+#durationSlider {
+	position:absolute;
+	left:120px;
+	top:80px;
+	width:80px;
+	height:6px;
+	background:MidnightBlue;
+}
+
+#durationValue {
+	position:absolute;
+	left:220px;
+	top:76px;
+	font-size:12px;
+}
+
+.slider .ui-slider-handle {
+	height:8px;
+	top:-2px;
+	width:16px;
+}
+
+#animateCrate {
+	position:absolute;
+	left:20px;
+	top:110px;
+	font-size:12px;
+}
+
+#animateCrateCheckBox {
+	position:absolute;
+	left:100px;
+	font-size:12px;
+	top:-4px;
+}
+
+#animateWaves {
+	position:absolute;
+	left:20px;
+	top:140px;
+	font-size:12px;
+}
+
+#animateWavesCheckBox {
+	position:absolute;
+	left:100px;
+	font-size:12px;
+	top:-4px;
+}
+
+#animateLight {
+	position:absolute;
+	left:20px;
+	top:170px;
+	font-size:12px;
+}
+
+#animateLightCheckBox {
+	position:absolute;
+	left:100px;
+	font-size:12px;
+	top:-4px;
+}
+
+#animateWater {
+	position:absolute;
+	left:20px;
+	top:200px;
+	font-size:12px;
+}
+
+#animateWaterCheckBox {
+	position:absolute;
+	left:100px;
+	font-size:12px;
+	top:-4px;
+}
+
+#loop {
+	position:absolute;
+	left:20px;
+	top:240px;
+	font-size:12px;
+}
+
+#loopCheckBox {
+	position:absolute;
+	left:100px;
+	font-size:12px;
+	top:-4px;
+}
+
+#playButton {
+	font-size:24px;
+	position:absolute;
+	left:120px;
+	top:280px;	
+}
+

@@ -21,8 +21,7 @@ var KF = KF || ( function () {
 
 		update : function()
 		{
-			var i, len = animators.length;
-			for (i = 0; i < len; i++)
+			for (i = 0; i < animators.length; i++)
 			{
 				animators[i].update();
 			}
@@ -48,6 +47,7 @@ KF.KeyFrameAnimator.prototype.init = function(param)
 
 	this.duration = param.duration ? param.duration : KF.KeyFrameAnimator.default_duration;
 	this.loop = param.loop ? param.loop : false;
+	this.easing = param.easing;
 }
 
 KF.KeyFrameAnimator.prototype.createInterpolators = function(interps)
@@ -89,7 +89,9 @@ KF.KeyFrameAnimator.prototype.update = function()
 	var deltat = (now - this.startTime) % this.duration;
 	var nCycles = Math.floor((now - this.startTime) / this.duration);
 	var fract = deltat / this.duration;
-
+	if (this.easing)
+		fract = this.easing(fract);
+	
 	if (nCycles >= 1 && !this.loop)
 	{
 		this.running = false;
