@@ -7,14 +7,132 @@
 <link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/css3dtransforms.css" />
+    <style>
+    .container {
+      width: 300px;
+      height: 390px;
+      position: relative;
+      margin: 0 auto 0px;
+      border: 1px solid #CCC;
+    }
+	
+	.perspective {
+      -webkit-perspective: 400px;
+         -moz-perspective: 400px;
+           -o-perspective: 400px;
+              perspective: 400px;
+	}        
+	
+    .card {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      -webkit-transition: -webkit-transform 5s;
+         -moz-transition: -moz-transform 5s;
+           -o-transition: -o-transform 5s;
+              transition: transform 5s;
+      -webkit-transform-style: preserve-3d;
+         -moz-transform-style: preserve-3d;
+           -o-transform-style: preserve-3d;
+              transform-style: preserve-3d;
+    }
+
+    .card.flipY {
+      -webkit-transform: rotateY( 180deg );
+         -moz-transform: rotateY( 180deg );
+           -o-transform: rotateY( 180deg );
+              transform: rotateY( 180deg );
+
+    }
+
+    .labeled {
+      display: block;
+      height: 100%;
+      width: 100%;
+      line-height: 260px;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 80px;
+      position: absolute;
+    }
+
+    .card .front {
+      background: red;
+      position: absolute;
+      height:80%;
+      width:90%;
+      margin-top:10%;
+      margin-left:5%;
+      -webkit-backface-visibility: hidden;
+         -moz-backface-visibility: hidden;
+           -o-backface-visibility: hidden;
+              backface-visibility: hidden;
+    }
+
+    .card .back {
+      background: blue;
+      position: absolute;
+      height:80%;
+      width:90%;
+      margin-top:10%;
+      margin-left:5%;
+      -webkit-transform: rotateY( 180deg );
+         -moz-transform: rotateY( 180deg );
+           -o-transform: rotateY( 180deg );
+              transform: rotateY( 180deg );
+      -webkit-backface-visibility: hidden;
+         -moz-backface-visibility: hidden;
+           -o-backface-visibility: hidden;
+              backface-visibility: hidden;
+    }
+    
+    #card1 {
+    	position:absolute;
+    	left:400px;
+    	top:60px;
+    }
+    
+    #card2 {
+    	position:absolute;
+    	left:40px;
+    	top:60px;
+    }
+
+  </style>
+  
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script type="text/javascript">
 
 	$(document).ready(
 			function() {
+				
+				// set up hover cards
+				// although this can be done without JavaScript, we've attached these events
+				// because it causes the hover to be triggered when the element is tapped on a touch device
+				$('.hover').hover(function(){
+					console.log("hovering...");
+					$(this).addClass('flipY');
+				},function(){
+					console.log("not hovering...");
+					$(this).removeClass('flipY');
+				});
+				
+				// set up click/tap cards
+				$('.click').toggle(function(){
+					console.log("clicked.");
+					//$(this).addClass('flipY');
+				},function(){
+					console.log("unclicked.");
+					//$(this).removeClass('flipY');
+				});
+
+				$('.hover').addClass('flipY');
+				setTimeout(function(){$('.hover').removeClass('flipY'); }, 5000);
 
 			}
+
 	);
 
 </script>
@@ -22,11 +140,23 @@
 </head>
 <body>
 
-<div id="container">
-	<div id="title">
-		CSS 3D Transforms
-	</div>
+CSS 3D Transforms: Perspective Projection
+
+<div id="card1" class="container ">
+Without Perspective Projection
+    <div class="card hover labeled">
+      <div class="front">FRONT</div>
+      <div class="back">BACK</div>
+    </div>
 </div>
+<div id="card2" class="container perspective">
+With Perspective Projection
+    <div class="card hover labeled">
+      <div class="front">FRONT</div>
+      <div class="back">BACK</div>
+    </div>
+</div>
+
 
 </body>
 </html>
