@@ -12,6 +12,7 @@
       width: 300px;
       height: 390px;
       position: relative;
+      text-align:center;
       margin: 0 auto 0px;
       border: 1px solid #CCC;
     }
@@ -62,7 +63,7 @@
       position: absolute;
       height:80%;
       width:90%;
-      margin-top:10%;
+      margin-top:23%;
       margin-left:5%;
       -webkit-backface-visibility: hidden;
          -moz-backface-visibility: hidden;
@@ -75,7 +76,7 @@
       position: absolute;
       height:80%;
       width:90%;
-      margin-top:10%;
+      margin-top:23%;
       margin-left:5%;
       -webkit-transform: rotateY( 180deg );
          -moz-transform: rotateY( 180deg );
@@ -87,17 +88,29 @@
               backface-visibility: hidden;
     }
     
+    .legend {
+      font-size: 18px;
+      position:absolute;
+      margin-left:10%;
+    }
+    
+    .code {
+      font-size: 12px;
+      font-family:Courier;
+    }
+    
     #card1 {
     	position:absolute;
-    	left:400px;
+    	left:40px;
     	top:60px;
     }
     
     #card2 {
     	position:absolute;
-    	left:40px;
+    	left:400px;
     	top:60px;
     }
+
 
   </style>
   
@@ -142,15 +155,18 @@
 
 CSS 3D Transforms: Perspective Projection
 
-<div id="card1" class="container ">
-Without Perspective Projection
+<div id="card1" class="container perspective">
+	<div class="legend">
+	With Perspective Projection
+		<div class="code">{ perspective: 400px; }</div>
+	</div>
     <div class="card hover labeled">
       <div class="front">FRONT</div>
       <div class="back">BACK</div>
     </div>
 </div>
-<div id="card2" class="container perspective">
-With Perspective Projection
+<div id="card2" class="container ">
+	<div class="legend">Without Perspective Projection</div>
     <div class="card hover labeled">
       <div class="front">FRONT</div>
       <div class="back">BACK</div>
