@@ -5,8 +5,8 @@ body {
 }
 
 .container {
-	width: 150px;
-	height: 200px;
+	width: 300px;
+	height: 390px;
 	position: relative;
 	text-align:center;
 	margin: 0 auto 0px;
@@ -46,7 +46,8 @@ body {
      display: block;
      height: 100%;
      width: 100%;
-     line-height: 130px;
+     line-height: 260px;
+     color: white;
      text-align: center;
      font-weight: bold;
      font-size: 80px;
@@ -54,8 +55,8 @@ body {
 }
 
 .card .front {
-	box-shadow: 4px 4px 2px #888888;
-	position: absolute;
+     background: red;
+     position: absolute;
      height:80%;
      width:90%;
      margin-top:23%;
@@ -84,7 +85,7 @@ body {
 }
    
 .legend {
-     font-size: 14px;
+     font-size: 18px;
      position:absolute;
      margin-left:10%;
 }
