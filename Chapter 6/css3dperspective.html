@@ -15,23 +15,16 @@
 	$(document).ready(
 			function() {
 				
-				// set up hover cards
-				// although this can be done without JavaScript, we've attached these events
-				// because it causes the hover to be triggered when the element is tapped on a touch device
 				$('.hover').hover(function(){
-					console.log("hovering...");
 					$(this).addClass('flipY');
 				},function(){
-					console.log("not hovering...");
 					$(this).removeClass('flipY');
 				});
 				
 				// set up click/tap cards
 				$('.click').toggle(function(){
-					console.log("clicked.");
 					//$(this).addClass('flipY');
 				},function(){
-					console.log("unclicked.");
 					//$(this).removeClass('flipY');
 				});
 

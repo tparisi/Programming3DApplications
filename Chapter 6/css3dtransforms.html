@@ -14,29 +14,6 @@
 
 	$(document).ready(
 			function() {
-				
-				// set up hover cards
-				// although this can be done without JavaScript, we've attached these events
-				// because it causes the hover to be triggered when the element is tapped on a touch device
-				$('.hover').hover(function(){
-					console.log("hovering...");
-					$(this).addClass('flipY');
-				},function(){
-					console.log("not hovering...");
-					$(this).removeClass('flipY');
-				});
-				
-				// set up click/tap cards
-				$('.click').toggle(function(){
-					console.log("clicked.");
-					//$(this).addClass('flipY');
-				},function(){
-					console.log("unclicked.");
-					//$(this).removeClass('flipY');
-				});
-
-				$('.hover').addClass('flipY');
-				setTimeout(function(){$('.hover').removeClass('flipY'); }, 5000);
 
 			}
 
@@ -49,24 +26,88 @@
 
 CSS 3D Transforms
 
-<div id="card1" class="container translated">
+<div id="card1" class="container">
 	<div class="legend">
-	With Perspective Projection
-		<div class="code">{ perspective: 400px; }</div>
+	Translate
 	</div>
-    <div class="card hover labeled">
-      <div class="front">FRONT</div>
-      <div class="back">BACK</div>
-    </div>
-</div>
-<div id="card2" class="container ">
-	<div class="legend">Without Perspective Projection</div>
-    <div class="card hover labeled">
-      <div class="front">FRONT</div>
-      <div class="back">BACK</div>
-    </div>
+	<div class="code">{transform:translateX(20px) translateY(20px), translateZ(20px);}</div>
+	<div class="cardBorder">
+	    <div class="card translate">
+	      <p>This element is translated.<p>
+	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
+	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
+	      <button>OK</button>
+	    </div>
+	</div>
 </div>
 
+<div id="card2" class="container">
+	<div class="legend">
+	Rotate
+	</div>
+	<div class="code">{rotateZ(20deg);}</div>
+	<div class="cardBorder">
+	    <div class="card rotate">
+	      <p>This element is rotated.<p>
+	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
+	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
+	      <button>OK</button>
+	    </div>
+	</div>
+</div>
+
+<div id="card3" class="container">
+	<div class="legend">
+	Scale
+	</div>
+	<div class="code">{scaleX(1.25) scaleY(.75);}</div>
+	<div class="cardBorder">
+	    <div class="card scale">
+	      <p>This element is scaled.</p>
+	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
+	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
+	      <button>OK</button>
+	    </div>
+	</div>
+</div>
+
+<div id="hierarchy1" class="hierarchyContainer perspective">
+	<div class="legend">
+	With hierarchy
+	</div>
+	<div class="code">{transform-style: preserve-3d;}</div>
+	<div class="cardBorder">
+	    <div class="card hierarchy translate">
+	      <p>This element is a parent.</p>
+	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
+	      <button>OK</button>
+		    <div class="childCard rotateY">
+		      <br></br>
+		      <p>This element is a child.</p>
+			  <div class="code">{rotateY(30deg);}</div>
+		    </div>
+	    </div>
+	</div>
+</div>
+
+<div id="hierarchy2" class="hierarchyContainer">
+	<div class="legend">
+	Without hierarchy
+	</div>
+	<div class="code">{transform-style: flat;}</div>
+	<div class="cardBorder">
+	    <div class="card nohierarchy translate">
+	      <p>This element is a parent.</p>
+	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
+	      <button>OK</button>
+		    <div class="childCard rotateY">
+		      <br></br>
+		      <p>This element is a child.</p>
+			  <div class="code">{rotateY(30deg);}</div>
+		    </div>
+	    </div>
+	</div>
+</div>
 
 </body>
 </html>
