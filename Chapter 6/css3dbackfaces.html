@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transforms - Back Face Visibility</title>
+
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/css3dtransforms.css" />
+<link rel="stylesheet" href="../css/css3dbackfaces.css" />
+
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(
+			function() {
+
+			}
+
+	);
+
+</script>
+
+</head>
+<body>
+
+CSS 3D Transforms - Back Face Visibility
+
+<div id="backface1" class="container perspective ">
+	<div class="legend">
+	One-Sided, Visible
+	</div>
+	<div class="code">{backface-visibility: visible;}</div>
+	<div class="cardBorder">
+	    <div class="card backface animRotateY">
+	      <p>This element is rendered with back faces visible.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
+</div>
+
+<div id="backface2" class="container perspective ">
+	<div class="legend">
+	One-Sided, Hidden
+	</div>
+	<div class="code">{backface-visibility: hidden;}</div>
+	<div class="cardBorder">
+	    <div class="card nobackface animRotateY">
+	      <p>This element is rendered with back faces hidden.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
+</div>
+
+
+<div id="backface3" class="container perspective ">
+	<div class="legend">
+	Two-Sided, Hidden
+	</div>
+	<div class="code">{backface-visibility: hidden;}</div>
+	<div class="cardBorder">
+	    <div class="card nobackface animRotateY">
+	      <p>This element is rendered with back faces hidden.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	    <div class="card nobackface backside animRotateMinusY">
+	      <p>This element is rendered with back faces hidden.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
+</div>
+
+</body>
+</html>

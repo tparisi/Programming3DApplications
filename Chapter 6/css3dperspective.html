@@ -1,35 +1,18 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transforms: Perspective Projection</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transforms - Perspective</title>
 
-<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
-<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/css3dtransforms.css" />
 <link rel="stylesheet" href="../css/css3dperspective.css" />
-  
+
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script type="text/javascript">
 
 	$(document).ready(
 			function() {
-				
-				$('.hover').hover(function(){
-					$(this).addClass('flipY');
-				},function(){
-					$(this).removeClass('flipY');
-				});
-				
-				// set up click/tap cards
-				$('.click').toggle(function(){
-					//$(this).addClass('flipY');
-				},function(){
-					//$(this).removeClass('flipY');
-				});
-
-				$('.hover').addClass('flipY');
-				setTimeout(function(){$('.hover').removeClass('flipY'); }, 5000);
 
 			}
 
@@ -40,26 +23,33 @@
 </head>
 <body>
 
-CSS 3D Transforms: Perspective Projection
+CSS 3D Transforms - Perspective
 
-<div id="card1" class="container perspective">
+<div id="perspective1" class="container perspective">
 	<div class="legend">
-	With Perspective Projection
-		<div class="code">{ perspective: 400px; }</div>
+	With Perspective
 	</div>
-    <div class="card hover labeled">
-      <div class="front">FRONT</div>
-      <div class="back">BACK</div>
-    </div>
-</div>
-<div id="card2" class="container ">
-	<div class="legend">Without Perspective Projection</div>
-    <div class="card hover labeled">
-      <div class="front">FRONT</div>
-      <div class="back">BACK</div>
-    </div>
+	<div class="code">{perspective: 400px;}</div>
+	<div class="cardBorder">
+	    <div class="card rotate">
+	      <p>This element is rendered with perspective.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
 </div>
 
+<div id="perspective2" class="container noperspective">
+	<div class="legend">
+	Without Perspective
+	</div>
+	<div class="code">{perspective: 0px;}</div>
+	<div class="cardBorder">
+	    <div class="card rotate">
+	      <p>This element is rendered without perspective.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
+</div>
 
 </body>
 </html>

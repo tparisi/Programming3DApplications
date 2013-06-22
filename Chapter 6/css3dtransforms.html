@@ -3,8 +3,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transforms</title>
 
-<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
-<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/css3dtransforms.css" />
 
@@ -26,37 +24,35 @@
 
 CSS 3D Transforms
 
-<div id="card1" class="container">
+<div id="card1" class="container perspective">
 	<div class="legend">
 	Translate
 	</div>
-	<div class="code">{transform:translateX(20px) translateY(20px), translateZ(20px);}</div>
+	<div class="code">{translateX(20px) translateY(20px) translateZ(-100px);}</div>
 	<div class="cardBorder">
 	    <div class="card translate">
-	      <p>This element is translated.<p>
+	      <p>This element is translated.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
 	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
-	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
-	      <button>OK</button>
 	    </div>
 	</div>
 </div>
 
-<div id="card2" class="container">
+<div id="card2" class="container perspective">
 	<div class="legend">
 	Rotate
 	</div>
-	<div class="code">{rotateZ(20deg);}</div>
+	<div class="code">{rotateY(30deg);}</div>
 	<div class="cardBorder">
 	    <div class="card rotate">
-	      <p>This element is rotated.<p>
+	      <p>This element is rotated.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
 	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
-	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
-	      <button>OK</button>
 	    </div>
 	</div>
 </div>
 
-<div id="card3" class="container">
+<div id="card3" class="container perspective">
 	<div class="legend">
 	Scale
 	</div>
@@ -64,50 +60,12 @@ CSS 3D Transforms
 	<div class="cardBorder">
 	    <div class="card scale">
 	      <p>This element is scaled.</p>
+	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
 	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
-	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
-	      <button>OK</button>
 	    </div>
 	</div>
 </div>
 
-<div id="hierarchy1" class="hierarchyContainer perspective">
-	<div class="legend">
-	With hierarchy
-	</div>
-	<div class="code">{transform-style: preserve-3d;}</div>
-	<div class="cardBorder">
-	    <div class="card hierarchy translate">
-	      <p>This element is a parent.</p>
-	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
-	      <button>OK</button>
-		    <div class="childCard rotateY">
-		      <br></br>
-		      <p>This element is a child.</p>
-			  <div class="code">{rotateY(30deg);}</div>
-		    </div>
-	    </div>
-	</div>
-</div>
-
-<div id="hierarchy2" class="hierarchyContainer">
-	<div class="legend">
-	Without hierarchy
-	</div>
-	<div class="code">{transform-style: flat;}</div>
-	<div class="cardBorder">
-	    <div class="card nohierarchy translate">
-	      <p>This element is a parent.</p>
-	      <img width=64 height=42 src="../images/parisi1.jpg"></img>
-	      <button>OK</button>
-		    <div class="childCard rotateY">
-		      <br></br>
-		      <p>This element is a child.</p>
-			  <div class="code">{rotateY(30deg);}</div>
-		    </div>
-	    </div>
-	</div>
-</div>
 
 </body>
 </html>

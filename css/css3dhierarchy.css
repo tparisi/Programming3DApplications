@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+.hierarchy {
+     -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+          -o-transform-style: preserve-3d;
+             transform-style: preserve-3d;
+}
+
+.nohierarchy {
+     -webkit-transform-style: flat;
+        -moz-transform-style: flat;
+          -o-transform-style: flat;
+             transform-style: flat;
+}
+
+.childCard {
+	position: absolute;
+	width: 80%;
+	height: 60%;
+	left:10%;
+	border:1px solid;
+	border-radius: 4px;
+	box-shadow: 2px 2px 2px;
+	background-color: White;
+}
+
+.childCard .code {
+	margin-top:0px;
+    background-color:OrangeRed;
+}
+
+#hierarchy1 {
+   	position:absolute;
+   	left:80px;
+   	top:60px;
+}
+
+#hierarchy2 {
+   	position:absolute;
+   	left:440px;
+   	top:60px;
+}
