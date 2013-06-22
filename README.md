@@ -17,3 +17,8 @@ http://www.filterforge.com/filters/9452.html
 http://zackseeker.deviantart.com/art/Wooden-crate-texture-195459851
 
 http://www.turbosquid.com/FullPreview/Index.cfm?ID=259863&seo=0
+
+HTML5 Rawkes Logo
+Mashup of the HTML5 logo with Rob Hawkes' (@robhawkes) logo, by Phil Banks (@emirpprime)
+
+

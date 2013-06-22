@@ -1,0 +1,99 @@
+@CHARSET "UTF-8";
+
+.frontside {
+	-webkit-transform: rotateY(0deg);
+	   -moz-transform: rotateY(0deg);
+	     -o-transform: rotateY(0deg);
+	        transform: rotateY(0deg);
+	        line-height:160px;
+	        font-size:40px;
+	        color:White;
+	        background-color:DarkCyan;
+	        border-color:Black;
+	        box-shadow:2px 2px 2px Black;
+}
+
+.backside {
+	-webkit-transform: rotateY(180deg);
+	   -moz-transform: rotateY(180deg);
+	     -o-transform: rotateY(180deg);
+	        transform: rotateY(180deg);
+	        line-height:160px;
+	        font-size:40px;
+	        color:White;
+	        background-color:DarkRed;
+	        border-color:Black;
+	        box-shadow:2px 2px 2px Black;
+}
+
+.frontside.flip {
+	-webkit-transform: rotateY(-180deg);
+	   -moz-transform: rotateY(-180deg);
+	     -o-transform: rotateY(-180deg);
+	        transform: rotateY(-180deg);
+		
+}
+
+
+.backside.flip {
+	-webkit-transform: rotateY(0deg);
+	   -moz-transform: rotateY(0deg);
+	     -o-transform: rotateY(0deg);
+	        transform: rotateY(0deg);
+		
+}
+
+.goGold {
+	background-color:Goldenrod;
+}
+
+.easeAll2sec {
+	-webkit-transition:all 2s;
+	   -moz-transition:all 2s;
+	     -o-transition:all 2s;
+	        transition:all 2s;
+}
+
+.easeTransform2secColor5secDelay {
+	-webkit-transition:-webkit-transform 2s, background-color 5s linear 2s;
+	   -moz-transition:-moz-transform  2s, background-color 5s linear 2s;
+	     -o-transition:-o-transform 2s, background-color 5s linear 2s;
+	        transition:transform 2s, background-color 5s linear 2s;
+}
+
+#transition1 {
+   	position:absolute;
+   	left:40px;
+   	top:80px;
+}
+
+#transition2 {
+   	position:absolute;
+   	left:330px;
+   	top:80px;
+}
+
+#transition3 {
+   	position:absolute;
+   	left:40px;
+   	top: 380px;
+}
+
+#transition4 {
+   	position:absolute;
+   	left:330px;
+   	top: 380px;
+}
+
+.card:hover {
+	cursor:pointer;
+}
+
+#prompt {
+	position:absolute;
+	top:50px;
+	width:600;
+	text-align:center;
+	font-size:12px;
+	margin-left:2px;
+}

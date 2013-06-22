@@ -1,0 +1,61 @@
+@CHARSET "UTF-8";
+
+@-webkit-keyframes kfRotateY {
+  from {
+    -webkit-transform: rotateY(0deg);
+  }
+
+  to {
+   -webkit-transform: rotateY(360deg);
+  }
+}
+
+.animRotateY
+ {
+  -webkit-animation-duration: 5s;
+  -webkit-animation-name: kfRotateY;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function:linear;
+}
+
+@-webkit-keyframes kfRotateMinusY {
+  from {
+    -webkit-transform: rotateY(-180deg);
+  }
+
+  to {
+   -webkit-transform: rotateY(180deg);
+  }
+}
+
+.animRotateMinusY
+ {
+  -webkit-animation-duration: 5s;
+  -webkit-animation-name: kfRotateMinusY;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function:linear;
+}
+
+#animation1 {
+   	position:absolute;
+   	left:40px;
+   	top:60px;
+}
+
+#animation2 {
+   	position:absolute;
+   	left:330px;
+   	top:60px;
+}
+
+#animation3 {
+   	position:absolute;
+   	left:40px;
+   	top: 360px;
+}
+
+#animation4 {
+   	position:absolute;
+   	left:330px;
+   	top: 360px;
+}

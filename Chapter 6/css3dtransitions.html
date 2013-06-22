@@ -1,0 +1,102 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transitions</title>
+
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/css3dtransforms.css" />
+<link rel="stylesheet" href="../css/css3dbackfaces.css" />
+<link rel="stylesheet" href="../css/css3dtransitions.css" />
+
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script type="text/javascript">
+
+	var front = true;
+	$(document).ready(
+			function() {
+				$('#transition1 .clickable').click(function(){
+					// alert("Clicked");
+					if (front)
+					{
+						$('#front1').addClass('flip');
+						$('#back1').addClass('flip');
+						$('#front1').addClass('goGold');
+						$('#back1').addClass('goGold');
+					}
+					else
+					{
+						$('#front1').removeClass('flip');
+						$('#back1').removeClass('flip');
+						$('#front1').removeClass('goGold');
+						$('#back1').removeClass('goGold');
+					}
+
+					front = !front;
+				});
+
+				$('#transition2 .clickable').click(function(){
+					if (front)
+					{
+						$('#front2').addClass('flip');
+						$('#back2').addClass('flip');
+						$('#front2').addClass('goGold');
+						$('#back2').addClass('goGold');
+					}
+					else
+					{
+						$('#front2').removeClass('flip');
+						$('#back2').removeClass('flip');
+						$('#front2').removeClass('goGold');
+						$('#back2').removeClass('goGold');
+					}
+
+					front = !front;
+				});
+				
+			}
+
+	);
+
+</script>
+
+</head>
+<body>
+
+CSS 3D Transitions
+
+<div id="transition1" class="container perspective ">
+	<div class="legend">
+	All Properties
+	</div>
+	<div class="code">transition:all 2s;</div>
+	<div class="cardBorder">
+	    <div id="front1" class="card nobackface frontside clickable easeAll2sec">
+	    FRONT
+	    </div>
+	    <div id="back1" class="card nobackface backside clickable easeAll2sec">
+	    BACK
+	    </div>
+	</div>
+</div>
+
+<div id="transition2" class="container perspective ">
+	<div class="legend">
+	Individual Properties
+	</div>
+	<div class="code">transition:transform 2s, background-color 5s linear 2s;</div>
+	<div class="cardBorder">
+	    <div id="front2" class="card nobackface frontside clickable easeTransform2secColor5secDelay">
+	    FRONT
+	    </div>
+	    <div id="back2" class="card nobackface backside clickable easeTransform2secColor5secDelay">
+	    BACK
+	    </div>
+	</div>
+</div>
+<div id="prompt">
+Click to Flip Each Card
+</div>
+
+</body>
+</html>

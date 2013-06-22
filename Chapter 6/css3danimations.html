@@ -1,11 +1,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transforms - Back Face Visibility</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Animations</title>
 
 <link rel="stylesheet" href="../css/main.css" />
 <link rel="stylesheet" href="../css/css3dtransforms.css" />
 <link rel="stylesheet" href="../css/css3dbackfaces.css" />
+<link rel="stylesheet" href="../css/css3danimations.css" />
 
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
@@ -23,57 +24,57 @@
 </head>
 <body>
 
-CSS 3D Transforms - Back Face Visibility
+CSS 3D Animations
 
-<div id="backface1" class="container perspective ">
+<div id="animation1" class="container perspective ">
 	<div class="legend">
 	One-Sided, Visible
 	</div>
 	<div class="code">{backface-visibility: visible;}</div>
 	<div class="cardBorder">
-	    <div class="card backface frontside">
-	    FRONT
-	    </div>
-	</div>
-</div>
-
-<div id="backface2" class="container perspective ">
-	<div class="legend">
-	One-Sided, Hidden
-	</div>
-	<div class="code">{backface-visibility: hidden;}</div>
-	<div class="cardBorder">
-	    <div class="card nobackface frontside">
-	    FRONT
-	    </div>
-	</div>
-</div>
-
-<div id="backface3" class="container perspective ">
-	<div class="legend">
-	Two-Sided, Visible
-	</div>
-	<div class="code">{backface-visibility: visible;}</div>
-	<div class="cardBorder">
-	    <div class="card backface frontside">
-	    FRONT
-	    </div>
-	    <div class="card backface backside">
+	    <div class="card backface backside animRotateMinusY">
 	    BACK
 	    </div>
 	</div>
 </div>
 
-<div id="backface4" class="container perspective ">
+<div id="animation2" class="container perspective ">
+	<div class="legend">
+	One-Sided, Hidden
+	</div>
+	<div class="code">{backface-visibility: hidden;}</div>
+	<div class="cardBorder">
+	    <div class="card nobackface backside animRotateMinusY">
+	    BACK
+	    </div>
+	</div>
+</div>
+
+<div id="animation3" class="container perspective ">
+	<div class="legend">
+	Two-Sided, Visible
+	</div>
+	<div class="code">{backface-visibility: visible;}</div>
+	<div class="cardBorder">
+	    <div class="card backface frontside animRotateY">
+	    FRONT
+	    </div>
+	    <div class="card backface backside animRotateMinusY">
+	    BACK
+	    </div>
+	</div>
+</div>
+
+<div id="animation4" class="container perspective ">
 	<div class="legend">
 	Two-Sided, Hidden
 	</div>
 	<div class="code">{backface-visibility: hidden;}</div>
 	<div class="cardBorder">
-	    <div class="card nobackface frontside">
+	    <div class="card nobackface frontside animRotateY">
 	    FRONT
 	    </div>
-	    <div class="card nobackface backside">
+	    <div class="card nobackface backside animRotateMinusY">
 	    BACK
 	    </div>
 	</div>

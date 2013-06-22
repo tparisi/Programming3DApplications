@@ -1,10 +1,30 @@
 @CHARSET "UTF-8";
 
+.frontside {
+	-webkit-transform: rotateY(210deg);
+	   -moz-transform: rotateY(210deg);
+	     -o-transform: rotateY(210deg);
+	        transform: rotateY(210deg);
+	        line-height:160px;
+	        font-size:40px;
+	        color:White;
+	        background-color:DarkCyan;
+	        border-color:Black;
+	        box-shadow:2px 2px 2px Black;
+}
+
 .backside {
-	-webkit-transform: rotateY(180deg);
-	   -moz-transform: rotateY(180deg);
-	     -o-transform: rotateY(180deg);
-	        transform: rotateY(180deg);
+	-webkit-transform: rotateY(30deg);
+	   -moz-transform: rotateY(30deg);
+	     -o-transform: rotateY(30deg);
+	        transform: rotateY(30deg);
+	        line-height:160px;
+	        font-size:40px;
+	        color:White;
+	        background-color:DarkRed;
+	        border-color:Black;
+	        box-shadow:2px 2px 2px Black;
+	        opacity:0.8;
 }
 
 .backface {
@@ -21,42 +41,6 @@
 	        backface-visibility: hidden;
 }
 
-@-webkit-keyframes kfRotateY {
-  from {
-    -webkit-transform: rotateY(0deg);
-  }
-
-  to {
-   -webkit-transform: rotateY(360deg);
-  }
-}
-
-.animRotateY
- {
-  -webkit-animation-duration: 5s;
-  -webkit-animation-name: kfRotateY;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function:linear;
-}
-
-@-webkit-keyframes kfRotateMinusY {
-  from {
-    -webkit-transform: rotateY(-180deg);
-  }
-
-  to {
-   -webkit-transform: rotateY(180deg);
-  }
-}
-
-.animRotateMinusY
- {
-  -webkit-animation-duration: 5s;
-  -webkit-animation-name: kfRotateMinusY;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function:linear;
-}
-
 #backface1 {
    	position:absolute;
    	left:40px;
@@ -71,6 +55,12 @@
 
 #backface3 {
    	position:absolute;
-   	left:620px;
-   	top: 60px;
+   	left:40px;
+   	top: 360px;
+}
+
+#backface4 {
+   	position:absolute;
+   	left:330px;
+   	top: 360px;
 }
