@@ -14,9 +14,33 @@
 
 	$(document).ready(
 			function() {
+				$('#front1').click(function(){
+					$('#front1').addClass('animRotateY');
+					$('#back1').addClass('animRotateMinusY');
+					setTimeout(function(){
+						$('#front1').removeClass('animRotateY');
+						$('#back1').removeClass('animRotateMinusY');
+						
+					}, 2000);
+					}
+				);
+				$('#front2').click(function(){
+					$('#front2').addClass('animShake');
+					}
+				);
+				$('#front3').click(function(){
+					$('#cardBorder3').addClass('animFly');
+					$('#front3').addClass('animRotateY');
+					$('#back3').addClass('animRotateMinusY');
+					setTimeout(function(){
+						$('#cardBorder3').removeClass('animFly');						
+						$('#front3').removeClass('animRotateY');
+						$('#back3').removeClass('animRotateMinusY');
+					}, 4000);
+					}
+				);
 
 			}
-
 	);
 
 </script>
@@ -27,59 +51,156 @@
 CSS 3D Animations
 
 <div id="animation1" class="container perspective ">
-	<div class="legend">
-	One-Sided, Visible
-	</div>
-	<div class="code">{backface-visibility: visible;}</div>
+<div class="legend">
+Rotate (Once)
+</div>
+
 	<div class="cardBorder">
-	    <div class="card backface backside animRotateMinusY">
-	    BACK
+	    <div id="front1" class="card nobackface frontside">
+	    <pre>
+@keyframes kfRotateY {
+  from {
+    transform: rotateY(0deg);
+  }
+
+  to {
+   transform: rotateY(360deg);
+  }
+}
+
+.animRotateY
+ {
+  animation-duration: 2s;
+  animation-name: kfRotateY;
+  animation-iteration-count: infinite;
+  animation-timing-function:linear;
+}
+	    </pre>
+
+	    </div>
+	    <div id="back1" class="card nobackface backside">
+		<pre>
+@keyframes kfRotateMinusY {
+  from {
+    transform: rotateY(-180deg);
+  }
+
+  to {
+    transform: rotateY(180deg);
+  }
+}
+
+.animRotateMinusY
+ {
+   animation-duration: 2s;
+   animation-name: kfRotateMinusY;
+   animation-iteration-count: infinite;
+   animation-timing-function:linear;
+}
+
+		</pre>
 	    </div>
 	</div>
 </div>
 
 <div id="animation2" class="container perspective ">
-	<div class="legend">
-	One-Sided, Hidden
-	</div>
-	<div class="code">{backface-visibility: hidden;}</div>
+<div class="legend">
+Shake (Forever)
+</div>
+
 	<div class="cardBorder">
-	    <div class="card nobackface backside animRotateMinusY">
-	    BACK
+	    <div id="front2" class="card nobackface frontside">
+	    <pre>
+@-webkit-keyframes kfShake {
+  0% {
+    transform:translate3d(0, 0, 0) rotateZ(0deg);
+  }
+  25% {
+    transform: translate3d(0, -20px, 0) rotateZ(20deg);
+  }
+  50% {
+    transform: translate3d(-20px, 0, 0) rotateZ(-20deg);
+  }
+  100% {
+    transform: translate3d(0, -20px, 0) rotateZ(-20deg);
+  }
+}
+
+.animShake
+ {
+   animation-duration: 1s;
+   animation-name: kfShake;
+   animation-iteration-count: infinite;
+   animation-timing-function:ease-in-out;
+}
+	    </pre>
+	    </div>
+	    <div id="back2" class="card nobackface backside">
 	    </div>
 	</div>
 </div>
 
 <div id="animation3" class="container perspective ">
-	<div class="legend">
-	Two-Sided, Visible
-	</div>
-	<div class="code">{backface-visibility: visible;}</div>
-	<div class="cardBorder">
-	    <div class="card backface frontside animRotateY">
-	    FRONT
+<div class="legend">
+Fly (Alternate)
+</div>
+	<div id="cardBorder3" class="cardBorder">
+	    <div id="front3" class="card nobackface frontside">
+		<pre>
+@keyframes kfSweep {
+  0% {
+    transform:translate3d(0, 0, 0) rotateZ(0deg);
+  }
+  25% {
+    transform: translate3d(50px, -50px, 0);
+  }
+  50% {
+    transform: translate3d(100px, -100px, 0);
+  }
+  100% {
+    transform: translate3d(150px, -150px, 0);
+  }
+}
+
+.animFly
+ {
+   animation-duration: 1s;
+   animation-name: kfSweep;
+   animation-iteration-count: infinite;
+   animation-timing-function:cubic-bezier(0.1, 0.2, 0.5, 1);
+}
+		</pre>
 	    </div>
-	    <div class="card backface backside animRotateMinusY">
-	    BACK
+	    <div id="back3" class="card nobackface backside">
+		<pre>
+@keyframes kfSweep {
+  0% {
+    transform:translate3d(0, 0, 0) rotateZ(0deg);
+  }
+  25% {
+    transform: translate3d(50px, -100px, 0);
+  }
+  50% {
+    transform: translate3d(100px, -200px, 0);
+  }
+  100% {
+    transform: translate3d(150px, -300px, 0);
+  }
+}
+
+.animFly
+ {
+   animation-duration: 1s;
+   animation-name: kfSweep;
+   animation-iteration-count: infinite;
+   animation-timing-function:cubic-bezier(0.1, 0.2, 0.5, 1);
+}
+		</pre>
 	    </div>
 	</div>
 </div>
-
-<div id="animation4" class="container perspective ">
-	<div class="legend">
-	Two-Sided, Hidden
-	</div>
-	<div class="code">{backface-visibility: hidden;}</div>
-	<div class="cardBorder">
-	    <div class="card nobackface frontside animRotateY">
-	    FRONT
-	    </div>
-	    <div class="card nobackface backside animRotateMinusY">
-	    BACK
-	    </div>
-	</div>
+<div id="prompt">
+Click to Animate Each Card
 </div>
-
-
 </body>
 </html>
