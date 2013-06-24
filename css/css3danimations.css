@@ -1,11 +1,18 @@
 @CHARSET "UTF-8";
 
+.container {
+	width: 330px;
+	height: 330px;
+	position: relative;
+	text-align:center;
+}
+
 .cardBorder {
 	position: absolute;
 	width: 100%;
 	height: 80%;
 	border:0px;
-	top:15%;
+	top:12%;
 }
 
 .frontside {
@@ -119,7 +126,7 @@
 
 .card pre {
 	font-family:Courier;
-	font-size:10px;
+	font-size:12px;
 	font-weight:bold;
 	color:black;
 	line-height:10px;
@@ -134,20 +141,14 @@
 
 #animation2 {
    	position:absolute;
-   	left:330px;
+   	left:400px;
    	top:80px;
 }
 
 #animation3 {
    	position:absolute;
    	left:40px;
-   	top: 360px;
-}
-
-#animation4 {
-   	position:absolute;
-   	left:330px;
-   	top: 360px;
+   	top: 400px;
 }
 
 .card:hover {
@@ -157,7 +158,7 @@
 #prompt {
 	position:absolute;
 	top:50px;
-	width:600;
+	width:800;
 	text-align:center;
 	font-size:12px;
 	margin-left:2px;
