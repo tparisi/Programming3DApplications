@@ -9,8 +9,6 @@ void main()
 	vec4 color = v_color;
 	if (v_light >= 0.0)
 		color = vec4(v_light, v_light, v_light, 1.0);
-	else
-		color = vec4(1.0);
 		
     if (gl_FrontFacing) {
 	 css_ColorMatrix = mat4( color.r, 0.0, 0.0, 0.0,

@@ -13,25 +13,6 @@ uniform float bendAmount;
 
 const float PI = 3.1415;
 
-// Construct perspective matrix
-mat4 perspectiveCamera() {
-
-	return mat4(2.41421, 0.0, 0.0, 0.0,
-	            0.0, 2.41421, 0.0, 0.0,
-	            0.0, 0.0, -1.002002, -1.0, 
-	            0.0, 0.0, -0.2002002, 0.0);
-
-}
-
-mat4 modelView() {
-
-	return mat4(1.0, 0.0, 0.0, 0.0,
-	            0.0, 1.0, 0.0, 0.0,
-	            0.0, 0.0, 1.0, 0.0, 
-	            -cameraPosition.x, -cameraPosition.y, -cameraPosition.z, 1.0);
-
-}
-
 void main()
 {
     vec4 position = a_position;
@@ -44,7 +25,7 @@ void main()
     {
 	    position.x *= cos(theta);
 		position.z *= -cos(theta);
-	
+		
 		vec3 normal = vertexNormal;
 		normal.x *= cos(theta);
 		normal.z *= cos(theta);
@@ -56,6 +37,6 @@ void main()
     
     v_light = light;
     
-    gl_Position = u_projectionMatrix * perspectiveCamera() * modelView() * position;
+    gl_Position = u_projectionMatrix * position;
     v_color = vec4(a_texCoord.x, a_texCoord.y, 0, 1);
 }

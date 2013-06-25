@@ -11,22 +11,42 @@
 <script type="text/javascript">
 
 	var bent = false;
-
+	var cylinder = false;
+	
 	$(document).ready(
 			function() {
+				$('#card1').addClass('unbend');
 				$('#card1').click(function(){
 					if (!bent)
 					{
 						$('#card1').addClass('bend');
+						$('#card1').removeClass('unbend');
 					}
 					else
 					{
 						$('#card1').removeClass('bend');
+						$('#card1').addClass('unbend');
 					}
 
 				bent = !bent;
 				});
 
+				$('#card2').addClass('nocylinder');
+				$('#card2').click(function(){
+					if (!cylinder)
+					{
+						$('#card2').addClass('cylinder');
+						$('#card2').removeClass('nocylinder');
+					}
+					else
+					{
+						$('#card2').removeClass('cylinder');
+						$('#card2').addClass('nocylinder');
+					}
+
+				cylinder = !cylinder;
+				});
+				
 			}
 
 	);
@@ -46,7 +66,23 @@ CSS 3D Custom Filters
 	<div class="code">{filter: custom(url(../shaders/bend.vs) mix(url(../shaders/passthrough.fs) multiply source-atop), 32 32, cameraPosition 0 0 2.33, lightPosition 0 0 1, bendAmount .6, transform translate3d(0,0,0));}</div>
 	<div class="cardBorder">
 	    <div id="card1" class="card">
-	      <p>This element is bent using a CSS custom filter (shader).</p>
+	      <p>This element is bent along an edge.</p>
+	      <img width=251 height=251 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
+</div>
+<div id="filter2" class="container perspective hierarchy">
+	<div class="legend">
+	Cylinder Filter
+	</div>
+	<p>Click to warp the card</p>
+	<div class="code">{filter: custom(url(../shaders/cylinder.vs) mix(url(../shaders/passthrough.fs) multiply source-atop),
+					36 2, amount 0,
+					cylinderRadius 0.5,
+					transform rotateY(0deg) rotateX(0deg));}</div>
+	<div class="cardBorder ">
+	    <div id="card2" class="card">
+	      <p>This element is wrapped on a cylinder.</p>
 	      <img width=251 height=251 src="../images/HTML5rawkes.png"></img>
 	    </div>
 	</div>
