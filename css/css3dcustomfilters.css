@@ -51,20 +51,19 @@ body {
 	width: 100%;
 	height: 80%;
 	top:32%;
-	border:none;
+	border:1px dotted;
     border-radius:0 0 4px 4px;
     z-index:1;
 }
 
 .card {
 	position: absolute;
-	width: 100%;
-	height: 100%;
+	width: 99%;
+	height: 99%;
 	border:1px solid;
 	border-radius: 4px;
 	box-shadow: 2px 2px 2px;
 	background-color:White;
-
 }
 
 .rotateX {
@@ -77,11 +76,13 @@ body {
 .unbend {
 	-webkit-filter: custom(url(../shaders/bend.vs) mix(url(../shaders/passthrough.fs) multiply source-atop), 32 32, cameraPosition 0 0 2.45, lightPosition 0 0 1, bendAmount 0);
 	-webkit-transition: all ease-in-out 1s;
+	-webkit-transform:translateX(0) rotateY(0deg);
 }
 	
 .bend {
 	-webkit-filter: custom(url(../shaders/bend.vs) mix(url(../shaders/passthrough.fs) multiply source-atop), 32 32, cameraPosition 0 0 2.45, lightPosition 0 0 1, bendAmount 0.67);
 	-webkit-transition: all ease-in-out 1s;
+	-webkit-transform:translateX(50px) rotateY(0deg);
 }
 
 .nocylinder {
@@ -108,8 +109,8 @@ body {
 
 .card p {
 	font-size:14px;
-	text-align:left;
-	margin-left:10px;
+	text-align:center;
+	margin-left:0px;
 }
 
 .legend {
