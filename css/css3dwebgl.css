@@ -1,0 +1,153 @@
+@CHARSET "UTF-8";
+
+body {
+	color:#111111;
+}
+
+.container {
+	width: 440px;
+	height: 440px;
+	position: relative;
+	text-align:center;
+	margin-left:50px;
+}
+
+.container p {
+	font-size:12px;
+	line-height:12px;
+}
+	
+#webglcanvas {
+	background:rgba(256, 256, 256, 0);
+	position:absolute;
+	top:30%;
+	left:20%;
+}
+
+.perspective {
+	-webkit-perspective: 400px;
+	   -moz-perspective: 400px;
+	     -o-perspective: 400px;
+	        perspective: 400px;
+}        
+
+.noperspective {
+	-webkit-perspective: 0px;
+	   -moz-perspective: 0px;
+	     -o-perspective: 0px;
+	        perspective: 0px;
+}
+
+.cardBorder {
+	position: absolute;
+	width: 100%;
+	height: 80%;
+	top:20%;
+	border:1px dotted;
+    border-radius:0 0 4px 4px;
+}
+
+.card {
+	position: absolute;
+	width: 99%;
+	height: 99%;
+	top:0;
+	border:1px solid;
+	border-radius: 4px;
+	box-shadow: 2px 2px 2px;
+}
+
+.translate {
+	-webkit-transform: translateX(20px) translateY(20px) translateZ(-100px);
+	   -moz-transform: translateX(20px) translateY(20px) translateZ(-100px);
+	     -o-transform: translateX(20px) translateY(20px) translateZ(-100px);
+	        transform: translateX(20px) translateY(20px) translateZ(-100px);
+}
+
+.rotate {
+	-webkit-transform: rotateY(30deg);
+	   -moz-transform: rotateY(30deg);
+	     -o-transform: rotateY(30deg);
+	        transform: rotateY(30deg);
+}
+
+.rotateY {
+	-webkit-transform: rotateY(20deg);
+	   -moz-transform: rotateY(20deg);
+	     -o-transform: rotateY(20deg);
+	        transform: rotateY(20deg);
+}
+
+
+.scale {
+	-webkit-transform: scaleX(1.25) scaleY(.75);
+	   -moz-transform: scaleX(1.25) scaleY(.75);
+	     -o-transform: scaleX(1.25) scaleY(.75);
+	        transform: scaleX(1.25) scaleY(.75);
+}
+
+.card p {
+	font-size:12px;
+	text-align:center;
+	margin-left:0px;
+}
+
+.legend {
+     font-size: 18px;
+     font-weight:bold;
+     text-align:center;
+}
+   
+.code {
+     font-size: 12px;
+     font-weight:normal;
+     font-family:Courier;
+     border:1px solid;
+     border-radius:4px 4px 0 0;
+     background-color:DarkSeaGreen;
+/*     background-color:DarkCyan; */
+     width:100%;
+     height:19%;
+     text-align:left;
+     margin-top:4px;
+}
+
+.cardBorder pre {
+	font-family:Courier;
+	font-size:14px;
+	font-weight:bold;
+	color:black;
+	line-height:10px;
+	text-align:left;
+	margin-left:16px;
+	margin-top:64px;
+}
+
+@-webkit-keyframes kfRotateY {
+  from {
+    -webkit-transform: rotateY(0deg);
+  }
+
+  to {
+   -webkit-transform: rotateY(360deg);
+  }
+}
+
+.animRotateY
+ {
+  -webkit-animation-duration: 10s;
+  -webkit-animation-name: kfRotateY;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function:linear;
+}
+
+#card1 {
+   	position:absolute;
+   	left:40px;
+   	top:60px;
+}
+
+#card1:hover {
+	cursor:pointer;
+}
+

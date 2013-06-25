@@ -1,10 +1,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Transforms</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D + WebGL</title>
 
 <link rel="stylesheet" href="../css/main.css" />
-<link rel="stylesheet" href="../css/css3dtransforms.css" />
+<link rel="stylesheet" href="../css/css3dwebgl.css" />
 
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
@@ -15,6 +15,8 @@
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
 <script type="text/javascript">
 
+	var rotating = false;
+	
 	$(document).ready(
 			function() {
 				var canvas = document.getElementById("webglcanvas");
@@ -31,6 +33,20 @@
 		        // Run the run loop
 		        run();
 
+				$('#cardFront1').click(function(){
+					if (!rotating)
+					{
+						$('#cardFront1').addClass('animRotateY');
+					}
+					else
+					{
+						$('#cardFront1').removeClass('animRotateY');
+					}
+
+					rotating = !rotating;
+				}
+				);
+		        
 			}
 
 	);
@@ -44,7 +60,8 @@
 	root = null,
 	group = null,
 	cube = null,
-	waves = null,
+	sphere = null,
+	cone = null,
 	directionalLight = null;
 	
 	function run() {
@@ -60,7 +77,6 @@
 			orbitControls.update();
 	}
 
-	var mapUrl = "../images/Tileable classic water texture.jpg";
 	function createScene(canvas) {
 		
 		// Create the Three.js renderer and attach it to our canvas
@@ -74,7 +90,7 @@
 
 	    // Add  a camera so we can view the scene
         camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-        camera.position.set(0, 2, 8);
+        camera.position.set(0, 2, 13);
 		scene.add(camera);
 		
 		// Create a group to hold all the objects
@@ -94,38 +110,46 @@
 		group = new THREE.Object3D;
 		root.add(group);
 
-		// Create a texture map
-		var map = THREE.ImageUtils.loadTexture(mapUrl);
-		map.wrapS = map.wrapT = THREE.RepeatWrapping;
-		map.repeat.set(4, 4);
-
-		var color = 0xffffff;
-		var ambient = 0x888888;
-		
-		// Put in a ground plane to show off the lighting
-        geometry = new THREE.PlaneGeometry(200, 200, 50, 50);
-        waves = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
-        	ambient:ambient, map:map, side:THREE.DoubleSide}));
-        waves.rotation.x = -Math.PI / 2;
-        waves.position.y = -1.02;
-        
-        // Add the waves to our group
-        root.add( waves );
-
         // Create the cube geometry
-		map = THREE.ImageUtils.loadTexture("../images/wooden_crate_1_store.jpg");		
-        geometry = new THREE.CubeGeometry(2, 2, 2);
+        var geometry = new THREE.CubeGeometry(2, 2, 2);
         
         // And put the geometry and material together into a mesh
-        var color = 0xffffff;
+        var color = 0xff0000;
         ambient = 0x888888;
         cube = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
-            ambient:ambient, 
-            map:map,
-            transparent:true}));
+            ambient:ambient}));
+		cube.position.x = -3;
 		
         // Add the mesh to our group
         group.add( cube );
+		
+        // Create the sphere geometry
+        geometry = new THREE.SphereGeometry(Math.sqrt(2), 20, 20);
+        
+        // And put the geometry and material together into a mesh
+        var color = 0x00ff00;
+        ambient = 0x888888;
+        sphere = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
+            ambient:ambient}));
+		
+        // Add the mesh to our group
+        group.add( sphere );
+
+        // Create the cone geometry
+        geometry = new THREE.CylinderGeometry(0, 2, 2, 50, 10);
+        
+        // And put the geometry and material together into a mesh
+        var color = 0x0000ff;
+        ambient = 0x888888;
+		cone = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color, 
+			ambient:ambient}));
+		cone.position.x = 3;
+		
+		// Add the  mesh to our group
+        group.add( cone );
+
+		// Now tilt the group
+		group.rotation.z = Math.PI / 12;
 		
         // Now add the group to our scene
         scene.add( root );
@@ -137,150 +161,64 @@
 	}
 	   	
 	var duration = 10, // sec
-	crateAnimator = null,
-	waveAnimator = null,
-	lightAnimator = null,
-	waterAnimator = null,
-	animateCrate = true,
-	animateWaves = true,
-	animateLight = true,
-	animateWater = true,
-	loopAnimation = false;
+	animator = null,
+	loopAnimation = true;
 
 	function playAnimations()
 	{
+		var halfPI = Math.PI / 2,
+		PI = Math.PI, 
+		threehalfPI = 3 * halfPI,
+		twoPI = Math.PI * 2;
+		
 		// position animation
-		if (crateAnimator)
-			crateAnimator.stop();
+		if (animator)
+			animator.stop();
 		
-		group.position.set(0, 0, 0);
-		group.rotation.set(0, 0, 0);
-
-		if (animateCrate)
-		{
-			crateAnimator = new KF.KeyFrameAnimator;
-			crateAnimator.init({ 
-				interps:
-					[
-					    { 
-					    	keys:[0, .2, .25, .375, .5, .9, 1], 
-					    	values:[
-					    	        { x : 0, y:0, z: 0 },
-					    	        { x : .5, y:0, z: .5 },
-					    	        { x : 0, y:0, z: 0 },
-					    	        { x : .5, y:-.25, z: .5 },
-					    	        { x : 0, y:0, z: 0 },
-					    	        { x : .5, y:-.25, z: .5 },
-					    	        { x : 0, y:0, z: 0 },
-					    	        ],
-					    	target:group.position
-					    },
-					    { 
-					    	keys:[0, .25, .5, .75, 1], 
-					    	values:[
-					    	        { x : 0, z : 0 },
-					    	        { x : Math.PI / 12, z : Math.PI / 12 },
-					    	        { x : 0, z : Math.PI / 12 },
-					    	        { x : -Math.PI / 12, z : -Math.PI / 12 },
-					    	        { x : 0, z : 0 },
-					    	        ],
-					    	target:group.rotation
-					    },
-					],
-				loop: loopAnimation,
-				duration:duration * 1000,
-				easing:TWEEN.Easing.Bounce.InOut,
-			});
-			crateAnimator.start();
-			
-		}
+		animator = new KF.KeyFrameAnimator;
+		animator.init({ 
+			interps:
+				[
+				    { 
+				    	keys:[0, .25, .5, .75, 1], 
+				    	values:[
+				    	        { z: 0 },
+				    	        { z: halfPI },
+				    	        { z: PI },
+				    	        { z: threehalfPI },
+				    	        { z: twoPI },
+				    	        ],
+				    	target:cube.rotation
+				    },
+				    { 
+				    	keys:[0, .25, .5, .75, 1], 
+				    	values:[
+				    	        { x: 0 },
+				    	        { x: halfPI },
+				    	        { x: PI },
+				    	        { x: threehalfPI },
+				    	        { x: twoPI },
+				    	        ],
+				    	target:cone.rotation
+				    },
+				    { 
+				    	keys:[0, .25, .5, .75, 1], 
+				    	values:[
+				    	        { y: 0 },
+				    	        { y: halfPI },
+				    	        { y: PI },
+				    	        { y: threehalfPI },
+				    	        { y: twoPI },
+				    	        ],
+				    	target:root.rotation
+				    },
+				],
+			loop: loopAnimation,
+			duration:duration * 1000
+		});
 		
-		// rotation animation
-		if (waveAnimator)
-			waveAnimator.stop();
-
-		waves.rotation.set(-Math.PI / 2, 0, 0);
-
-		if (animateWaves)
-		{
-			waveAnimator = new KF.KeyFrameAnimator;
-			waveAnimator.init({ 
-				interps:
-					[
-					    { 
-					    	keys:[0, .5, 1], 
-					    	values:[
-					    	        { x : -Math.PI / 2, y : 0 },
-					    	        { x : -Math.PI / 2.2, y : 0 },
-					    	        { x : -Math.PI / 2, y: 0 },
-					    	        ],
-					    	target:waves.rotation
-					    },
-					],
-				loop: loopAnimation,
-				duration:duration * 1000,
-			});
-			waveAnimator.start();
-		}
+		animator.start();
 		
-		// color animation
-		if (lightAnimator)
-			lightAnimator.stop();
-
-		directionalLight.color.setRGB(1, 1, 1);
-
-		if (animateLight)
-		{
-			lightAnimator = new KF.KeyFrameAnimator;
-			lightAnimator.init({ 
-				interps:
-					[
-					    { 
-					    	keys:[0, .4, .6, .7, .8, 1], 
-					    	values:[
-					    	        { r: 1, g : 1, b: 1 },
-					    	        { r: 1, g : 1, b: 1 },
-					    	        { r: .333, g : .333, b: .333 },
-					    	        { r: 1, g : 1, b: 1 },
-					    	        { r: .667, g : .667, b: .667 },
-					    	        { r: 1, g : 1, b: 1 },
-					    	        ],
-					    	target:directionalLight.color
-					    },
-					],
-				loop: loopAnimation,
-				duration:duration * 1000,
-			});
-			lightAnimator.start();
-		}
-					
-		// opacity animation
-		if (waterAnimator)
-			waterAnimator.stop();
-		
-		cube.material.opacity = 1;	
-
-		if (animateWater)
-		{
-			waterAnimator = new KF.KeyFrameAnimator;
-			waterAnimator.init({ 
-				interps:
-					[
-					    { 
-					    	keys:[0, 1], 
-					    	values:[
-					    	        { x : 0, y : 0 },
-					    	        { x : 1, y : 1 },
-					    	        ],
-					    	target:waves.material.map.offset
-					    },
-					],
-				loop: loopAnimation,
-				duration:duration * 1000,
-			});
-			waterAnimator.start();
-		}
-
 	}
 	
 </script>
@@ -288,49 +226,41 @@
 </head>
 <body>
 
-CSS 3D Transforms
+CSS 3D + WebGL
 
 <div id="card1" class="container perspective">
 	<div class="legend">
-	Translate
+	DIV Rotated with CSS Key Frames
 	</div>
-	<div class="code">{translateX(20px) translateY(20px) translateZ(-100px);}</div>
+	<p>Canvas Rendered and Animated with WebGL.<br></br>Click to toggle DIV rotation.</p>
 	<div class="cardBorder">
-	    <div class="card translate">
-	      <p>This element is translated.</p>
-	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
-	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
+	<pre>
+{@keyframes kfRotateY {
+  from {
+    transform: rotateY(0deg);
+  }
+
+  to {
+   transform: rotateY(360deg);
+  }
+}
+
+.animRotateY
+ {
+  animation-duration: 2s;
+  animation-name: kfRotateY;
+  animation-iteration-count: infinite;
+  animation-timing-function:linear;
+}
+</pre>
+	    <div id="cardFront1" class="card">
+	      <p>Here is an example of WebGL rendered in a transformed CSS element.</p>
+	      <canvas id="webglcanvas" width=320 height=256></canvas>
+	      <p>Watch it spin...</p>
 	    </div>
 	</div>
 </div>
 
-<div id="card2" class="container perspective">
-	<div class="legend">
-	Rotate
-	</div>
-	<div class="code">{rotateY(30deg);}</div>
-	<div class="cardBorder">
-	    <div class="card rotate">
-	      <p>This element is rotated.</p>
-	      <canvas id="webglcanvas" width=96 height=96></canvas>
-	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
-	    </div>
-	</div>
-</div>
-
-<div id="card3" class="container perspective">
-	<div class="legend">
-	Scale
-	</div>
-	<div class="code">{scaleX(1.25) scaleY(.75);}</div>
-	<div class="cardBorder">
-	    <div class="card scale">
-	      <p>This element is scaled.</p>
-	      <img width=96 height=96 src="../images/HTML5rawkes.png"></img>
-	      <p>Transformed elements can contain anything: text, images, divs, controls...</p>
-	    </div>
-	</div>
-</div>
 
 
 </body>
