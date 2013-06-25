@@ -10,7 +10,7 @@ uniform mat4 u_projectionMatrix;
 
 // Uniforms passed in from CSS
 uniform float amount;
-uniform float cylinderRadius;
+uniform float radius;
 uniform mat4 transform;
 
 // Varyings
@@ -37,7 +37,7 @@ void main() {
 	vec4 position = a_position;
 
 	// Compute cylinder using UV coordinates
-	vec3 cylinder = computeCylinder( a_texCoord, cylinderRadius );
+	vec3 cylinder = computeCylinder( a_texCoord, radius );
 
 	// Blend plane and cylinder
 	position.xyz = mix( position.xyz, cylinder, amount );

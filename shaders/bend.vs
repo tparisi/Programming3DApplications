@@ -23,9 +23,11 @@ void main()
    	vertexNormal=vec3(0.0, 0.0, 1.0);
     if (a_texCoord.x >= 0.5)
     {
+    	// Rotate vertices on the right hand side of the plane
 	    position.x *= cos(theta);
 		position.z *= -cos(theta);
 		
+		// Rotate the vertex normals, too so we see lighting
 		vec3 normal = vertexNormal;
 		normal.x *= cos(theta);
 		normal.z *= cos(theta);

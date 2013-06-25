@@ -88,7 +88,7 @@ body {
 .nocylinder {
 	-webkit-filter: custom(url(../shaders/cylinder.vs) mix(url(../shaders/passthrough.fs) multiply source-atop),
 					36 2, amount 0,
-					cylinderRadius 0.5,
+					radius 0.5,
 					transform rotateY(0deg) rotateX(0deg));
 	-webkit-transition: all ease-in-out 1s;
 }
@@ -96,7 +96,7 @@ body {
 .cylinder {
 	-webkit-filter: custom(url(../shaders/cylinder.vs) mix(url(../shaders/passthrough.fs) multiply source-atop),
 					36 2, amount 1, 
-					cylinderRadius 0.5,
+					radius 0.5,
 					transform rotateY(0deg) rotateX(0deg));
 	-webkit-transition: all ease-in-out 1s;
 }
