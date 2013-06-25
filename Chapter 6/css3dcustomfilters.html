@@ -1,0 +1,55 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; CSS 3D Custom Filters</title>
+
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/css3dcustomfilters.css" />
+
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script type="text/javascript">
+
+	var bent = false;
+
+	$(document).ready(
+			function() {
+				$('#card1').click(function(){
+					if (!bent)
+					{
+						$('#card1').addClass('bend');
+					}
+					else
+					{
+						$('#card1').removeClass('bend');
+					}
+
+				bent = !bent;
+				});
+
+			}
+
+	);
+
+</script>
+
+</head>
+<body>
+
+CSS 3D Custom Filters
+
+<div id="filter1" class="container perspective hierarchy">
+	<div class="legend">
+	Bend Filter
+	</div>
+	<p>Click to bend the card</p>
+	<div class="code">{filter: custom(url(../shaders/bend.vs) mix(url(../shaders/passthrough.fs) multiply source-atop), 32 32, cameraPosition 0 0 2.33, lightPosition 0 0 1, bendAmount .6, transform translate3d(0,0,0));}</div>
+	<div class="cardBorder">
+	    <div id="card1" class="card">
+	      <p>This element is bent using a CSS custom filter (shader).</p>
+	      <img width=251 height=251 src="../images/HTML5rawkes.png"></img>
+	    </div>
+	</div>
+</div>
+</body>
+</html>

@@ -65,7 +65,7 @@ body {
 }
 
 
-.card.scale {
+.scale {
 	-webkit-transform: scaleX(1.25) scaleY(.75);
 	   -moz-transform: scaleX(1.25) scaleY(.75);
 	     -o-transform: scaleX(1.25) scaleY(.75);

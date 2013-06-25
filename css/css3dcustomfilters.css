@@ -1,0 +1,109 @@
+@CHARSET "UTF-8";
+
+body {
+	color:#111111;
+}
+
+.container {
+	width: 440px;
+	height: 440px;
+	position: relative;
+	text-align:center;
+}
+
+.perspective {
+	-webkit-perspective: 400px;
+	   -moz-perspective: 400px;
+	     -o-perspective: 400px;
+	        perspective: 400px;
+}        
+
+
+.hierarchy {
+     -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+          -o-transform-style: preserve-3d;
+             transform-style: preserve-3d;
+}
+
+.cardBorder {
+	position: absolute;
+	width: 100%;
+	height: 80%;
+	top:32%;
+	border:none;
+    border-radius:0 0 4px 4px;
+    z-index:1;
+}
+
+.card {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border:1px solid;
+	border-radius: 4px;
+	box-shadow: 2px 2px 2px;
+	background-color:White;
+
+	-webkit-filter: custom(url(../shaders/bend.vs) mix(url(../shaders/passthrough.fs) multiply source-atop), 32 32, cameraPosition 0 0 2.45, lightPosition 0 0 1, bendAmount 0);
+	-webkit-transition: all linear 1.5s;
+}
+
+.rotateX {
+	-webkit-transform: rotateX(-20deg);
+	   -moz-transform: rotateX(-20deg);
+	     -o-transform: rotateX(-20deg);
+	        transform: rotateX(-20deg);
+}
+
+.bend {
+	-webkit-filter: custom(url(../shaders/bend.vs) mix(url(../shaders/passthrough.fs) multiply source-atop), 32 32, cameraPosition 0 0 2.45, lightPosition 0 0 1, bendAmount 0.67);
+	-webkit-transition: all linear 1.5s;
+}
+
+.container p {
+	font-size:12px;
+	text-align:center;
+	margin-left:10px;
+}
+
+.card p {
+	font-size:14px;
+	text-align:left;
+	margin-left:10px;
+}
+
+.legend {
+     font-size: 18px;
+     font-weight:bold;
+     text-align:center;
+}
+   
+.code {
+     font-size: 12px;
+     font-weight:normal;
+     font-family:Courier;
+     border:1px solid;
+     border-radius:4px 4px 0 0;
+     background-color:DarkSeaGreen;
+/*     background-color:DarkCyan; */
+     width:100%;
+     height:18%;
+     text-align:left;
+     margin-top:4px;
+}
+
+.code pre {
+     font-size: 12px;
+}
+
+.card:hover {
+	cursor:pointer;
+}
+
+#filter1 {
+   	position:absolute;
+   	left:40px;
+   	top:60px;
+}
+
