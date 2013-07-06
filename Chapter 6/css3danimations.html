@@ -147,27 +147,28 @@ Fly (Alternate)
 	<div id="cardBorder3" class="cardBorder">
 	    <div id="front3" class="card nobackface frontside">
 		<pre>
-@keyframes kfSweep {
+@keyframes kfFly {
   0% {
-    transform:translate3d(0, 0, 0) rotateZ(0deg);
+    transform:translate3d(0, 0, 0);
   }
   25% {
-    transform: translate3d(50px, -50px, 0);
+    transform: translate3d(100px, -100px, 20px0);
   }
   50% {
-    transform: translate3d(100px, -100px, 0);
+    transform: translate3d(200px, -200px, 40px);
   }
   100% {
-    transform: translate3d(150px, -150px, 0);
+    transform: translate3d(400px, -300px, 20px);
   }
 }
 
 .animFly
  {
-   animation-duration: 1s;
-   animation-name: kfSweep;
-   animation-iteration-count: infinite;
-   animation-timing-function:cubic-bezier(0.1, 0.2, 0.5, 1);
+   animation-duration: 2s;
+   animation-name: kfFly;
+   animation-iteration-count: 2;
+   animation-timing-function:cubic-bezier(0.1, 0.2, 0.8, 1);
+   animation-direction:alternate;
 }
 		</pre>
 	    </div>

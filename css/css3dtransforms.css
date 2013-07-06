@@ -9,6 +9,7 @@ body {
 	height: 240px;
 	position: relative;
 	text-align:center;
+        -moz-transform-style: preserve-3d;
 }
 
 .perspective {
@@ -32,6 +33,7 @@ body {
 	top:30%;
 	border:1px dotted;
     border-radius:0 0 4px 4px;
+        -moz-transform-style: preserve-3d;
 }
 
 .card {
@@ -41,6 +43,7 @@ body {
 	border:1px solid;
 	border-radius: 4px;
 	box-shadow: 2px 2px 2px;
+        -moz-transform-style: preserve-3d;
 }
 
 .translate {
@@ -91,7 +94,8 @@ body {
      border:1px solid;
      border-radius:4px 4px 0 0;
      background-color:DarkSeaGreen;
-/*     background-color:DarkCyan; */
+     background-color:CadetBlue;
+     /*     background-color:DarkCyan; */
      width:100%;
      height:19%;
      text-align:left;
