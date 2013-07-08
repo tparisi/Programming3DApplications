@@ -12,12 +12,13 @@
 <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
 <script type="text/javascript">
 
-	var front = true;
+	var front1 = true;
+	var front2 = true;
 	$(document).ready(
 			function() {
 				$('#transition1 .clickable').click(function(){
 					// alert("Clicked");
-					if (front)
+					if (front1)
 					{
 						$('#front1').addClass('flip');
 						$('#back1').addClass('flip');
@@ -32,11 +33,11 @@
 						$('#back1').removeClass('goGold');
 					}
 
-					front = !front;
+					front1 = !front1;
 				});
 
 				$('#transition2 .clickable').click(function(){
-					if (front)
+					if (front2)
 					{
 						$('#front2').addClass('flip');
 						$('#back2').addClass('flip');
@@ -51,7 +52,7 @@
 						$('#back2').removeClass('goGold');
 					}
 
-					front = !front;
+					front2 = !front2;
 				});
 				
 			}
