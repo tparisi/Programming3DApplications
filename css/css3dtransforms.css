@@ -60,14 +60,6 @@ body {
 	        transform: rotateY(30deg);
 }
 
-.rotateY {
-	-webkit-transform: rotateY(20deg);
-	   -moz-transform: rotateY(20deg);
-	     -o-transform: rotateY(20deg);
-	        transform: rotateY(20deg);
-}
-
-
 .scale {
 	-webkit-transform: scaleX(1.25) scaleY(.75);
 	   -moz-transform: scaleX(1.25) scaleY(.75);
