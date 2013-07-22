@@ -20,6 +20,7 @@
 	root = null,
 	group1 = null,
 	group2 = null,
+	group3 = null,
 	model = null,
 	directionalLight = null;
 	
@@ -31,14 +32,15 @@
 
 			group1.rotation.y += 0.01;
 			group2.rotation.y -= 0.01;
+			group3.rotation.x -= 0.01;
 			
 			// Update the camera controller
 			orbitControls.update();
 	}
 
-	var modelUrl = "../models/T-50/T-50.js";
-	var colladaUrl1 = "../models/Cottus_Elec/cottus_elec.DAE";
-	var colladaUrl2 = "../models/Cottus_Rktlauncher/cottus_rktlauncher.DAE";
+	var url1 = "../models/Cottus_Elec/cottus_elec.DAE";
+	var url2 = "../models/Cottus_Rktlauncher/cottus_rktlauncher.DAE";
+	var url3 = "../models/Cottus_Twincannon/cottus_twincannon.DAE";
 	
 	function createScene(canvas) {
 		
@@ -68,51 +70,32 @@
 
 		ambientLight = new THREE.AmbientLight ( 0x888888 );
 		root.add(ambientLight);
-		
-		// Create a group to hold the objects
+
+		// Create groups to hold the objects
 		group1 = new THREE.Object3D;
 		root.add(group1);
 
-		// Create a group to hold the objects
 		group2 = new THREE.Object3D;
 		root.add(group2);
 
-		/*
-		var loader = new THREE.JSONLoader();
-		loader.load( modelUrl, function(geometry, materials) { 
-			handleModelLoaded(geometry, materials) } );
-*/
-
+		group3 = new THREE.Object3D;
+		root.add(group3);
+		
 		var loader = new THREE.ColladaLoader();
-		loader.load( colladaUrl1, function(data) {
+		loader.load( url1, function(data) {
 			handleSceneLoaded(data, group1); });
 
 		var loader = new THREE.ColladaLoader();
-		loader.load( colladaUrl2, function(data) {
+		loader.load( url2, function(data) {
 			handleSceneLoaded(data, group2); });
+
+		var loader = new THREE.ColladaLoader();
+		loader.load( url3, function(data) {
+			handleSceneLoaded(data, group3); });
 		
         // Now add the group to our scene
         scene.add( root );
     }
-
-	function handleModelLoaded(geometry, materials)
-	{
-		// Just in case model doesn't have normals
-		geometry.computeVertexNormals();
-
-		var index;
-		for (index in materials)
-		{
-			materials[index].overdraw = true;
-			materials[index].shading = THREE.SmoothShading;
-		}
-		
-		var material = new THREE.MeshFaceMaterial(materials);
-		var model = new THREE.Mesh( geometry, material  );
-
-        // Add the mesh to our group
-        group.add( model );
-	}
 
 	function handleSceneLoaded(data, parent)
 	{
