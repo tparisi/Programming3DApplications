@@ -1,0 +1,160 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Rendering Models with Canvas Renderer</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/three.js.r58/loaders/ColladaLoader.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	root = null,
+	group1 = null,
+	group2 = null,
+	model = null,
+	directionalLight = null;
+	
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			group1.rotation.y += 0.01;
+			group2.rotation.y -= 0.01;
+			
+			// Update the camera controller
+			orbitControls.update();
+	}
+
+	var modelUrl = "../models/T-50/T-50.js";
+	var colladaUrl1 = "../models/Cottus_Elec/cottus_elec.DAE";
+	var colladaUrl2 = "../models/Cottus_Rktlauncher/cottus_rktlauncher.DAE";
+	
+	function createScene(canvas) {
+		
+		// Create the Three.js renderer and attach it to our canvas
+		renderer = new THREE.CanvasRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.set(0, 2, 8);
+		scene.add(camera);
+		
+		// Create a group to hold all the objects
+		root = new THREE.Object3D;
+		
+        // Add a directional light to show off the object
+		directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
+
+		// Create and add all the lights
+		directionalLight.position.set(0, 1, 2);
+		root.add(directionalLight);
+
+		ambientLight = new THREE.AmbientLight ( 0x888888 );
+		root.add(ambientLight);
+		
+		// Create a group to hold the objects
+		group1 = new THREE.Object3D;
+		root.add(group1);
+
+		// Create a group to hold the objects
+		group2 = new THREE.Object3D;
+		root.add(group2);
+
+		/*
+		var loader = new THREE.JSONLoader();
+		loader.load( modelUrl, function(geometry, materials) { 
+			handleModelLoaded(geometry, materials) } );
+*/
+
+		var loader = new THREE.ColladaLoader();
+		loader.load( colladaUrl1, function(data) {
+			handleSceneLoaded(data, group1); });
+
+		var loader = new THREE.ColladaLoader();
+		loader.load( colladaUrl2, function(data) {
+			handleSceneLoaded(data, group2); });
+		
+        // Now add the group to our scene
+        scene.add( root );
+    }
+
+	function handleModelLoaded(geometry, materials)
+	{
+		// Just in case model doesn't have normals
+		geometry.computeVertexNormals();
+
+		var index;
+		for (index in materials)
+		{
+			materials[index].overdraw = true;
+			materials[index].shading = THREE.SmoothShading;
+		}
+		
+		var material = new THREE.MeshFaceMaterial(materials);
+		var model = new THREE.Mesh( geometry, material  );
+
+        // Add the mesh to our group
+        group.add( model );
+	}
+
+	function handleSceneLoaded(data, parent)
+	{
+        // Add the mesh to our group
+        parent.add( data.scene );
+	}
+		
+	function initControls()
+	{
+		orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+	}
+	   		
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				// initialize the controls
+				initControls();
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+	<div id="title">
+		Key Frame Animation
+	</div>
+
+	<div id="prompt">
+		Drag the mouse to rotate the camera<br>Use the scroll wheel to zoom.
+	</div>
+</div>
+
+</html>
