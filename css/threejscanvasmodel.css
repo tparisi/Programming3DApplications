@@ -1,0 +1,52 @@
+@CHARSET "UTF-8";
+
+
+#container {
+	background-image:url('../images/field_of_stars_full.jpg');
+	position:absolute;
+	width:800px;
+	height:600px;
+}
+
+#title {
+	position:absolute;
+	left:400px;
+	width:400px;
+	top:20px;
+	color:CadetBlue;
+	text-shadow: 1px 1px #222222;
+}
+
+#rendererPicker {
+	font-size:14px;
+	position:absolute;
+	top:40px;
+	left:800px;
+    margin-left:20px;
+    color:DarkBlue;
+}
+
+#rendererRBGroup {
+	position:absolute;
+	font-size:12px;
+	margin-top:10px;
+	width:140px;
+	left:20px;
+}
+
+#animate {
+	position:absolute;
+	left:800px;
+	top:120px;
+    margin-left:20px;
+	font-size:14px;
+    color:DarkBlue;
+}
+
+#animateCheckBox {
+	position:absolute;
+	left:100px;
+	font-size:12px;
+	top:0px;
+}
+
