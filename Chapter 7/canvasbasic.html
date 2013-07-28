@@ -1,0 +1,32 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Basic Canvas Example</title>
+
+</head>
+
+<style>
+	#basicCanvas {
+		background-color:Black;
+	}
+</style>
+<body>
+
+<canvas id="basicCanvas" width=500 height=500></canvas>
+
+</body>
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script type="text/javascript">
+
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("basicCanvas");
+				var context = canvas.getContext("2d");
+				context.fillStyle='#ffffff';
+				context.fillRect(125, 125, 250, 250);
+			}
+	);
+
+</script>
+</html>

@@ -1,0 +1,128 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Canvas Features</title>
+
+</head>
+
+<style>
+
+	#basicCanvas {
+		border:1px solid;
+		color:Green;
+	}
+</style>
+<body>
+<h1>Canvas Features</h1>
+<canvas id="basicCanvas" width=500 height=500></canvas>
+
+</body>
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script type="text/javascript">
+
+	function draw(canvas, context)
+	{
+		context.clearRect(canvas.width, canvas.height);
+		
+		// Small red filled rectangle
+		context.fillStyle='#ff0000';
+		context.fillRect(25, 25, 100, 50);
+				
+		// Small dark blue filled rectangle
+		context.strokeStyle='DarkBlue';
+		context.strokeRect(250, 25, 100, 50);
+
+		// Filled text
+		context.fillStyle='Black';
+		context.font='italic 30px Verdana';
+		context.fillText('Fill', 25, 125);
+
+		// Stroked text
+		context.strokeStyle='Orange';
+		context.font='italic 30px Verdana';
+		context.strokeText('Stroke', 250, 125);
+
+		// A triangle
+		context.save();
+		context.beginPath();
+		context.fillStyle='Yellow';
+		context.moveTo(75, 150);
+		context.lineTo(25, 225);
+		context.lineTo(125, 225);
+		context.lineTo(75, 150);
+		context.fill();
+		context.closePath();
+		context.restore();
+
+		// A filled bezier curve
+		context.save();
+		context.beginPath();
+		context.strokeStyle='Green';
+		context.fillStyle='LightBlue';
+	    context.moveTo(300,150);
+	    context.bezierCurveTo(225,175,275,225,275,225);
+	    context.bezierCurveTo(350,250,350,225,350,225);
+	    context.bezierCurveTo(350,175,300,175,300,150);
+	    context.stroke();
+	    context.fill();
+		context.closePath();
+		context.restore();
+
+		// A bitmap
+		var image1 = new Image;
+		image1.onload = function() {
+
+			context.save();
+			context.drawImage(image1, 25, 250, 128, 128);
+			context.restore();
+		}
+
+		// A bitmap-filled circle
+		var image2 = new Image;
+		image2.onload = function() {
+
+			context.save();
+			var pattern = context.createPattern(image2, "repeat");
+			context.fillStyle = pattern;
+			context.beginPath();
+			context.arc(300, 314, 64, 0, 2 * Math.PI, false);
+		    context.scale(.5, .5);
+		    context.fill();
+		    context.stroke();
+			context.closePath();
+			context.restore();
+		}
+		
+		image1.src = '../images/parisi1.jpg';
+		image2.src = '../images/ash_uvgrid01.jpg';
+
+		// A polyline
+		context.save();
+		context.strokeStyle="rgb(128, 0, 255)";
+		context.moveTo(25, 425);
+		context.lineTo(125, 400);
+		context.lineTo(225, 425);
+		context.stroke();
+		context.restore();
+
+		// A gradient fill
+		context.save();
+		var gradient = context.createLinearGradient(250,0,350,0);
+		gradient.addColorStop(0,"green");
+		gradient.addColorStop(1,"blue");
+		context.fillStyle=gradient;
+		context.fillRect(250, 425, 100, 50);
+		context.restore();
+	}
+	
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("basicCanvas");
+				var context = canvas.getContext("2d");
+				draw(canvas, context);
+			}
+	);
+
+</script>
+</html>
