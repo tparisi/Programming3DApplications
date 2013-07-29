@@ -63,7 +63,6 @@
 		context.strokeText('Stroke', 250, 125);
 		context.restore();
 
-		
 		// A triangle
 		context.save();
 		context.beginPath();
@@ -72,8 +71,8 @@
 		context.lineTo(25, 225);
 		context.lineTo(125, 225);
 		context.lineTo(75, 150);
-		context.fill();
 		context.closePath();
+		context.fill();
 		context.restore();
 
 		// A filled bezier curve
@@ -85,9 +84,9 @@
 	    context.bezierCurveTo(225,175,275,225,275,225);
 	    context.bezierCurveTo(350,250,350,225,350,225);
 	    context.bezierCurveTo(350,175,300,175,300,150);
+		context.closePath();
 	    context.stroke();
 	    context.fill();
-		context.closePath();
 		context.restore();
 
 		// A bitmap
@@ -107,9 +106,9 @@
 			context.beginPath();
 			context.arc(300, 314, 64, 0, 2 * Math.PI, false);
 		    context.scale(.5, .5);
+			context.closePath();
 		    context.fill();
 		    context.stroke();
-			context.closePath();
 			context.restore();
 		}
 		
@@ -122,7 +121,6 @@
 		context.lineTo(75, 425);
 		context.lineTo(150, 475);
 		context.stroke();
-		context.closePath();
 		context.restore();
 
 		// A gradient fill
