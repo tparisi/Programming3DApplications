@@ -26,23 +26,28 @@
 				});
 		cube.addComponent(visual);
 
-		// Add a rotate behavior to give the cube some life
+		// Add a several behaviors
 		var rotator = new Vizi.RotateBehavior;
+		var bouncer = new Vizi.BounceBehavior({loop:true});
+		var mover = new Vizi.MoveBehavior({loop:true, duration:2, moveVector:new THREE.Vector3(0, 0, -2)});
 		cube.addComponent(rotator);
+		cube.addComponent(bouncer);
+		cube.addComponent(mover);
 		
 		// Make the cube pickable		
 		var picker = new Vizi.Picker;
 		cube.addComponent(picker);
 
 		// Add a highlight color for hover
-		var highlight = new Vizi.HighlightBehavior({highlightColor:0xeeff00});
+		var highlight = new Vizi.HighlightBehavior({highlightColor:0x88eeff});
 		cube.addComponent(highlight);
 		
-		// Connect the picker to the rotator, highlight and rotate on hover
+		// Connect the picker to the rotator. Highlight on hover, toggle behaviors on click
 		picker.addEventListener("mouseover", function() { highlight.on(); });
 		picker.addEventListener("mouseout", function() { highlight.off();});
 		picker.addEventListener("mouseup", function() { rotator.toggle(); });
-
+		picker.addEventListener("mouseup", function() { bouncer.toggle(); });
+		picker.addEventListener("mouseup", function() { mover.toggle(); });
 		
 		// Rotate the cube toward the viewer to show off the 3D
 		cube.transform.rotation.x = Math.PI / 5;
@@ -58,29 +63,6 @@
 		// Run it
 		app.run();
 
-		/*
-		var rotator = new Vizi.RotateBehavior({loop:true});
-		var bouncer = new Vizi.BounceBehavior({loop:true});
-		var mover = new Vizi.MoveBehavior({loop:true, duration:2, moveVector:new THREE.Vector3(0, 0, -2)});
-	
-		picker.addEventListener("mouseover", function() { highlight.on(); });
-		picker.addEventListener("mouseout", function() { highlight.off(); });
-		picker.addEventListener("mouseup", function() { bouncer.toggle(); });
-		picker.addEventListener("mouseup", function() { mover.toggle(); });
-						
-		cube.addComponent(visual);
-		cube.addComponent(picker);
-		cube.addComponent(rotator);
-		cube.addComponent(bouncer);
-		cube.addComponent(mover);
-		cube.addComponent(highlight);
-		app.addObject(cube);
-	
-		cube.transform.rotation.x = Math.PI / 5;
-
-		app.run();
-		*/
-		
 	}
 	);
 
