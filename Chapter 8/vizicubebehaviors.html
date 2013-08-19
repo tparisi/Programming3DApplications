@@ -45,9 +45,7 @@
 		// Connect the picker to the rotator. Highlight on hover, toggle behaviors on click
 		picker.addEventListener("mouseover", function() { highlight.on(); });
 		picker.addEventListener("mouseout", function() { highlight.off();});
-		picker.addEventListener("mouseup", function() { rotator.toggle(); });
-		picker.addEventListener("mouseup", function() { bouncer.toggle(); });
-		picker.addEventListener("mouseup", function() { mover.toggle(); });
+		picker.addEventListener("mouseup", function() { rotator.toggle(); bouncer.toggle(); mover.toggle(); });
 		
 		// Rotate the cube toward the viewer to show off the 3D
 		cube.transform.rotation.x = Math.PI / 5;
