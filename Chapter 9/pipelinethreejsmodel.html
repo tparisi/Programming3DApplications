@@ -17,8 +17,7 @@ var renderer = null,
 scene = null, 
 camera = null,
 orbitControls = null,
-headlight = null,
-modelCenter = null;
+headlight = null;
 
 var duration = 5000; // ms
 var currentTime = Date.now();
@@ -143,17 +142,17 @@ function handleModelLoaded(geometry, materials) {
 	
 	// Translate the object to the origin if it's not modeled centered
 	geometry.computeBoundingBox();
-	modelCenter = new THREE.Vector3().addVectors(geometry.boundingBox.max, geometry.boundingBox.min).multiplyScalar(0.5);
-	mesh.position.set(-modelCenter.x, 0, -modelCenter.z);
+	center = new THREE.Vector3().addVectors(geometry.boundingBox.max, geometry.boundingBox.min).multiplyScalar(0.5);
+	mesh.position.set(-center.x, 0, -center.z);
 	scene.add( mesh );
 
 	// Find a good camera position based on the size of the geometry
-	var front = geometry.boundingBox.max.clone().sub(modelCenter);
+	var front = geometry.boundingBox.max.clone().sub(center);
 	//camera.position.set(0, geometry.boundingBox.max.y / 2, geometry.boundingBox.max.z * 8);
 	camera.position.set(0, front.y, front.z * 5);
 
 	if (orbitControls)
-		orbitControls.center.copy(modelCenter);
+		orbitControls.center.copy(center);
 }
 
 function createScene(container) {
