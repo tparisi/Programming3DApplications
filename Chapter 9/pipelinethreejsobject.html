@@ -1,0 +1,216 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Loading Models with Three.js</title>
+
+<link rel="stylesheet" href="../css/main.css" />
+
+<div id="container" style="width:98%; height:98%; position:absolute;background-color:gray;border:1px solid black;">
+</div>
+
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+var renderer = null, 
+scene = null, 
+camera = null,
+cubeGroup = null,
+cube = null,
+sphereGroup = null,
+sphere = null,
+cone = null,
+orbitControls = null;
+
+var duration = 5000; // ms
+var currentTime = Date.now();
+function animate() {
+
+    var now = Date.now();
+    var deltat = now - currentTime;
+    currentTime = now;
+    var fract = deltat / duration;
+    var angle = Math.PI * 2 * fract;
+
+}
+
+function run() {
+    requestAnimationFrame(function() { run(); });
+    
+		// Spin the cube for next frame
+		animate();
+			
+		// Update the camera controller
+		orbitControls.update();
+
+		// Render the scene
+		renderer.render( scene, camera );
+
+}
+
+var shadows = true;
+var addGround = true;
+var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
+
+function createRenderer(container) {
+	// Create the Three.js renderer and attach it to our canvas
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+
+	// Turn on shadows
+	if (shadows) {
+		renderer.shadowMapEnabled = true;
+		renderer.shadowMapType = THREE.PCFSoftShadowMap;
+	}
+	    
+	// Set the viewport size
+	renderer.setSize(container.offsetWidth, container.offsetHeight);
+
+	container.appendChild(renderer.domElement);
+}
+
+
+function createLights() {
+	
+	// Lighting setup
+	var light1 = new THREE.AmbientLight(0xffffff);
+	scene.add(light1);
+	
+	var light2 = new THREE.PointLight(0xffffff);
+	light2.position.set(0, 30, 30);
+	scene.add(light2);	
+	
+	var light3 = new THREE.PointLight(0x888888);
+	light3.position.set(-100, 200, -100);
+	scene.add(light3);	
+	
+	var light4 = new THREE.PointLight(0xffffff);
+	light4.position.set(100, -100, 100);
+	scene.add(light4);
+
+	if (shadows) {
+		var spot1 = new THREE.SpotLight(0); // 0xffffff);
+		spot1.position.set(0, 200, 134);
+		scene.add(spot1);
+	
+	    spot1.shadowCameraNear      = 1;
+	    spot1.shadowCameraFar      = 1024;
+	    spot1.castShadow            = true;
+	    spot1.shadowDarkness        = 0.4;
+	    spot1.shadowBias = 0.0001;
+	    spot1.shadowMapWidth = SHADOW_MAP_WIDTH;
+	    spot1.shadowMapHeight = SHADOW_MAP_HEIGHT;
+	}	
+}
+
+function createGround() {
+	if (addGround) {
+              var groundMaterial = new THREE.MeshPhongMaterial({
+                      color: 0xFFFFFF,
+                      ambient: 0x888888,
+                      shading: THREE.SmoothShading,
+                  });
+              var ground = new THREE.Mesh( new THREE.PlaneGeometry(1024, 1024), groundMaterial);
+
+              if (shadows) {
+              	ground.receiveShadow = true;
+              }
+              
+              ground.rotation.x = -Math.PI / 2;
+              
+              scene.add(ground);
+	}
+}
+
+function loadModel() {
+	// Ball chair by Luxxeon
+    // http://www.turbosquid.com/FullPreview/Index.cfm/ID/761919
+    // http://www.turbosquid.com/Search/Artists/luxxeon
+    // http://luxxeon.deviantart.com/
+    
+    var url = "../models/ball_chair/ball_chair.json";
+
+    // Egg chair by Luxxeon
+    // http://www.turbosquid.com/FullPreview/Index.cfm/ID/738230
+    // http://www.turbosquid.com/Search/Artists/luxxeon
+    // http://luxxeon.deviantart.com/
+    //var url = "../models/egg_chair/eggchair.json";
+
+    var loader = new THREE.JSONLoader();
+	loader.load( url, function( geometry, materials ) { 
+		handleModelLoaded(geometry, materials) } );
+    
+}
+
+function handleModelLoaded(geometry, materials) {
+
+	// Create a new mesh with per-face materials
+	var material = new THREE.MeshFaceMaterial(materials);
+	var mesh = new THREE.Mesh( geometry, material  );
+
+	// Turn on shadows
+	mesh.castShadow = true;
+	
+	// Translate the object to the origin if it's not modeled centered
+	geometry.computeBoundingBox();
+	var center = new THREE.Vector3().addVectors(geometry.boundingBox.max, geometry.boundingBox.min).multiplyScalar(0.5);
+	mesh.position.set(-center.x, 0, -center.z);
+	scene.add( mesh );
+
+	// Find a good camera position based on the size of the geometry
+	var front = geometry.boundingBox.max.clone().sub(center);
+	//camera.position.set(0, geometry.boundingBox.max.y / 2, geometry.boundingBox.max.z * 8);
+	camera.position.set(0, front.y, front.z * 8);
+}
+
+function createScene(container) {
+    
+    // Create a new Three.js scene
+    scene = new THREE.Scene();
+
+    // Add  a camera so we can view the scene
+    camera = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 1, 4000 );
+    camera.position.z = 10;
+	scene.add(camera);
+
+	// Lights
+	createLights();
+
+	// Ground
+	if (addGround)
+		createGround();
+
+	// The model
+	loadModel();
+}
+
+function initControls() {
+	orbitControls = new THREE.OrbitControls(camera, renderer.domElement);	
+}
+
+$(document).ready(
+		function() {
+
+			var container = document.getElementById("container");
+
+			// create the renderer
+			createRenderer(container);
+			
+			// create the scene
+			createScene(container);
+
+			// initialize the controls
+			initControls();
+			
+	        // Run the run loop
+	        run();
+		}
+);
+
+</script>
+
+</head>
+<body>
+
+
+</html>

@@ -1,0 +1,54 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 20.08.2013 13:29:52
+
+newmtl shell
+	Ns 77.000000
+	Ni 1.500000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.720000 0.720000 0.720000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\shell_color.jpg
+	map_Kd maps\shell_color.jpg
+
+newmtl pillows
+	Ns 0.000000
+	Ni 1.500000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\pillows_color.jpg
+	map_Kd maps\pillows_color.jpg
+	map_bump maps\pillows_bump.jpg
+	bump maps\pillows_bump.jpg
+
+newmtl shell_trim
+	Ns 77.000000
+	Ni 1.500000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.525490 0.000000 0.125490
+	Ks 0.720000 0.720000 0.720000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\trim_color.jpg
+	map_Kd maps\trim_color.jpg
+
+newmtl padding
+	Ns 8.000000
+	Ni 1.500000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.588235 0.588235 0.588235
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\padding_color.jpg
+	map_Kd maps\padding_color.jpg
+	map_bump maps\padding_bump.jpg
+	bump maps\padding_bump.jpg
