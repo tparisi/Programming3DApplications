@@ -5,7 +5,7 @@
 
 <link rel="stylesheet" href="../css/main.css" />
 
-<div id="container" style="width:98%; height:98%; position:absolute;background-color:gray;border:1px solid black;">
+<div id="container" style="width:98%; height:98%; position:absolute;">
 </div>
 
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
@@ -16,12 +16,9 @@
 var renderer = null, 
 scene = null, 
 camera = null,
-cubeGroup = null,
-cube = null,
-sphereGroup = null,
-sphere = null,
-cone = null,
-orbitControls = null;
+orbitControls = null,
+headlight = null,
+modelCenter = null;
 
 var duration = 5000; // ms
 var currentTime = Date.now();
@@ -44,13 +41,16 @@ function run() {
 		// Update the camera controller
 		orbitControls.update();
 
+		// Reposition the headlight to point at the model
+		headlight.position.copy(camera.position);
+		
 		// Render the scene
 		renderer.render( scene, camera );
 
 }
 
 var shadows = true;
-var addGround = true;
+var addEnvironment = true;
 var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
 
 function createRenderer(container) {
@@ -71,55 +71,45 @@ function createRenderer(container) {
 
 
 function createLights() {
-	
+
 	// Lighting setup
-	var light1 = new THREE.AmbientLight(0xffffff);
-	scene.add(light1);
+	headlight = new THREE.DirectionalLight;
+	headlight.position.set(0, 0, 1);
+	scene.add(headlight);
 	
-	var light2 = new THREE.PointLight(0xffffff);
-	light2.position.set(0, 30, 30);
-	scene.add(light2);	
-	
-	var light3 = new THREE.PointLight(0x888888);
-	light3.position.set(-100, 200, -100);
-	scene.add(light3);	
-	
-	var light4 = new THREE.PointLight(0xffffff);
-	light4.position.set(100, -100, 100);
-	scene.add(light4);
+	var ambient = new THREE.AmbientLight(0xffffff);
+	scene.add(ambient);
 
 	if (shadows) {
-		var spot1 = new THREE.SpotLight(0); // 0xffffff);
-		spot1.position.set(0, 200, 134);
+		var spot1 = new THREE.SpotLight(0xaaaaaa);
+		spot1.position.set(0, 150, 200);
 		scene.add(spot1);
 	
 	    spot1.shadowCameraNear      = 1;
 	    spot1.shadowCameraFar      = 1024;
 	    spot1.castShadow            = true;
-	    spot1.shadowDarkness        = 0.4;
+	    spot1.shadowDarkness        = 0.3;
 	    spot1.shadowBias = 0.0001;
 	    spot1.shadowMapWidth = SHADOW_MAP_WIDTH;
 	    spot1.shadowMapHeight = SHADOW_MAP_HEIGHT;
 	}	
 }
 
-function createGround() {
-	if (addGround) {
-              var groundMaterial = new THREE.MeshPhongMaterial({
-                      color: 0xFFFFFF,
-                      ambient: 0x888888,
-                      shading: THREE.SmoothShading,
-                  });
-              var ground = new THREE.Mesh( new THREE.PlaneGeometry(1024, 1024), groundMaterial);
-
-              if (shadows) {
-              	ground.receiveShadow = true;
-              }
-              
-              ground.rotation.x = -Math.PI / 2;
-              
-              scene.add(ground);
+function createEnvironment() {
+	// floor
+	var floorMaterial = new THREE.MeshPhongMaterial({
+	        color: 0xffffff,
+	        ambient: 0x555555,
+	        shading: THREE.SmoothShading,
+	    });
+	var floor = new THREE.Mesh( new THREE.PlaneGeometry(1024, 1024), floorMaterial);
+	
+	if (shadows) {
+		floor.receiveShadow = true;
 	}
+	
+	floor.rotation.x = -Math.PI / 2;	
+	scene.add(floor);
 }
 
 function loadModel() {
@@ -134,7 +124,7 @@ function loadModel() {
     // http://www.turbosquid.com/FullPreview/Index.cfm/ID/738230
     // http://www.turbosquid.com/Search/Artists/luxxeon
     // http://luxxeon.deviantart.com/
-    //var url = "../models/egg_chair/eggchair.json";
+    // var url = "../models/egg_chair/eggchair.json";
 
     var loader = new THREE.JSONLoader();
 	loader.load( url, function( geometry, materials ) { 
@@ -153,14 +143,17 @@ function handleModelLoaded(geometry, materials) {
 	
 	// Translate the object to the origin if it's not modeled centered
 	geometry.computeBoundingBox();
-	var center = new THREE.Vector3().addVectors(geometry.boundingBox.max, geometry.boundingBox.min).multiplyScalar(0.5);
-	mesh.position.set(-center.x, 0, -center.z);
+	modelCenter = new THREE.Vector3().addVectors(geometry.boundingBox.max, geometry.boundingBox.min).multiplyScalar(0.5);
+	mesh.position.set(-modelCenter.x, 0, -modelCenter.z);
 	scene.add( mesh );
 
 	// Find a good camera position based on the size of the geometry
-	var front = geometry.boundingBox.max.clone().sub(center);
+	var front = geometry.boundingBox.max.clone().sub(modelCenter);
 	//camera.position.set(0, geometry.boundingBox.max.y / 2, geometry.boundingBox.max.z * 8);
-	camera.position.set(0, front.y, front.z * 8);
+	camera.position.set(0, front.y, front.z * 5);
+
+	if (orbitControls)
+		orbitControls.center.copy(modelCenter);
 }
 
 function createScene(container) {
@@ -177,15 +170,15 @@ function createScene(container) {
 	createLights();
 
 	// Ground
-	if (addGround)
-		createGround();
+	if (addEnvironment)
+		createEnvironment();
 
 	// The model
 	loadModel();
 }
 
 function initControls() {
-	orbitControls = new THREE.OrbitControls(camera, renderer.domElement);	
+	orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
 }
 
 $(document).ready(
