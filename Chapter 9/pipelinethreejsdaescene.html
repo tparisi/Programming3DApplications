@@ -5,19 +5,20 @@
 
 <link rel="stylesheet" href="../css/main.css" />
 
-<div id="container" style="width:98%; height:98%; position:absolute;">
+<div id="container" style="width:98%; height:98%; position:absolute;background-color:skyblue;">
 </div>
 
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
 <script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
-<script src="../libs/three.js.r58/loaders/ColladaLoader.js"></script>
+<script src="../libs/three.js.r59/loaders/ColladaLoader.js"></script>
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
 <script type="text/javascript">
 var renderer = null, 
 scene = null, 
 camera = null,
-orbitControls = null;
+orbitControls = null,
+headlight = null;
 
 function run() {
     requestAnimationFrame(function() { run(); });
@@ -26,6 +27,10 @@ function run() {
 		if (orbitControls)
 			orbitControls.update();
 
+		// Reposition the headlight to point at the model
+		if (headlight)
+			headlight.position.copy(camera.position);
+		
 		// Render the scene
 		if (scene && camera)
 			renderer.render( scene, camera );
@@ -57,7 +62,7 @@ function loadScene() {
     // http://www.turbosquid.com/Search/Artists/luxxeon
     // http://luxxeon.deviantart.com/
     
-    var url = "../models/MechRoom/MechRoom.dae";
+    var url = "../models/ruins/Ruins_dae.dae";
 
     // Egg chair by Luxxeon
     // http://www.turbosquid.com/FullPreview/Index.cfm/ID/738230
@@ -72,24 +77,95 @@ function loadScene() {
     
 }
 
-function createCamera()
+function createDefaultLights() {
+
+	// Lighting setup
+	headlight = new THREE.DirectionalLight;
+	headlight.position.set(0, 0, 1);
+	scene.add(headlight);
+
+	var ambient = new THREE.AmbientLight(0x222222);
+	scene.add(ambient);
+}
+
+function createDefaultCamera()
 {
     // Add  a camera so we can view the scene
-    camera = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 1, 4000 );
-    camera.position.z = 10;
+    camera = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 0.001, 10000 );
+    camera.position.z = 5;
 	scene.add(camera);
+}
+
+function traverseScene(n, result)
+{
+	// Look for cameras
+	if (n instanceof THREE.Camera)
+	{
+		if (!result.cameras)
+			result.cameras = [];
+		
+		result.cameras.push(n);
+	}
+
+	// Look for lights
+	if (n instanceof THREE.Light)
+	{
+		if (!result.lights)
+			result.lights = [];
+		
+		result.lights.push(n);
+	}
 	
 }
 
 function handleSceneLoaded(data) {
-	scene = new THREE.Scene;
 	scene.add(data.scene);
-//	camera = data.cameras.default_camera;
-	if (camera == null)
-		createCamera();
 
+	var result = {};
+	data.scene.traverse(function (n) { traverseScene(n, result); });
+
+	if (result.cameras && result.cameras.length)
+		camera = result.cameras[0];
+	else
+		createDefaultCamera();
+
+	if (result.lights && result.lights.length) {
+	}
+	else
+		createDefaultLights();
+	
 	initControls();
 }
+
+function createEnvironment() {
+	// ground
+	var groundMaterial = new THREE.MeshPhongMaterial({
+	        color: 0xffffff,
+	        ambient: 0x555555,
+	        shading: THREE.SmoothShading,
+	    });
+	var ground = new THREE.Mesh( new THREE.PlaneGeometry(1024, 1024, 32, 32), groundMaterial);
+	
+	ground.rotation.x = -Math.PI / 2;	
+	scene.add(ground);
+}
+
+var addEnvironment = true;
+
+function createScene(container) {
+    
+    // Create a new Three.js scene
+    scene = new THREE.Scene();
+
+	// Ground
+	if (addEnvironment)
+		createEnvironment();
+
+	// Load the scene
+	loadScene();
+}
+
+
 
 function initControls() {
 	orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -103,8 +179,8 @@ $(document).ready(
 			// create the renderer
 			createRenderer(container);
 			
-			// load the scene
-			loadScene();
+			// create the scene and load the DAE
+			createScene();
 
 	        // Run the run loop
 	        run();
