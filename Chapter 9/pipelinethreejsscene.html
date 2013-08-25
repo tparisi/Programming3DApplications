@@ -26,8 +26,8 @@ function run() {
 			orbitControls.update();
 
 		// Render the scene
-		renderer.render( scene, camera );
-
+		if (scene && camera)
+			renderer.render( scene, camera );
 }
 
 var shadows = true;
@@ -56,7 +56,7 @@ function loadScene() {
     // http://www.turbosquid.com/Search/Artists/luxxeon
     // http://luxxeon.deviantart.com/
     
-    var url = "../models/testthreejsscene/testthreejsscene.js";
+    var url = "../models/Italiandesignhotel1.1.js";
 
     // Egg chair by Luxxeon
     // http://www.turbosquid.com/FullPreview/Index.cfm/ID/738230
@@ -70,9 +70,21 @@ function loadScene() {
     
 }
 
+function createCamera()
+{
+    // Add  a camera so we can view the scene
+    camera = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 1, 4000 );
+    camera.position.z = 10;
+	scene.add(camera);
+	
+}
+
 function handleSceneLoaded(data) {
 	scene = data.scene;
 	camera = data.cameras.default_camera;
+	if (camera == null)
+		createCamera();
+
 	initControls();
 }
 
