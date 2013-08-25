@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Model and Scene Previewer</title>
+
+<link rel="stylesheet" href="../css/main.css" />
+
+<div id="container" style="width:98%; height:98%; position:absolute;">
+</div>
+
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/vizi/vizi.js"></script>
+<script type="text/javascript">
+
+$(document).ready(
+		function() {
+
+			// Create the Vizi application object
+			var container = document.getElementById("container");		
+			var app = new Vizi.Application({ container : container });
+
+			// Create a camera controller - model viewing mode
+			var controller = Vizi.Prefabs.ModelController({active:true, headlight:false});
+			app.addObject(controller);
+
+			// Load the model
+			var root = new Vizi.Object;
+			var loader = new Vizi.Loader;
+			loader.addEventListener("loaded", function(scene) { handleSceneLoaded(scene, root)});
+			loader.loadScene("../models/duck.dae");
+
+			app.addObject(root);
+			
+			// Run it
+			app.run();
+		}
+);
+
+function handleSceneLoaded(scene, root) {
+
+	 root.addComponent(scene.scene); 
+}
+
+</script>
+
+</head>
+<body>
+
+
+</html>
