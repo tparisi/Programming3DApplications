@@ -98,9 +98,10 @@ function createDefaultCamera()
 
 function traverseScene(n, result)
 {
+	var boundingBox = result.boundingBox;
+	
 	// Look for cameras
-	if (n instanceof THREE.Camera)
-	{
+	if (n instanceof THREE.Camera) {
 		if (!result.cameras)
 			result.cameras = [];
 		
@@ -108,14 +109,79 @@ function traverseScene(n, result)
 	}
 
 	// Look for lights
-	if (n instanceof THREE.Light)
-	{
+	if (n instanceof THREE.Light) {
 		if (!result.lights)
 			result.lights = [];
 		
 		result.lights.push(n);
 	}
-	
+
+}
+
+computeBoundingBox = function(obj) {
+	if (obj instanceof THREE.Mesh) {
+		var geometry = obj.geometry;
+		if (geometry) {
+			if (!geometry.boundingBox) {
+				geometry.computeBoundingBox();
+			}
+			
+			var geometryBBox = geometry.boundingBox;
+			obj.updateMatrix();
+			geometryBBox.applyMatrix4(obj.matrix);
+			return geometryBBox;
+		}
+		else {
+			return new THREE.Box3(new THREE.Vector3, new THREE.Vector3);
+		}
+	}
+	else {
+		var i, len = obj.children.length;
+		var boundingBox = new THREE.Box3(new THREE.Vector3, new THREE.Vector3);
+		
+		for (i = 0; i < len; i++) {
+			var bbox = computeBoundingBox(obj.children[i]);
+			if ( bbox.min.x < boundingBox.min.x ) {
+
+				boundingBox.min.x = bbox.min.x;
+
+			}
+			
+			if ( bbox.max.x > boundingBox.max.x ) {
+
+				boundingBox.max.x = bbox.max.x;
+
+			}
+
+			if ( bbox.min.y < boundingBox.min.y ) {
+
+				boundingBox.min.y = bbox.min.y;
+
+			}
+			
+			if ( bbox.max.y > boundingBox.max.y ) {
+
+				boundingBox.max.y = bbox.max.y;
+
+			}
+
+			if ( bbox.min.z < boundingBox.min.z ) {
+
+				boundingBox.min.z = bbox.min.z;
+
+			}
+			
+			if ( bbox.max.z > boundingBox.max.z ) {
+
+				boundingBox.max.z = bbox.max.z;
+
+			}
+		}
+
+		obj.updateMatrix();
+		boundingBox.applyMatrix4(obj.matrix);
+		return boundingBox;
+	}
 }
 
 function handleSceneLoaded(data) {
@@ -126,9 +192,14 @@ function handleSceneLoaded(data) {
 
 	if (result.cameras && result.cameras.length)
 		camera = result.cameras[0];
-	else
+	else {
+		// Find a good camera position based on the size of the scene
 		createDefaultCamera();
-
+		var boundingBox = computeBoundingBox(data.scene);
+		var front = boundingBox.max;
+		camera.position.set(front.x, front.y, front.z);		
+	}
+	
 	if (result.lights && result.lights.length) {
 	}
 	else
