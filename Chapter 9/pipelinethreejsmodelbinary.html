@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Programming 3D Applications in HTML5 and WebGL &mdash; Loading Models with Three.js JSON Format</title>
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Loading Models with Three.js Binary Format</title>
 
 <link rel="stylesheet" href="../css/main.css" />
 
@@ -11,6 +11,7 @@
 <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
 <script src="../libs/three.js.r58/three.js"></script>
 <script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/three.js.r59/loaders/BinaryLoader.js"></script>
 <script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
 <script type="text/javascript">
 var renderer = null, 
@@ -102,7 +103,7 @@ function loadModel() {
     // http://www.turbosquid.com/Search/Artists/luxxeon
     // http://luxxeon.deviantart.com/
     
-    var url = "../models/ball_chair/ball_chair.json";
+    var url = "../models/ball_chair/ball_chair_bin.json";
 
     // Egg chair by Luxxeon
     // http://www.turbosquid.com/FullPreview/Index.cfm/ID/738230
@@ -110,7 +111,7 @@ function loadModel() {
     // http://luxxeon.deviantart.com/
     // var url = "../models/egg_chair/eggchair.json";
 
-    var loader = new THREE.JSONLoader();
+    var loader = new THREE.BinaryLoader();
 	loader.load( url, function( geometry, materials ) { 
 		handleModelLoaded(geometry, materials) } );
     
