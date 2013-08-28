@@ -56,19 +56,6 @@ function createRenderer(container) {
 	container.appendChild(renderer.domElement);
 }
 
-function loadScene() {
-	// Ruins by ERLHN
-    // http://www.turbosquid.com/FullPreview/Index.cfm/ID/668298
-	// http://www.turbosquid.com/Search/Artists/ERLHN    
-    var url = "../models/ruins/Ruins_dae.dae";
-
-    var loader = new THREE.ColladaLoader();
-
-	loader.load( url, function( data ) { 
-		handleSceneLoaded(data) } );
-    
-}
-
 function createDefaultLights() {
 
 	// Lighting setup
@@ -86,26 +73,6 @@ function createDefaultCamera()
     camera = new THREE.PerspectiveCamera( 45, container.offsetWidth / container.offsetHeight, 0.001, 10000 );
     camera.position.z = 5;
 	scene.add(camera);
-}
-
-function traverseScene(n, result)
-{
-	// Look for cameras
-	if (n instanceof THREE.Camera) {
-		if (!result.cameras)
-			result.cameras = [];
-		
-		result.cameras.push(n);
-	}
-
-	// Look for lights
-	if (n instanceof THREE.Light) {
-		if (!result.lights)
-			result.lights = [];
-		
-		result.lights.push(n);
-	}
-
 }
 
 // Compute the bounding box of an object or hierarchy of objects
@@ -174,6 +141,18 @@ computeBoundingBox = function(obj) {
 		return boundingBox;
 	}
 }
+function loadScene() {
+	// Ruins by ERLHN
+    // http://www.turbosquid.com/FullPreview/Index.cfm/ID/668298
+	// http://www.turbosquid.com/Search/Artists/ERLHN    
+    var url = "../models/ruins/Ruins_dae.dae";
+
+    var loader = new THREE.ColladaLoader();
+
+	loader.load( url, function( data ) { 
+		handleSceneLoaded(data) } );
+    
+}
 
 function handleSceneLoaded(data) {
 	// Add the objects to the scene
@@ -200,6 +179,26 @@ function handleSceneLoaded(data) {
 
 	// Create the controller
 	initControls();
+}
+
+function traverseScene(n, result)
+{
+	// Look for cameras
+	if (n instanceof THREE.Camera) {
+		if (!result.cameras)
+			result.cameras = [];
+		
+		result.cameras.push(n);
+	}
+
+	// Look for lights
+	if (n instanceof THREE.Light) {
+		if (!result.lights)
+			result.lights = [];
+		
+		result.lights.push(n);
+	}
+
 }
 
 function createEnvironment() {
