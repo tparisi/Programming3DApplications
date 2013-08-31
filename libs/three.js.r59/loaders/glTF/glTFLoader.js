@@ -1274,14 +1274,21 @@ THREE.glTFLoader.prototype.load = function( url, callback ) {
     return rootObj;
 }
 
-THREE.glTFLoader.prototype.checkComplete = function()
-{
+THREE.glTFLoader.prototype.callLoadedCallback = function() {
+	var result = {
+			scene : this.rootObj,
+			cameras : this.loader.cameras,
+			animations : this.loader.animations,
+	};
+	
+	this.callback(result);
+}
+
+THREE.glTFLoader.prototype.checkComplete = function() {
 	if (this.meshesLoaded == this.meshesRequested 
 			&& this.animationsLoaded == this.animationsRequested)
 	{
-		this.cameras = this.loader.cameras;
-		this.animations = this.loader.animations;
-		this.callback(this.rootObj);
+		this.callLoadedCallback();
 	}
 }
 

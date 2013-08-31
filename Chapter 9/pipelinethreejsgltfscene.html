@@ -139,7 +139,8 @@
 			var cameras = [];
 			var cameraNames = [];
 			var defaultCamera = null;
-
+			var gltf = null;
+			
 			function onload() {
 
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -227,8 +228,12 @@
                 var loadStartTime = Date.now();
                 var status = document.getElementById("status");
                 status.innerHTML = "Loading...";
-                loader.load( sceneInfo.url, function(object) {
+                loader.load( sceneInfo.url, function(data) {
 
+                	gltf = data;
+
+                	var object = gltf.scene;
+                	                	
                     var loadEndTime = Date.now();
 
                     var loadTime = (loadEndTime - loadStartTime) / 1000;
@@ -250,20 +255,20 @@
                     cameraIndex = 0;
                     cameras = [];
                     cameraNames = [];
-                    if (loader.cameras && loader.cameras.length)
+                    if (gltf.cameras && gltf.cameras.length)
                     {
-                        var i, len = loader.cameras.length;
+                        var i, len = gltf.cameras.length;
                         for (i = 0; i < len; i++)
                         {
                             var addCamera = true;
-                            var cameraName = loader.cameras[i].parent.name;
+                            var cameraName = gltf.cameras[i].parent.name;
                             if (sceneInfo.cameras && !(cameraName in sceneInfo.cameras)) {
                                     addCamera = false;
                             }
 
                             if (addCamera) {
                             	cameraNames.push(cameraName);
-                            	cameras.push(loader.cameras[i]);
+                            	cameras.push(gltf.cameras[i]);
                             }
                         }
 
@@ -429,9 +434,9 @@
 			}
 
 			function toggleAnimations() {
-				var i, len = loader.animations.length;
+				var i, len = gltf.animations.length;
 				for (i = 0; i < len; i++) {
-					var animation = loader.animations[i];
+					var animation = gltf.animations[i];
 					if (animation.running) {
 						animation.stop();
 					}
@@ -460,12 +465,12 @@
 				cameraNames = [];
 				defaultCamera = null;
 				
-				if (!loader || !loader.animations)
+				if (!loader || !gltf.animations)
 					return;
 				
-				var i, len = loader.animations.length;
+				var i, len = gltf.animations.length;
 				for (i = 0; i < len; i++) {
-					var animation = loader.animations[i];
+					var animation = gltf.animations[i];
 					if (animation.running) {
 						animation.stop();
 					}
