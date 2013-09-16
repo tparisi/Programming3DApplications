@@ -50518,7 +50518,7 @@ Vizi.Viewer = function(param)
 	this.showBoundingBox = (param.showBoundingBox !== undefined) ? param.showBoundingBox : false;
 	this.allowPan = (param.allowPan !== undefined) ? param.allowPan : true;
 	this.allowZoom = (param.allowZoom !== undefined) ? param.allowZoom : true;
-	this.oneButton = (param.oneButton !== undefined) ? param.oneButton : true;
+	this.oneButton = (param.oneButton !== undefined) ? param.oneButton : false;
 	this.gridSize = param.gridSize || Vizi.Viewer.DEFAULT_GRID_SIZE;
 	this.gridStepSize = param.gridStepSize || Vizi.Viewer.DEFAULT_GRID_STEP_SIZE;	
 
