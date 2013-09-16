@@ -101,14 +101,6 @@ Futurgo.prototype.useCamera = function(name) {
 	this.viewer.useCamera(name);
 }
 
-/*
-Animation names
-window_rear_open.matrix_window_rear_open
-window_rear_close.matrix_window_rear_close
-window_front_open.matrix_window_front_open
-window_front_close.matrix_window_front_close
-*/
-
 Futurgo.prototype.playAnimation = function(name, loop, reverse) {
 	var animationNames = this.viewer.keyFrameAnimatorNames;
 	var index = animationNames.indexOf(name);
