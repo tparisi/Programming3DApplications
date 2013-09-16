@@ -1,5 +1,5 @@
 /**
- * @fileoverview General-purpose key frame animation
+ * @fileoverview Futurgo Example - 3D Product Page
  * @author Tony Parisi
  */
 
@@ -41,6 +41,7 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 
 	this.useCamera("setup");
 
+	// Add entry fade behavior to the windows
 	var that = this;
 	scene.map(/windows_front|windows_rear/, function(o) {
 		var fader = new Vizi.FadeBehavior({duration:2, opacity:.8});
@@ -55,6 +56,11 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 		o.addComponent(picker);
 	});
 
+	// Auto-rotate the scene
+	var main = scene.findNode("vizi_mobile");
+	var carousel = new Vizi.RotateBehavior({autoStart:true, duration:20});
+	main.addComponent(carousel);	
+	
 	var frame_parts_exp =
 		/rear_view_arm_L|rear_view_arm_R|rear_view_frame_L|rear_view_frame_R/;
 
@@ -78,10 +84,6 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 		picker.addEventListener("mouseout", function(event) { that.onMouseOut("wheels", event); });
 		o.addComponent(picker);
 	});
-	
-	var main = scene.findNode("vizi_mobile");
-	var carousel = new Vizi.RotateBehavior({autoStart:true, duration:20});
-	main.addComponent(carousel);
 	
 	if (this.loadCallback) {
 		var loadTime = (Date.now() - loadStartTime) / 1000;
