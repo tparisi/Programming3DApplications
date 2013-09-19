@@ -38720,7 +38720,7 @@ THREE.ColladaLoader = function () {
 			var instance_camera = node.cameras[i];
 			var cparams = cameras[instance_camera.url];
 
-			var cam = new THREE.PerspectiveCamera(cparams.fov, parseFloat(cparams.aspect_ratio), 
+			var cam = new THREE.PerspectiveCamera(cparams.yfov, parseFloat(cparams.aspect_ratio), 
 					parseFloat(cparams.znear), parseFloat(cparams.zfar));
 
 			obj.add(cam);
@@ -38756,6 +38756,7 @@ THREE.ColladaLoader = function () {
 					case 'spot':
 
 						light = new THREE.SpotLight( color, intensity, distance, angle, exponent );
+						light.position.set(0, 0, 1);
 						break;
 
 					case 'ambient':
@@ -43860,7 +43861,7 @@ THREE.glTFLoader.prototype.load = function( url, callback ) {
                 		{
                 			// N.B.: if no aspect ratio supplied, assume 1?
 	                		if (!aspect_ratio)
-	                			aspect_ratio = 4 / 3; // container.offsetWidth / container.offsetHeight;
+	                			aspect_ratio = container.offsetWidth / container.offsetHeight; // 4 / 3; // 
 	                		
                 			// According to COLLADA spec...
                 			// aspect_ratio = xfov / yfov
@@ -43910,6 +43911,7 @@ THREE.glTFLoader.prototype.load = function( url, callback ) {
             			
             			case "spot " :
             				light = new THREE.SpotLight(color);
+    						light.position.set(0, 0, 1);
             			break;
             			
             			case "ambient" : 
@@ -47358,7 +47360,10 @@ Vizi.SceneComponent.prototype.addToScene = function() {
 			var parent = this._object.transform ? this._object.transform.object : scene;
 			
 			if (parent) {
-			    parent.add(this.object);
+				
+			    if (parent != this.object.parent)
+			    	 parent.add(this.object);
+			    
 			    this.object.data = this; // backpointer for picking and such
 			}
 			else {
@@ -49343,15 +49348,6 @@ Vizi.Prefabs.ModelController = function(param)
 	var controllerScript = new Vizi.ModelControllerScript(param);
 	controller.addComponent(controllerScript);
 
-	var timer = new Vizi.Timer( { duration : 3333 } );
-	controller.addComponent(timer);
-
-	var viewpoint = new Vizi.Object;
-	var camera = new Vizi.PerspectiveCamera({active:param.active, fov: param.fov});
-	viewpoint.addComponent(camera);
-
-	controller.addChild(viewpoint);
-
 	var intensity = param.headlight ? 1 : 0;
 	
 	var headlight = new Vizi.DirectionalLight({ intensity : intensity });
@@ -49369,11 +49365,13 @@ Vizi.ModelControllerScript = function(param)
 
 	this.radius = param.radius || Vizi.ModelControllerScript.default_radius;
 	this.minRadius = param.minRadius || Vizi.ModelControllerScript.default_min_radius;
-	this.enabled = (param.enabled !== undefined) ? param.enabled : true;
 	this.allowPan = (param.allowPan !== undefined) ? param.allowPan : true;
 	this.allowZoom = (param.allowZoom !== undefined) ? param.allowZoom : true;
 	this.oneButton = (param.oneButton !== undefined) ? param.oneButton : true;
+	this._enabled = (param.enabled !== undefined) ? param.enabled : true;
 	this._headlightOn = param.headlight;
+	this.cameras = [];
+	this.controlsList = [];
 	
     Object.defineProperties(this, {
     	camera: {
@@ -49390,6 +49388,14 @@ Vizi.ModelControllerScript = function(param)
     		},
     		set: function(c) {
     			this.controls.center.copy(c);
+    		}
+    	},
+    	enabled : {
+    		get: function() {
+    			return this._enabled;
+    		},
+    		set: function(v) {
+    			this.setEnabled(v);
     		}
     	},
         headlightOn: {
@@ -49410,25 +49416,19 @@ Vizi.ModelControllerScript.prototype.realize = function()
 {
 	this.headlight = this._object.getComponent(Vizi.DirectionalLight);
 	this.headlight.intensity = this._headlightOn ? 1 : 0;
-	this.viewpoint = this._object.getChild(0);
-	this._camera = this.viewpoint.camera;
-	this.defaultCamera = this._camera;
-	
-	this._camera.position.set(0, this.radius / 2, this.radius);
-	
-	this.createControls();
 }
 
-Vizi.ModelControllerScript.prototype.createControls = function()
+Vizi.ModelControllerScript.prototype.createControls = function(camera)
 {
-	this.controls = new Vizi.OrbitControls(this._camera.object, Vizi.Graphics.instance.container);
-	this.controls.enabled = this.enabled;
-	this.controls.userMinY = this.minY;
-	this.controls.userMinZoom = this.minZoom;
-	this.controls.userMaxZoom = this.maxZoom;
-	this.controls.oneButton = this.oneButton;
-	this.controls.userPan = this.allowPan;
-	this.controls.userZoom = this.allowZoom;
+	var controls = new Vizi.OrbitControls(camera.object, Vizi.Graphics.instance.container);
+	controls.userMinY = this.minY;
+	controls.userMinZoom = this.minZoom;
+	controls.userMaxZoom = this.maxZoom;
+	controls.oneButton = this.oneButton;
+	controls.userPan = this.allowPan;
+	controls.userZoom = this.allowZoom;
+	
+	return controls;
 }
 
 Vizi.ModelControllerScript.prototype.update = function()
@@ -49442,7 +49442,8 @@ Vizi.ModelControllerScript.prototype.update = function()
 
 Vizi.ModelControllerScript.prototype.setCamera = function(camera) {
 	this._camera = camera;
-	this.createControls();
+	this._camera.position.set(0, this.radius / 2, this.radius);
+	this.controls = this.createControls(camera);
 }
 
 Vizi.ModelControllerScript.prototype.setHeadlightOn = function(on)
@@ -49451,6 +49452,12 @@ Vizi.ModelControllerScript.prototype.setHeadlightOn = function(on)
 	if (this.headlight) {
 		this.headlight.intensity = on ? 1 : 0;
 	}
+}
+
+Vizi.ModelControllerScript.prototype.setEnabled = function(enabled)
+{
+	this._enabled = enabled;
+	this.controls.enabled = enabled;
 }
 
 Vizi.ModelControllerScript.default_radius = 10;
@@ -49664,7 +49671,7 @@ Vizi.Camera = function(param)
 	
 	this._active = param.active || false;
 	var position = param.position || Vizi.Camera.DEFAULT_POSITION;
-    this.position.copy(position);	
+    //this.position.copy(position);	
 }
 
 goog.inherits(Vizi.Camera, Vizi.SceneComponent);
@@ -49693,7 +49700,7 @@ Vizi.Camera.prototype.lookAt = function(v)
 
 Vizi.Camera.DEFAULT_POSITION = new THREE.Vector3(0, 0, 10);
 Vizi.Camera.DEFAULT_NEAR = 1;
-Vizi.Camera.DEFAULT_FAR = 4000;
+Vizi.Camera.DEFAULT_FAR = 10000;
 goog.provide('Vizi.PerspectiveCamera');
 goog.require('Vizi.Camera');
 
@@ -50516,11 +50523,13 @@ Vizi.Viewer = function(param)
 	this.headlightOn = (param.headlight !== undefined) ? param.headlight : true;
 	this.showGrid = (param.showGrid !== undefined) ? param.showGrid : false;
 	this.showBoundingBox = (param.showBoundingBox !== undefined) ? param.showBoundingBox : false;
+	this.showBoundingBoxes = (param.showBoundingBoxes !== undefined) ? param.showBoundingBoxes : false;
 	this.allowPan = (param.allowPan !== undefined) ? param.allowPan : true;
 	this.allowZoom = (param.allowZoom !== undefined) ? param.allowZoom : true;
 	this.oneButton = (param.oneButton !== undefined) ? param.oneButton : false;
 	this.gridSize = param.gridSize || Vizi.Viewer.DEFAULT_GRID_SIZE;
-	this.gridStepSize = param.gridStepSize || Vizi.Viewer.DEFAULT_GRID_STEP_SIZE;	
+	this.gridStepSize = param.gridStepSize || Vizi.Viewer.DEFAULT_GRID_STEP_SIZE;
+	this.flipY = (param.flipY !== undefined) ? param.flipY : false;
 
 	// Set up backdrop objects for empty scene
 	this.initScene();
@@ -50535,6 +50544,9 @@ Vizi.Viewer.prototype.initScene = function()
 {
 	this.sceneRoot = new Vizi.Object;
 	this.addObject(this.sceneRoot);
+	if (this.flipY) {
+		this.sceneRoot.transform.rotation.x = -Math.PI / 2;
+	}
 
 	this.gridRoot = new Vizi.Object;
 	this.addObject(this.gridRoot);
@@ -50546,6 +50558,14 @@ Vizi.Viewer.prototype.initScene = function()
 	this.controllerScript = this.controller.getComponent(Vizi.ModelControllerScript);
 	this.addObject(this.controller);
 
+	var viewpoint = new Vizi.Object;
+	this.defaultCamera = new Vizi.PerspectiveCamera({active:true});
+	viewpoint.addComponent(this.defaultCamera);
+	viewpoint.name = "[default]";
+	this.addObject(viewpoint);
+
+	this.controllerScript.camera = this.defaultCamera;
+	
 	var ambientLightObject = new Vizi.Object;
 	this.ambientLight = new Vizi.AmbientLight({color:0xFFFFFF, intensity : this.ambientOn ? 1 : 0 });
 	this.addObject(ambientLightObject);
@@ -50590,6 +50610,8 @@ Vizi.Viewer.prototype.replaceScene = function(data)
 		this.sceneRoot.removeChild(this.scenes[i]);
 	}
 	
+	this.sceneRoot.removeComponent(this.sceneRoot.findNode(Vizi.Decoration));
+	
 	this.scenes = [data.scene];
 	this.sceneRoot.addChild(data.scene);
 	
@@ -50620,12 +50642,12 @@ Vizi.Viewer.prototype.replaceScene = function(data)
 	
 	this.cameras = [];
 	this.cameraNames = [];
-	this.cameras.push(this.createDefaultCamera());
-	this.camera = this.controllerScript.viewpoint.camera;
-	this.controllerScript.viewpoint.name = "[default]";
+	this.cameras.push(this.defaultCamera);
+	this.camera = this.defaultCamera;
 	this.cameraNames.push("[default]");
 
-	this.controllerScript.viewpoint.camera.active = true;
+	this.controllerScript.camera = this.defaultCamera;
+	this.controllerScript.camera.active = true;
 	
 	if (data.cameras)
 	{
@@ -50637,7 +50659,7 @@ Vizi.Viewer.prototype.replaceScene = function(data)
 			
 			this.cameras.push(camera);
 			this.cameraNames.push(camera._object.name);
-		}
+		}		
 	}
 	
 	this.lights = [];
@@ -50813,7 +50835,8 @@ Vizi.Viewer.prototype.useCamera = function(id) {
 	}
 
 	if (index >= 0 && this.cameras && this.cameras[index]) {
-		this.copyCameraValues(this.cameras[index], this.camera);
+		this.cameras[index].active = true;
+		this.controllerScript.enabled = (index == 0);
 	}
 }
 
@@ -50930,10 +50953,29 @@ Vizi.Viewer.prototype.setGridOn = function(on)
 	}
 }
 
+Vizi.Viewer.prototype.setBoundingBoxesOn = function(on)
+{
+	this.showBoundingBoxes = !this.showBoundingBoxes;
+	var that = this;
+	this.sceneRoot.map(Vizi.Decoration, function(o) {
+		o.object.visible = that.showBoundingBoxes;
+	});
+}
+
 Vizi.Viewer.prototype.setAmbientLightOn = function(on)
 {
 	this.ambientLight.intensity = on ? 1 : 0;
 	this.ambientLightOn = on;
+}
+
+Vizi.Viewer.prototype.setFlipY = function(flip) {
+	this.flipY = flip;
+	if (this.flipY) {
+		this.sceneRoot.transform.rotation.x = -Math.PI / 2;
+	}
+	else {
+		this.sceneRoot.transform.rotation.x = 0;
+	}
 }
 
 Vizi.Viewer.prototype.createGrid = function()
@@ -50996,14 +51038,43 @@ Vizi.Viewer.prototype.fitToScene = function()
 	this.cameras[0].position.copy(this.controllerScript.camera.position);
 
 	// Bounding box display
-	if (this.showBoundingBox) {
+	if (true) {
 		var geo = new THREE.CubeGeometry(this.boundingBox.max.x - this.boundingBox.min.x,
 				this.boundingBox.max.y - this.boundingBox.min.y,
 				this.boundingBox.max.z - this.boundingBox.min.z);
 		var mat = new THREE.MeshBasicMaterial({color:0x888888, transparent:true, wireframe:true, opacity:.2})
-		var cube = new THREE.Mesh(geo, mat);
-		cube.position.add(center);
-		this.sceneRoot.transform.object.add(cube);
+		var decoration = new Vizi.Decoration({geometry:geo, material:mat});
+		// decoration.position.add(center);
+//		var cube = new THREE.Mesh(geo, mat);
+//		cube.position.add(center);
+		this.sceneRoot.addComponent(decoration);
+		decoration.position.add(center);
+		decoration.object.visible = this.showBoundingBoxes;
+		
+		this.sceneRoot.map(Vizi.Object, function(o) {
+			var visuals = o.visuals;
+				if (visuals) {
+				var i, len = visuals.length;
+				for (i = 0; i < len; i++) {
+					var visual = visuals[i];
+					if (!visual.geometry.boundingBox)
+						visual.geometry.computeBoundingBox();
+
+					var bbox = visual.geometry.boundingBox;
+					
+					var geo = new THREE.CubeGeometry(bbox.max.x - bbox.min.x,
+							bbox.max.y - bbox.min.y,
+							bbox.max.z - bbox.min.z);
+					var mat = new THREE.MeshBasicMaterial({color:0x888888, transparent:true, wireframe:true, opacity:.2})
+					var decoration = new Vizi.Decoration({geometry:geo, material:mat});
+					o.addComponent(decoration);
+
+					var center = bbox.max.clone().add(bbox.min).multiplyScalar(0.5);
+					decoration.position.add(center);
+					decoration.object.visible = this.showBoundingBoxes;
+				}
+			}
+		});
 	}
 
 	// Resize the grid
@@ -51053,6 +51124,7 @@ Vizi.SpotLight = function(param)
 	param = param || {};
 
 	this.scaledDir = new THREE.Vector3;
+	this.positionVec = new THREE.Vector3;
 	this.castShadows = ( param.castShadows !== undefined ) ? param.castShadows : Vizi.SpotLight.DEFAULT_CAST_SHADOWS;
 	
 	Vizi.Light.call(this, param);
@@ -51060,7 +51132,7 @@ Vizi.SpotLight = function(param)
 	if (param.object) {
 		this.object = param.object; 
 		this.direction = param.object.position.clone().normalize().negate();
-		this.targetPos = param.object.target.clone();
+		this.targetPos = param.object.target.position.clone();
 		this.shadowDarkness = param.object.shadowDarkness;
 	}
 	else {
@@ -51119,15 +51191,16 @@ Vizi.SpotLight.prototype.update = function()
 	// Really bizarre semantics
 	if (this.object)
 	{
+		this.positionVec.set(0, 0, 0);
+		var worldmat = this.object.parent.matrixWorld;
+		this.positionVec.applyMatrix4(worldmat);
+		this.position.copy(this.positionVec);
+
 		this.scaledDir.copy(this.direction);
 		this.scaledDir.multiplyScalar(Vizi.Light.DEFAULT_RANGE);
 		this.targetPos.copy(this.position);
 		this.targetPos.add(this.scaledDir);	
-		this.object.target.position.copy(this.targetPos);
-		
-		var worldmat = this.object.parent.matrixWorld;
-		this.position.applyMatrix4(worldmat);
-		this.object.target.position.applyMatrix4(worldmat);
+		// this.object.target.position.copy(this.targetPos);
 		
 		this.updateShadows();
 	}
@@ -51162,6 +51235,28 @@ Vizi.SpotLight.DEFAULT_ANGLE = Math.PI / 2;
 Vizi.SpotLight.DEFAULT_EXPONENT = 10;
 Vizi.SpotLight.DEFAULT_CAST_SHADOWS = false;
 Vizi.SpotLight.DEFAULT_SHADOW_DARKNESS = 0.3;
+/**
+ * @fileoverview Base class for visual elements.
+ * @author Tony Parisi
+ */
+goog.provide('Vizi.Decoration');
+goog.require('Vizi.Visual');
+
+/**
+ * @constructor
+ */
+Vizi.Decoration = function(param)
+{
+	param = param || {};
+	
+	Vizi.Visual.call(this, param);
+
+}
+
+goog.inherits(Vizi.Decoration, Vizi.Visual);
+
+Vizi.Decoration.prototype._componentCategory = "decorations";
+
 /**
  * @fileoverview Module Configuration
  * 
@@ -51204,6 +51299,7 @@ goog.require('Vizi.PointLight');
 goog.require('Vizi.SpotLight');
 goog.require('Vizi.Loader');
 goog.require('Vizi.Prefabs');
+goog.require('Vizi.Decoration');
 goog.require('Vizi.SceneComponent');
 goog.require('Vizi.SceneUtils');
 goog.require('Vizi.SceneVisual');
