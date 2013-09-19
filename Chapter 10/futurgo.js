@@ -39,7 +39,7 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 	var scene = data.scene;
 	this.viewer.replaceScene(data);
 
-	// Add entry fade behavior to the windows
+	// Add entry fade behavior to the windows, and pickers for rollover behavior
 	var that = this;
 	scene.map(/windows_front|windows_rear/, function(o) {
 		var fader = new Vizi.FadeBehavior({duration:2, opacity:.8});
@@ -49,8 +49,10 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 		}, 2000);
 
 		var picker = new Vizi.Picker;
-		picker.addEventListener("mouseover", function(event) { that.onMouseOver("glass", event); });
-		picker.addEventListener("mouseout", function(event) { that.onMouseOut("glass", event); });
+		picker.addEventListener("mouseover", function(event) { 
+			that.onMouseOver("glass", event); });
+		picker.addEventListener("mouseout", function(event) { 
+			that.onMouseOut("glass", event); });
 		o.addComponent(picker);
 	});
 
@@ -59,6 +61,7 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 	var carousel = new Vizi.RotateBehavior({autoStart:true, duration:20});
 	main.addComponent(carousel);	
 	
+	// Collect the part materials so that we can change colors
 	var frame_parts_exp =
 		/rear_view_arm_L|rear_view_arm_R|rear_view_frame_L|rear_view_frame_R/;
 
@@ -68,21 +71,27 @@ Futurgo.prototype.onLoadComplete = function(data, loadStartTime)
 		});
 	});
 
+	// Add pickers for rollover behavior
 	scene.map(/body2|rear_view_arm_L|rear_view_arm_R/, function(o) {
 		var picker = new Vizi.Picker;
-		picker.addEventListener("mouseover", function(event) { that.onMouseOver("body", event); });
-		picker.addEventListener("mouseout", function(event) { that.onMouseOut("body", event); });
+		picker.addEventListener("mouseover", function(event) { 
+			that.onMouseOver("body", event); });
+		picker.addEventListener("mouseout", function(event) { 
+			that.onMouseOut("body", event); });
 		o.addComponent(picker);
 	});
 
 	scene.map("wheels", function(o) {
 
 		var picker = new Vizi.Picker;
-		picker.addEventListener("mouseover", function(event) { that.onMouseOver("wheels", event); });
-		picker.addEventListener("mouseout", function(event) { that.onMouseOut("wheels", event); });
+		picker.addEventListener("mouseover", function(event) { 
+			that.onMouseOver("wheels", event); });
+		picker.addEventListener("mouseout", function(event) { 
+			that.onMouseOut("wheels", event); });
 		o.addComponent(picker);
 	});
 	
+	// Tell the page we're loaded
 	if (this.loadCallback) {
 		var loadTime = (Date.now() - loadStartTime) / 1000;
 		this.loadCallback(loadTime);
