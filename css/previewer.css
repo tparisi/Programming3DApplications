@@ -14,7 +14,33 @@ body {
 	color:Black;
 }
 
+#controllerRBGroup {
+	position:absolute;
+	float:right;
+	right:18px;
+	top:10px;
+}
+
 #fileOpenDialog {
+	font-size:10px;
+	color:Black;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	height:16px;
+}
+
+.ui-dialog .ui-dialog-title {
+	font-size:12px;
+	color:black;
+}
+
+#infoPopup {
+	font-size:10px;
+	color:Black;
+}
+
+#tabs {
 	font-size:10px;
 	color:Black;
 }
@@ -86,21 +112,40 @@ body {
 #render_stats {
 	padding-top: 3px;
 	padding-left: 6px;
+	font-weight:normal;
 }
 
 #scene_stats {
 	padding-left: 6px;
+	font-weight:normal;
 }
 
 #load_time_stats {
-	top:76px;
+	top:18px;
+	left:90px;
 	position:absolute;
 	padding-left: 8px;
+	font-weight:normal;
+}
+
+#scene_graph {
+	height: 130px;
+	top: 90px;
+	position:absolute;
+	width: 98%;
+	margin:2px;
+}
+
+#scene_tree {
+	position:absolute;
+	width: 98%;
+	height:98%;
+	border:1px solid;
 }
 
 #cameras {
 	height: 120px;
-	top: 100px;
+	top: 240px;
 	position:absolute;
 	width: 98%;
 	margin:2px;
@@ -116,7 +161,7 @@ body {
 
 #lights {
 	height: 120px;
-	top: 240px;
+	top: 350px;
 	position:absolute;
 	width: 98%;
 	margin:2px;
@@ -132,7 +177,7 @@ body {
 
 #animations {
 	height: 120px;
-	top: 360px;
+	top: 460px;
 	position:absolute;
 	width: 98%;
 	margin:2px;
@@ -148,9 +193,10 @@ body {
 
 #misc {
 	height: 40px;
-	top: 520px;
+	top: 600px;
 	position:absolute;
 	margin:2px;
+	width:98%;
 }
 
 #misc_controls {
@@ -163,8 +209,20 @@ body {
 	position:absolute;
 }
 
+#flipY {
+	top: 20px;
+	left: 80px;
+	position:absolute;
+}
+
 #grid {
 	top: 40px;
+	position:absolute;
+}
+
+#boundingBoxes {
+	top: 40px;
+	left: 80px;
 	position:absolute;
 }
 

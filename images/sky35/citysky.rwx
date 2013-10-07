@@ -1,0 +1,58 @@
+
+ModelBegin
+ ProtoBegin cube_0_0
+  TextureModes Lit Foreshorten
+  Color 1 1 1
+  Transform 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 1
+  Opacity 1
+#! Textureaddressmode clamp
+
+  Vertex  1 -1  1 UV 0 0 #! Prelight 1 1 1
+  Vertex -1 -1  1 UV 1 0 #! Prelight 1 1 1
+  Vertex -1 -1 -1 UV 1 1 #! Prelight 1 1 1
+  Vertex  1 -1 -1 UV 0 1 #! Prelight 1 1 1
+  Texture backcity
+  Quad 4 3 2 1
+
+  Vertex  1  1  1 UV 1 0 #! Prelight 1 1 1
+  Vertex -1  1  1 UV 0 0 #! Prelight 1 1 1
+  Vertex -1  1 -1 UV 0 1 #! Prelight 1 1 1
+  Vertex  1  1 -1 UV 1 1 #! Prelight 1 1 1
+  Texture frontcity
+  Quad 7 8 5 6
+
+  Vertex -1  1  1 UV 1 0 #! Prelight 1 1 1
+  Vertex -1 -1  1 UV 0 0 #! Prelight 1 1 1
+  Vertex -1 -1 -1 UV 0 1 #! Prelight 1 1 1
+  Vertex -1  1 -1 UV 1 1 #! Prelight 1 1 1
+  Texture rightcity
+  Quad 9 10 11 12
+
+  Vertex  1  1  1 UV 0 0 #! Prelight 1 1 1
+  Vertex  1 -1  1 UV 1 0 #! Prelight 1 1 1
+  Vertex  1 -1 -1 UV 1 1 #! Prelight 1 1 1
+  Vertex  1  1 -1 UV 0 1 #! Prelight 1 1 1
+  Texture leftcity
+  Quad 16 15 14 13
+
+  Vertex  1  1 -1 UV 1 0 #! Prelight 1 1 1
+  Vertex -1  1 -1 UV 0 0 #! Prelight 1 1 1
+  Vertex -1 -1 -1 UV 0 1 #! Prelight 1 1 1
+  Vertex  1 -1 -1 UV 1 1 #! Prelight 1 1 1
+  Texture botcity
+  Quad 19 20 17 18
+rotate 0 0 1 180
+  Vertex  1  1  1 UV 0 0 #! Prelight 1 1 1
+  Vertex -1  1  1 UV 1 0 #! Prelight 1 1 1
+  Vertex -1 -1  1 UV 1 1 #! Prelight 1 1 1
+  Vertex  1 -1  1 UV 0 1 #! Prelight 1 1 1
+  Texture topcity
+  Quad 24 23 22 21
+ ProtoEnd # cube_0_0
+
+ ClumpBegin
+  Rotate 1 0 0 -90
+  Scale .1 .1 .1
+  ProtoInstance cube_0_0
+ ClumpEnd
+ModelEnd

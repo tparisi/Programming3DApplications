@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Vizi - Skybox</title>
+</head>
+<body>
+	<div id="container" style="width:98%; height:98%; position:absolute;background-color:red"></div>
+
+    <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+	<script src="../libs/vizi/vizi.js"></script>
+	<script>
+
+	$(document).ready(function() {
+		var container = document.getElementById("container");
+		
+		var app = new Vizi.Application({ container : container });
+
+
+		// Skybox from http://www.3delyvisions.com/
+		// http://www.3delyvisions.com/skf1.htm
+		var path = "../images/sky35/";
+		
+		var urls = [ path + "rightcity.jpg", path + "leftcity.jpg",
+					 path + "topcity.jpg", path + "botcity.jpg",
+					 path + "frontcity.jpg", path + "backcity.jpg" ];
+
+		var cubeTexture = THREE.ImageUtils.loadTextureCube( urls );
+
+		var cube = new Vizi.Object;
+
+		var visual = new Vizi.Visual(
+				{ geometry: new THREE.CubeGeometry(2, 2, 2),
+					material: new THREE.MeshPhongMaterial({
+						color:0xffffff,
+						envMap:cubeTexture,
+						reflectivity:0.8,
+						refractionRatio:0.1
+						})
+				});
+
+
+		cube.addComponent(visual);
+		app.addObject(cube);
+
+		var cam = new Vizi.PerspectiveCamera;
+		var camera = new Vizi.Object;
+		camera.addComponent(cam);
+		cam.active = true;
+
+		app.addObject(camera);
+		
+		var controller = Vizi.Prefabs.ModelController({active:true, headlight:true, 
+		});
+		var controllerScript = controller.getComponent(Vizi.ModelControllerScript);
+		controllerScript.camera = cam;
+		app.addObject(controller);
+		
+
+		var skybox = Vizi.Prefabs.Skybox(); // {texture:textureCube});
+		var skyboxScript = skybox.getComponent(Vizi.SkyboxScript);
+		skyboxScript.texture = cubeTexture;
+
+		app.addObject(skybox);
+		
+		app.run();
+	}
+	);
+
+	</script>
+	
+</body>
+</html>

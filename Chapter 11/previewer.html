@@ -1,0 +1,632 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Vizi Scene Previewer</title>
+	<link href="../css/previewer.css" rel="stylesheet" /> 
+	<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+	<link href="../libs/dynatree-1.2.4/ui.dynatree.vizi.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<div id="menubar" class="ui-widget-header ui-corner-all">
+		<label id="fileViewingLabel">Scene: </label>
+		<label id="fileViewingName"></label>
+		<button id="fileOpenButton" onclick="doFileOpen(false);">Open</button>
+		<button id="fileAddButton" onclick="doFileOpen(true);">Add</button>
+		<div id="controllerRBGroup">
+			<label id="controllerType">Controller: </label>
+			<input type="radio" name="controllerRBGroup" value="model" checked>Model
+			<input type="radio" name="controllerRBGroup" value="FPS">FPS
+		</div>
+	</div>
+	<div id="container"></div>
+	<div id="loadStatus" style="display:none">
+	Loading scene...
+	</div>
+	<div id="prompt">
+	</div>
+	<div id="controls">
+		<div id="stats">Stats
+		<div id="render_stats">0 FPS</div>
+		<div id="scene_stats">0 meshes<br>0 faces<br>Bounds [ ]<br></div>
+		</div>
+		<div id="load_time_stats">Load time</div>
+		<div id="scene_graph">Scene
+			<div id="scene_tree"></div>
+		</div>
+		<div id="cameras">Cameras
+			<div>
+				<select id="cameras_list" size="5" ondblclick="selectCamera();">
+				</select>
+			</div>
+			<div id="camera_controls">
+				<button id="selectCameraButton" onclick="selectCamera();">Select</button>
+			</div>
+		</div>
+		<div id="lights">Lights
+			<div>
+				<select id="lights_list" size="5" ondblclick="toggleLight();">
+				</select>
+			</div>
+			<div id="light_controls">
+				<button id="selectLightsButton" onclick="toggleLight();">Toggle</button>
+			</div>
+		</div>
+		<div id="animations">Animations
+			<div>
+				<select id="animations_list" size="5" ondblclick="selectAnimation();">
+				</select>
+			</div>
+			<div id="animation_controls">
+				<button id="playButton" onclick="playAnimation();">Play</button>
+				<button id="stopButton" onclick="stopAnimation();">Stop</button>
+				<button id="playAllButton" onclick="playAllAnimations();">Play All</button>
+				<button id="stopAllButton" onclick="stopAllAnimations();">Stop All</button>
+				<input type="checkbox" name="loop_cb" id="loop_cb" unchecked onClick="onLoopChecked(this);"/><label>Loop</label>
+			</div>
+		</div>
+		<div id="misc"> 
+		Miscellaneous
+			<div id="misc_controls">
+			<div id="headlight">
+				<input type="checkbox" name="headlight_cb" id="headlight_cb" checked onClick="onHeadlightChecked(this);"/><label>Headlight</label>
+			</div>
+			<div id="flipY">
+				<input type="checkbox" name="flipY_cb" id="flipY_cb" unchecked onClick="onFlipYChecked(this);"/><label>Flip Y</label>
+			</div>
+			<div id="grid">
+				<input type="checkbox" name="grid_cb" id="grid_cb" checked onClick="onGridChecked(this);"/><label>Grid</label>
+			</div>
+			<div id="boundingBoxes">
+				<input type="checkbox" name="bbox_cb" id="bbox_cb" unchecked onClick="onBoundingBoxesChecked(this);"/><label>Boxes</label>
+			</div>
+			</div>
+	 	</div>
+	</div>
+
+	<!--  file open dialog -->
+	<div id="fileOpenDialog" title="Open a File" style="display:none">
+	<p>Select a file in OBJ, DAE, JS (Three.js) or JSON (glTF)</p>
+		<div id="listing">
+			<label id="listingLabel">Available Scenes</label><br></br>
+			<select id="files" size="8"  ondblclick="openFile();">
+			</select>
+		</div>
+		<button id="loadButton" onclick="openFile();">Open</button><br></br>
+	</div>
+
+	<!--  info popup dialog -->
+	<div id="infoPopup" title="Object Info" style="display:none;font-size:10pt;font-weight:normal;">
+<div id="tabs">
+  <ul id="tabsUL">
+    <li><a id="transformTabTitle" href="#tabs-1">Transform</a></li>
+    <li><a id="detailTab1Title" href="#tabs-2">Detail 1</a></li>
+    <li><a id="detailTab2Title" href="#tabs-3">Detail 2</a></li>
+  </ul>
+  <div id="tabs-1">
+  tabs 1
+  </div>
+  <div id="tabs-2">
+  tabs 2
+  </div>
+  <div id="tabs-3">
+  tabs 3
+  </div>
+</div>
+	</div>
+ 
+	
+    <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+    <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="../libs/dynatree-1.2.4/jquery.dynatree-1.2.4.js"></script>
+	<script src="../libs/vizi/vizi.js"></script>
+	<script src="sceneTree.js"></script>
+	<script>
+
+	var urllist = [
+	    		"../models/vc/vc.dae",
+	       		"../models/vc/vc.json",
+	    		"../models/futurgo/futurgo.dae",
+	       		"../models/futurgo/futurgo.json",
+	       		"../models/futurgo_mobile/futurgo_mobile.dae",
+	       		"../models/futurgo_mobile/futurgo_mobile.json",
+	       		"../models/futurgo_city/futurgo_city.dae",
+	       		"../models/futurgo_city/futurgo_city.json",	       		
+	       		"../models/missile/missile.dae",
+	       		"../models/missile/missile-fixed.dae",
+	       		"../models/missile/missile.json",
+	       		"../models/missile/missile-fixed.json",
+	    		"../models/vizi_mobile_tc01_newer/vizi_mobile_tc01.dae",
+	    		"../models/vizi_mobile_tc01_newer/vizi_mobile_tc01.json",
+	    		"../models/frigate/frigate.dae",
+	    		"../models/frigate/frigate.json",
+	    		"../models/duck/duck.dae",
+	    		"../models/duck/duck.json",
+	    		"../models/rectangle/rectangle.dae",
+	    		"../models/rectangle/rectangle.json",
+	    		"../models/ball_chair/ball_chair.js",
+	    		"../models/egg_chair/eggchair.js",
+	           	];
+
+   	var viewer = null;
+	$(document).ready(function() {
+		
+		var container = document.getElementById("container");
+		var renderStats = document.getElementById("render_stats");
+		var sceneStats = document.getElementById("scene_stats");
+		
+		viewer = new Vizi.Viewer({ container : container, showGrid : true, headlight : true,
+			showBoundingBox : true, flipY : false, oneButton: true });
+		viewer.addEventListener("renderstats", function(stats) { onRenderStats(stats, renderStats); });
+		viewer.addEventListener("scenestats", function(stats) { onSceneStats(stats, sceneStats); });
+
+		buildFileList();
+		buildPropertySheet();
+		initSceneTree(viewer);
+		initControllerMode(viewer);
+		
+		viewer.run();
+	}
+	);
+
+	function buildFileList() {
+		var elt = document.getElementById("files");
+		var i, len = urllist.length;
+
+		for (i = 0; i < len; i++)
+		{
+			option = document.createElement("option");
+			option.text=urllist[i];
+			elt.add(option);
+		}
+	}
+	
+	function doFileOpen(add) {
+		$('#fileOpenDialog').data("add", add);
+		$('#fileOpenDialog').dialog({modal:true, height:300});
+	}
+
+	function openFile()
+	{
+	    var select = document.getElementById("files");
+	    var index = select.selectedIndex;
+		if (index >= 0)
+		{
+			var url = select.options[index].text;
+
+			var loader = new Vizi.Loader;
+
+			var add = $('#fileOpenDialog').data("add");
+			var loadCallback = add ? 
+					function(data) { onAddComplete(data, loadStartTime); } :
+					function(data) { onLoadComplete(data, loadStartTime); };
+					
+			loader.addEventListener("loaded", loadCallback); 
+			loader.addEventListener("progress", function(progress) { onLoadProgress(progress); }); 
+
+			var fileViewingName = document.getElementById("fileViewingName");
+			fileViewingName.innerHTML=url;
+			
+			var loadStartTime = Date.now();
+			loader.loadScene(url);
+			
+			var loadStatus = document.getElementById("loadStatus");
+			loadStatus.style.display = 'block';		
+		}
+
+		$('#fileOpenDialog').dialog("close");
+	}
+	
+	function onLoadComplete(data, loadStartTime)
+	{
+		// Hide the loader bar
+		var loadStatus = document.getElementById("loadStatus");
+		loadStatus.style.display = 'none';		
+
+		viewer.replaceScene(data);
+
+		var loadTime = (Date.now() - loadStartTime) / 1000;
+		var loadTimeStats = document.getElementById("load_time_stats");
+		loadTimeStats.innerHTML = "Load time<br>" + loadTime.toFixed(2) + "s"
+		// Vizi.System.log("Loaded " + loadTime.toFixed(2) + " seconds.");
+
+		updateSceneTree(viewer);
+		updateCamerasList(viewer);
+		updateLightsList(viewer);
+		updateAnimationsList(viewer);
+		updateMiscControls(viewer);
+
+		if (viewer.cameraNames.length > 1) {
+			selectCamera(1);
+		}
+
+		addRollovers(viewer, data.scene);	
+	}
+
+	function onAddComplete(data, loadStartTime)
+	{
+		// Hide the loader bar
+		var loadStatus = document.getElementById("loadStatus");
+		loadStatus.style.display = 'none';		
+
+		viewer.addToScene(data);
+
+		var loadTime = (Date.now() - loadStartTime) / 1000;
+		var loadTimeStats = document.getElementById("load_time_stats");
+		loadTimeStats.innerHTML = "Load time<br>" + loadTime.toFixed(2) + "s"
+		// Vizi.System.log("Loaded " + loadTime.toFixed(2) + " seconds.");
+
+		updateSceneTree(viewer);
+		updateCamerasList(viewer);
+		updateLightsList(viewer);
+		updateAnimationsList(viewer);
+		updateMiscControls(viewer);
+
+		addRollovers(viewer, data.scene);	
+	}
+	
+	function onLoadProgress(progress)
+	{
+		// Update the laoder bar
+		var percentProgress = progress.loaded / progress.total * 100;
+		var loadStatus = document.getElementById("loadStatus");
+		loadStatus.innerHTML = "Loading scene... " + percentProgress.toFixed(0) + " %";
+	}
+
+	function buildPropertySheet() {
+		$( "#tabs" ).tabs();
+	}
+	
+	function initSceneTree(viewer) {
+		// Initialize the tree inside the <div>element.
+		// The tree structure is read from the contained <ul> tag.
+		$("#scene_tree").dynatree({
+			imagePath: "./images/previewer_skin/",
+			title: "Scene Graph",
+			minExpandLevel: 2,
+			selectMode: 1,
+			onDblClick: function(node) {
+				openSceneNode(viewer, node);
+			},
+			onActivate: function(node) {
+//				$("#echoActive").text(node.data.title);
+				selectSceneNode(viewer, node);
+				if (infoPopupVisible) {
+					openSceneNode(viewer, node);
+				}
+//				alert(node.getKeyPath());
+				if( node.data.url )
+					window.open(node.data.url, node.data.target);
+			},
+			onDeactivate: function(node) {
+//				$("#echoSelected").text("-");
+			},
+			onFocus: function(node) {
+//				$("#echoFocused").text(node.data.title);
+			},
+			onBlur: function(node) {
+//				$("#echoFocused").text("-");
+			},
+		});
+	}
+
+	function initControllerMode(viewer) {
+		$("input[name=controllerRBGroup]").click(
+				function() {
+					var type = $("input[name=controllerRBGroup]:checked").attr('value');
+					viewer.setController(type);
+				}
+			);
+	}
+	
+	function onRenderStats(stats, renderStats) {
+		renderStats.innerHTML = stats.fps + " FPS";
+	}
+
+	function onSceneStats(stats, sceneStats) {
+		var meshesLabel = (stats.meshCount > 1 ? " meshes" : " mesh") + "<br>";
+		var facesLabel = (stats.faceCount > 1 ? " faces" : "face") + "<br>";
+		var boundingBoxLabel = "Bounds ";
+		var boundingBoxSize = "unknown<br>";
+		if (stats.boundingBox) {
+			var size = stats.boundingBox.size();
+			boundingBoxSize = 
+				"[" + size.x.toFixed(2) + ", " + 
+			size.y.toFixed(2) + ", " + 
+			size.z.toFixed(2) +
+			"]<br>";
+		}
+		sceneStats.innerHTML = stats.meshCount + meshesLabel + stats.faceCount + facesLabel +
+			boundingBoxLabel + boundingBoxSize;
+	}
+
+	function updateSceneTree(viewer) {
+
+		// Sample: add an hierarchic branch using code.
+		// This is how we would add tree nodes programatically
+		var rootNode = $("#scene_tree").dynatree("getRoot");
+		rootNode.removeChildren();
+		var initMessage = rootNode.addChild({
+			title: "Initializing...",
+			isFolder: false,
+		});
+		
+		setTimeout(function() {
+			rootNode.removeChild(initMessage);
+			rootNode.expand(false);
+			var i, len = viewer.scenes.length;
+			for (i = 0; i < len; i++) {
+				buildSceneTree(viewer.scenes[i], rootNode);
+			}
+		}, 1000);
+	}
+	
+	function updateCamerasList(viewer)
+	{
+		var elt = document.getElementById('cameras_list');
+		while( elt.hasChildNodes() ){
+		    elt.removeChild(elt.lastChild);
+		}
+
+		var cameraNames = viewer.cameraNames;
+		var i, len = cameraNames.length;
+		for (i = 0; i < len; i++)
+		{
+			option = document.createElement("option");
+			option.text=cameraNames[i];
+			elt.add(option);
+		}		
+	}
+
+	function updateLightsList(viewer)
+	{
+		var elt = document.getElementById('lights_list');
+		while( elt.hasChildNodes() ){
+		    elt.removeChild(elt.lastChild);
+		}
+
+		var lightNames = viewer.lightNames;
+		var lights = viewer.lights;
+		var i, len = lightNames.length;
+		for (i = 0; i < len; i++)
+		{
+			option = document.createElement("option");
+			var lightType = "unknown";
+			if (lights[i] instanceof Vizi.AmbientLight)
+				lightType = "Ambient";
+			else if (lights[i] instanceof Vizi.DirectionalLight)
+				lightType = "Directional";
+			else if (lights[i] instanceof Vizi.PointLight)
+				lightType = "Point";
+			else if (lights[i] instanceof Vizi.SpotLight)
+				lightType = "Spot";
+				
+			var value = (lights[i] instanceof Vizi.AmbientLight) ? lights[i].color.getHex() : 
+				lights[i].intensity;
+			value = value ? "on" : "off";
+			
+			option.text=lightNames[i] + " [" + lightType + ", " + value + "]";
+			elt.add(option);
+		}		
+	}
+		
+	function updateAnimationsList(viewer)
+	{
+		var elt = document.getElementById('animations_list');
+		while( elt.hasChildNodes() ){
+		    elt.removeChild(elt.lastChild);
+		}
+
+		var animationNames = viewer.keyFrameAnimatorNames;
+		var i, len = animationNames.length;
+		for (i = 0; i < len; i++)
+		{
+			option = document.createElement("option");
+			option.text=animationNames[i];
+			elt.add(option);
+		}		
+	}
+
+	function updateMiscControls(viewer)
+	{
+		var elt = document.getElementById('headlight_cb');
+		elt.checked = viewer.headlightOn;
+	}
+
+	function selectCamera(index)
+	{
+	    var select = document.getElementById("cameras_list");
+	    if (index === undefined) {
+		    index = select.selectedIndex;
+	    }
+	    else {
+		    select.selectedIndex = index;
+	    }
+	    
+		if (index >= 0) {
+			viewer.useCamera(index);
+		}
+	}
+
+	function toggleLight()
+	{
+	    var select = document.getElementById("lights_list");
+	    var index = select.selectedIndex;
+		if (index >= 0)
+		{
+			viewer.toggleLight(index);
+			updateLightsList(viewer);
+			select.selectedIndex = index;
+		}
+	}
+		
+	function selectAnimation()
+	{
+	    var select = document.getElementById("animations_list");
+	    var index = select.selectedIndex;
+		if (index >= 0)
+		{
+			viewer.playAnimation(index, viewer.loopAnimations);
+		}
+	}
+		
+	function playAnimation()
+	{
+	    var select = document.getElementById("animations_list");
+	    var index = select.selectedIndex;
+		if (index >= 0)
+		{
+			viewer.playAnimation(index, viewer.loopAnimations);
+		}
+	}
+
+	function stopAnimation()
+	{
+	    var select = document.getElementById("animations_list");
+	    var index = select.selectedIndex;
+		if (index >= 0)
+		{
+			viewer.stopAnimation(index);
+		}
+	}
+	
+	function playAllAnimations()
+	{
+		viewer.playAllAnimations(viewer.loopAnimations);
+	}
+
+	function stopAllAnimations()
+	{
+		viewer.stopAllAnimations();
+	}
+
+	function onLoopChecked(elt)
+	{
+		viewer.setLoopAnimations(elt.checked);
+	}
+	
+	function onHeadlightChecked(elt)
+	{
+		viewer.setHeadlightOn(elt.checked);
+	}
+
+	function onFlipYChecked(elt)
+	{
+		viewer.setFlipY(elt.checked);
+	}
+		
+	function onGridChecked(elt)
+	{
+		viewer.setGridOn(elt.checked);
+	}
+	
+	function onBoundingBoxesChecked(elt)
+	{
+		viewer.setBoundingBoxesOn(elt.checked);
+	}
+
+	var infoPopupVisible = false;
+	
+	function onPickerMouseOver(viewer, o, event) {
+//		console.log("Mouse over: ", o.name);
+	}
+
+	function onPickerMouseOut(viewer, o, event) {
+//		console.log("Mouse out: ", o.name);
+	}
+
+	function onPickerMouseUp(viewer, o, event) {
+//		console.log("Mouse up: ", o.name);
+		if (event.button == 0) {
+			viewer.highlightObject(o);
+			node = selectSceneNodeFromId(viewer, o._id);
+			if (node && infoPopupVisible) {
+				openSceneNode(viewer, node);
+			}
+		}
+	}
+
+	function onPickerMouseDoubleClick(viewer, o, event) {
+		if (event.button == 0) {
+			viewer.highlightObject(o);
+			node = selectSceneNodeFromId(viewer, o._id);
+			openSceneNode(viewer, node);
+		}
+	}
+		
+	function addRollover(viewer, o) {
+		var picker = new Vizi.Picker;
+		picker.addEventListener("mouseover", function(event) { onPickerMouseOver(viewer, o, event); });
+		picker.addEventListener("mouseout", function(event) { onPickerMouseOut(viewer, o, event); });
+		picker.addEventListener("mouseup", function(event) { onPickerMouseUp(viewer, o, event); });
+		picker.addEventListener("dblclick", function(event) { onPickerMouseDoubleClick(viewer, o, event); });
+		o.addComponent(picker);
+	}
+	
+	function addRollovers(viewer, scene) {
+		scene.map(Vizi.Object, function(o) {
+			addRollover(viewer, o);
+		});
+	}
+
+	function openSceneNode(viewer, node) {
+		setTimeout(function() {
+			var info = sceneNodeInfo(viewer, node);
+			if (info.object) {
+
+					var active = $( "#tabs" ).tabs( "option", "active" );
+								
+					$('#tabs-1').html(info.text.components.transform);
+					if (info.object.components.visual) {
+						$('#detailTab1Title').html("Geometry");
+						$('#detailTab2Title').html("Material");
+						$('#tabs-2').html(info.text.components.geometry);
+						$('#tabs-3').html(info.text.components.material);
+						$('#tabs').tabs({ disabled: [] });
+					}
+					else if (info.object.components.light) {
+						$('#detailTab1Title').html("Light");
+						$('#detailTab2Title').html(" ");
+						$('#tabs-2').html(info.text.components.light);
+						$('#tabs-3').html("");
+						$('#tabs').tabs({ disabled: [2] });
+						if (active > 1)
+							$('#tabs').tabs({ active: 1 });
+					}
+					else if (info.object.components.camera) {
+						$('#detailTab1Title').html("Camera");
+						$('#detailTab2Title').html(" ");
+						$('#tabs-2').html(info.text.components.camera);
+						$('#tabs-3').html("");
+						$('#tabs').tabs({ disabled: [2] });
+						if (active > 1)
+							$('#tabs').tabs({ active: 1 });
+					}
+					else {
+						$('#detailTab1Title').html("Group");
+						$('#detailTab2Title').html(" ");
+						$('#tabs-2').html(info.text.components.group);
+						$('#tabs-3').html("");
+						$('#tabs').tabs({ disabled: [2] });
+						if (active > 1)
+							$('#tabs').tabs({ active: 1 });
+					}
+
+					//$('#tabs').tabs({ active: info.type == "Group" ? 0 : 1 });
+										
+					var title = node.data.title + " : " + info.type;
+					infoPopupVisible = true;
+					$('#infoPopup').dialog({title:title, modal:false, height:300, width:300,
+						close: function() { infoPopupVisible = false; },
+					}
+					);
+
+					
+			}
+		}, 10);
+	}
+	
+	</script>
+	
+</body>
+</html>

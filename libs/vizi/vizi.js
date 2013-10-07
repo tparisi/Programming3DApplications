@@ -46716,7 +46716,7 @@ Vizi.Object = function(param) {
     
 	if (autoCreateTransform)
 	{
-		this.addComponent(new Vizi.Transform);
+		this.addComponent(new Vizi.Transform(param));
 	}
 }
 
@@ -46851,6 +46851,9 @@ Vizi.Object.prototype.addComponent = function(component) {
  * @param {Vizi.Component} component.
  */
 Vizi.Object.prototype.removeComponent = function(component) {
+	if (!component)
+		return;
+	
     var i = this._components.indexOf(component);
 
     if (i != -1)
@@ -46863,6 +46866,23 @@ Vizi.Object.prototype.removeComponent = function(component) {
         this._components.splice(i, 1);
         component.setObject(null);
     }
+    
+    var proto = Object.getPrototypeOf(component);
+    if (proto._componentProperty)
+    {
+    	this[proto._componentProperty] = null;
+    }
+
+    if (proto._componentCategory)
+    {
+    	if (this[proto._componentCategory]) {
+    		var cat = this[proto._componentCategory];
+    		i = cat.indexOf(component);
+    		if (i != -1)
+    			cat.splice(i, 1);
+    	}
+    }
+
 }
 
 /**
@@ -47101,63 +47121,6 @@ Vizi.Keyboard.KEY_UP  = 38;
 Vizi.Keyboard.KEY_RIGHT  = 39;
 Vizi.Keyboard.KEY_DOWN  = 40;
 /**
- * @fileoverview Contains prefab assemblies for core Vizi package
- * @author Tony Parisi
- */
-goog.provide('Vizi.Prefabs');/**
- *
- */
-goog.provide('Vizi.Mouse');
-
-Vizi.Mouse = function()
-{
-	// N.B.: freak out if somebody tries to make 2
-	// throw (...)
-
-	this.state = 
-	{ x : Vizi.Mouse.NO_POSITION, y: Vizi.Mouse.NO_POSITION,
-
-	buttons : { left : false, middle : false, right : false },
-	scroll : 0,
-	};
-
-	Vizi.Mouse.instance = this;
-};
-
-Vizi.Mouse.prototype.onMouseMove = function(event)
-{
-    this.state.x = event.elementX;
-    this.state.y = event.elementY;	            
-}
-
-Vizi.Mouse.prototype.onMouseDown = function(event)
-{
-    this.state.x = event.elementX;
-    this.state.y = event.elementY;	            
-    this.state.buttons.left = true;
-}
-
-Vizi.Mouse.prototype.onMouseUp = function(event)
-{
-    this.state.x = event.elementX;
-    this.state.y = event.elementY;	            
-    this.state.buttons.left = false;	            
-}
-
-Vizi.Mouse.prototype.onMouseScroll = function(event, delta)
-{
-    this.state.scroll = 0; // PUNT!
-}
-
-
-Vizi.Mouse.prototype.getState = function()
-{
-	return this.state;
-}
-
-Vizi.Mouse.instance = null;
-Vizi.Mouse.NO_POSITION = Number.MIN_VALUE;
-/**
  * @fileoverview Component is the base class for defining capabilities used within an Object
  * 
  * @author Tony Parisi
@@ -47212,6 +47175,307 @@ Vizi.Component.prototype.realize = function() {
 Vizi.Component.prototype.update = function() {
 }
 /**
+ * @fileoverview Behavior component - base class for time-based behaviors
+ * 
+ * @author Tony Parisi
+ */
+
+goog.provide('Vizi.Script');
+goog.require('Vizi.Component');
+
+Vizi.Script = function(param) {
+	param = param || {};
+    Vizi.Component.call(this, param);
+}
+
+goog.inherits(Vizi.Script, Vizi.Component);
+
+Vizi.Script.prototype._componentCategory = "scripts";
+
+Vizi.Script.prototype.realize = function()
+{
+	Vizi.Component.prototype.realize.call(this);
+}
+
+Vizi.Script.prototype.update = function()
+{
+	if (Vizi.Script.WARN_ON_ABSTRACT)
+		Vizi.System.warn("Abstract Script.evaluate called");
+}
+
+Vizi.Script.WARN_ON_ABSTRACT = true;
+/**
+ * @fileoverview Contains prefab assemblies for core Vizi package
+ * @author Tony Parisi
+ */
+goog.provide('Vizi.Prefabs');
+goog.require('Vizi.Prefabs');
+
+Vizi.Prefabs.FirstPersonController = function(param)
+{
+	param = param || {};
+	
+	var controller = new Vizi.Object(param);
+	var controllerScript = new Vizi.FirstPersonControllerScript(param);
+	controller.addComponent(controllerScript);
+
+	var intensity = param.headlight ? 1 : 0;
+	
+	var headlight = new Vizi.DirectionalLight({ intensity : intensity });
+	controller.addComponent(headlight);
+	
+	return controller;
+}
+
+goog.provide('Vizi.FirstPersonControllerScript');
+goog.require('Vizi.Script');
+
+Vizi.FirstPersonControllerScript = function(param)
+{
+	Vizi.Script.call(this, param);
+
+	this._enabled = (param.enabled !== undefined) ? param.enabled : true;
+	this._move = (param.move !== undefined) ? param.move : true;
+	this._look = (param.look !== undefined) ? param.look : true;
+	this._mouseLook = (param.mouseLook !== undefined) ? param.mouseLook : false;
+	
+	this.collisionDistance = 10;
+	this.moveSpeed = 13;
+	
+	this.savedCameraPos = new THREE.Vector3;	
+	this.movementVector = new THREE.Vector3;
+	
+    Object.defineProperties(this, {
+    	camera: {
+			get : function() {
+				return this._camera;
+			},
+			set: function(camera) {
+				this.setCamera(camera);
+			}
+		},
+    	enabled : {
+    		get: function() {
+    			return this._enabled;
+    		},
+    		set: function(v) {
+    			this.setEnabled(v);
+    		}
+    	},
+    	move : {
+    		get: function() {
+    			return this._move;
+    		},
+    		set: function(v) {
+    			this.setMove(v);
+    		}
+    	},
+    	look : {
+    		get: function() {
+    			return this._look;
+    		},
+    		set: function(v) {
+    			this.setLook(v);
+    		}
+    	},
+    	mouseLook : {
+    		get: function() {
+    			return this._mouseLook;
+    		},
+    		set: function(v) {
+    			this.setMouseLook(v);
+    		}
+    	},
+        headlightOn: {
+	        get: function() {
+	            return this._headlightOn;
+	        },
+	        set:function(v)
+	        {
+	        	this.setHeadlightOn(v);
+	        }
+    	},
+    });
+}
+
+goog.inherits(Vizi.FirstPersonControllerScript, Vizi.Script);
+
+Vizi.FirstPersonControllerScript.prototype.realize = function()
+{
+	this.headlight = this._object.getComponent(Vizi.DirectionalLight);
+	this.headlight.intensity = this._headlightOn ? 1 : 0;
+}
+
+Vizi.FirstPersonControllerScript.prototype.createControls = function(camera)
+{
+	var controls = new Vizi.FirstPersonControls(camera.object, Vizi.Graphics.instance.container);
+	controls.mouseLook = this._mouseLook;
+	controls.movementSpeed = this._move ? this.moveSpeed : 0;
+	controls.lookSpeed = this._look ? 1.0 : 0;
+
+	this.clock = new THREE.Clock();
+	return controls;
+}
+
+Vizi.FirstPersonControllerScript.prototype.update = function()
+{
+	this.saveCamera();
+	this.controls.update(this.clock.getDelta());
+	var collide = this.testCollision();
+	if (collide && collide.object) {
+		this.restoreCamera();
+		this.dispatchEvent("collide", collide);
+	}
+	
+	if (this.testTerrain()) {
+		this.restoreCamera();
+	}
+	
+	if (this._headlightOn)
+	{
+		this.headlight.direction.copy(this._camera.position).negate();
+	}	
+}
+
+Vizi.FirstPersonControllerScript.prototype.setEnabled = function(enabled)
+{
+	this._enabled = enabled;
+	this.controls.enabled = enabled;
+}
+
+Vizi.FirstPersonControllerScript.prototype.setMove = function(move)
+{
+	this._move = move;
+	this.controls.movementSpeed = move ? this.moveSpeed : 0;
+}
+
+Vizi.FirstPersonControllerScript.prototype.setLook = function(look)
+{
+	this._look = look;
+	this.controls.lookSpeed = look ? 1.0 : 0;
+}
+
+Vizi.FirstPersonControllerScript.prototype.setMouseLook = function(mouseLook)
+{
+	this._mouseLook = mouseLook;
+	this.controls.mouseLook = mouseLook;
+}
+
+Vizi.FirstPersonControllerScript.prototype.setCamera = function(camera) {
+	this._camera = camera;
+	this.controls = this.createControls(camera);
+	this.controls.movementSpeed = this.moveSpeed;
+	this.controls.lookSpeed = 0.1;
+
+}
+
+Vizi.FirstPersonControllerScript.prototype.saveCamera = function() {
+	this.savedCameraPos.copy(this._camera.position);
+}
+
+Vizi.FirstPersonControllerScript.prototype.restoreCamera = function() {
+	this._camera.position.copy(this.savedCameraPos);
+}
+
+Vizi.FirstPersonControllerScript.prototype.testCollision = function() {
+	
+	this.movementVector.copy(this._camera.position).sub(this.savedCameraPos);
+	if (this.movementVector.length()) {
+		
+        var collide = Vizi.Graphics.instance.objectFromRay(null, 
+        		this.savedCameraPos,
+        		this.movementVector, 1, 2);
+
+        if (collide && collide.object) {
+        	var dist = this.savedCameraPos.distanceTo(collide.hitPointWorld);
+        }
+        
+        return collide;
+	}
+	
+	return null;
+}
+
+Vizi.FirstPersonControllerScript.prototype.testTerrain = function() {
+	return false;
+}
+
+Vizi.FirstPersonControllerScript.prototype.setHeadlightOn = function(on)
+{
+	this._headlightOn = on;
+	if (this.headlight) {
+		this.headlight.intensity = on ? 1 : 0;
+	}
+}
+
+/**
+ *
+ */
+goog.provide('Vizi.Mouse');
+
+Vizi.Mouse = function()
+{
+	// N.B.: freak out if somebody tries to make 2
+	// throw (...)
+
+	this.state = 
+	{ x : Vizi.Mouse.NO_POSITION, y: Vizi.Mouse.NO_POSITION,
+
+	buttons : { left : false, middle : false, right : false },
+	scroll : 0,
+	};
+
+	Vizi.Mouse.instance = this;
+};
+
+Vizi.Mouse.prototype.onMouseMove = function(event)
+{
+    this.state.x = event.elementX;
+    this.state.y = event.elementY;	            
+}
+
+Vizi.Mouse.prototype.onMouseDown = function(event)
+{
+    this.state.x = event.elementX;
+    this.state.y = event.elementY;	            
+    this.state.buttons.left = true;
+}
+
+Vizi.Mouse.prototype.onMouseUp = function(event)
+{
+    this.state.x = event.elementX;
+    this.state.y = event.elementY;	            
+    this.state.buttons.left = false;	            
+}
+
+Vizi.Mouse.prototype.onMouseClick = function(event)
+{
+    this.state.x = event.elementX;
+    this.state.y = event.elementY;	            
+    this.state.buttons.left = false;	            
+}
+
+Vizi.Mouse.prototype.onMouseDoubleClick = function(event)
+{
+    this.state.x = event.elementX;
+    this.state.y = event.elementY;	            
+    this.state.buttons.left = false;	            
+}
+
+Vizi.Mouse.prototype.onMouseScroll = function(event, delta)
+{
+    this.state.scroll = 0; // PUNT!
+}
+
+
+Vizi.Mouse.prototype.getState = function()
+{
+	return this.state;
+}
+
+Vizi.Mouse.instance = null;
+Vizi.Mouse.NO_POSITION = Number.MIN_VALUE;
+/**
  * @fileoverview Timer - component that generates time events
  * 
  * @author Tony Parisi
@@ -47227,7 +47491,7 @@ Vizi.Timer = function(param)
     this.currentTime = Vizi.Time.instance.currentTime;
     this.running = false;
     this.duration = param.duration ? param.duration : 0;
-    this.loop = param.loop;
+    this.loop = (param.loop !== undefined) ? param.loop : false;
     this.lastFraction = 0;
 }
 
@@ -47273,6 +47537,7 @@ Vizi.Timer.prototype.update = function()
 Vizi.Timer.prototype.start = function()
 {
 	this.running = true;
+	this.currentTime = Vizi.Time.instance.currentTime;
 }
 
 Vizi.Timer.prototype.stop = function()
@@ -47324,6 +47589,14 @@ Vizi.SceneComponent = function(param)
 	        },
 	        set: function(v) {
 	            this.object.useQuaternion = v;
+	        }
+    	},    	
+        visible: {
+	        get: function() {
+	            return this.object.visible;
+	        },
+	        set: function(v) {
+	            this.object.visible = v;
 	        }
     	},    	
 
@@ -47541,7 +47814,7 @@ goog.require('Vizi.Behavior');
 Vizi.FadeBehavior = function(param) {
 	param = param || {};
 	this.duration = (param.duration !== undefined) ? param.duration : 1;
-	this.targetOpacity = (param.opacity !== undefined) ? param.opacity : 0.5;
+	this.opacity = (param.opacity !== undefined) ? param.opacity : 0.5;
 	this.savedOpacities = [];
 	this.savedTransparencies = [];
 	this.tween = null;
@@ -47561,13 +47834,13 @@ Vizi.FadeBehavior.prototype.start = function()
 		for (i = 0; i < len; i++) {
 			this.savedOpacities.push(visuals[i].material.opacity);
 			this.savedTransparencies.push(visuals[i].material.transparent);
-			visuals[i].material.transparent = this.targetOpacity < 1 ? true : false;
+			visuals[i].material.transparent = this.opacity < 1 ? true : false;
 		}	
 	}
 	
-	this.opacity = { opacity : this.savedOpacities[0] };
-	this.opacityTarget = { opacity : this.targetOpacity };
-	this.tween = new TWEEN.Tween(this.opacity).to(this.opacityTarget, this.duration * 1000)
+	this.value = { opacity : this.savedOpacities[0] };
+	this.targetValue = { opacity : this.opacity };
+	this.tween = new TWEEN.Tween(this.value).to(this.targetValue, this.duration * 1000)
 	.easing(TWEEN.Easing.Quadratic.InOut)
 	.repeat(0)
 	.start();
@@ -47589,7 +47862,7 @@ Vizi.FadeBehavior.prototype.evaluate = function(t)
 		var visuals = this._object.visuals;
 		var i, len = visuals.length;
 		for (i = 0; i < len; i++) {
-			visuals[i].material.opacity = this.opacity.opacity;
+			visuals[i].material.opacity = this.value.opacity;
 		}	
 	}
 
@@ -47827,8 +48100,12 @@ Vizi.MoveBehavior.prototype.evaluate = function(t)
 	if (t >= this.duration)
 	{
 		this.stop();
-		if (this.loop)
+		if (this.loop) {
 			this.start();
+		}
+		else {
+			this.dispatchEvent("complete");
+		}
 	}
 	
 	this.moveDelta.copy(this.movePosition).sub(this.prevMovePosition);
@@ -47911,6 +48188,30 @@ Vizi.PickManager.handleMouseUp = function(event)
     Vizi.PickManager.clickedObject = null;
 }
 
+Vizi.PickManager.handleMouseClick = function(event)
+{
+    Vizi.PickManager.clickedObject = Vizi.PickManager.objectFromMouse(event);
+    
+    if (Vizi.PickManager.clickedObject && Vizi.PickManager.clickedObject.onMouseClick)
+    {
+		Vizi.PickManager.clickedObject.onMouseClick(event);
+    }
+
+    Vizi.PickManager.clickedObject = null;
+}
+
+Vizi.PickManager.handleMouseDoubleClick = function(event)
+{
+    Vizi.PickManager.clickedObject = Vizi.PickManager.objectFromMouse(event);
+    
+    if (Vizi.PickManager.clickedObject && Vizi.PickManager.clickedObject.onMouseDoubleClick)
+    {
+		Vizi.PickManager.clickedObject.onMouseDoubleClick(event);
+    }
+
+    Vizi.PickManager.clickedObject = null;
+}
+
 Vizi.PickManager.handleMouseScroll = function(event)
 {
     if (Vizi.PickManager.overObject && Vizi.PickManager.overObject.onMouseScroll)
@@ -47930,7 +48231,7 @@ Vizi.PickManager.objectFromMouse = function(event)
 		event.point = intersected.point;
 		event.object = intersected.object;
 		
-    	if (intersected.object._object.picker)
+    	if (intersected.object._object.picker && intersected.object._object.picker.enabled)
     	{
     		return intersected.object._object.picker;
     	}
@@ -47949,7 +48250,7 @@ Vizi.PickManager.findObjectPicker = function(object)
 {
 	while (object)
 	{
-		if (object.data && object.data._object.picker)
+		if (object.data && object.data._object.picker && object.data._object.picker.enabled)
 		{
 			return object.data._object.picker;
 		}
@@ -48055,6 +48356,245 @@ Vizi.RotateBehavior.prototype.evaluate = function(t)
 		this.stop();
 	}
 }/**
+ * @author mrdoob / http://mrdoob.com/
+ * @author alteredq / http://alteredqualia.com/
+ * @author paulirish / http://paulirish.com/
+ */
+
+/* Heavily adapted version of Three.js FirstPerson controls for Vizi
+ * 
+ */
+
+goog.provide('Vizi.FirstPersonControls');
+
+Vizi.FirstPersonControls = function ( object, domElement ) {
+
+	this.object = object;
+	this.target = new THREE.Vector3( 0, 0, 0 );
+
+	this.domElement = ( domElement !== undefined ) ? domElement : document;
+
+	this.movementSpeed = 1.0;
+	this.lookSpeed = 1.0;
+
+	this.mouseX = 0;
+	this.mouseY = 0;
+	this.lastMouseX = 0;
+	this.lastMouseY = 0;
+
+	this.lat = 0;
+	this.lon = 0;
+	this.phi = 0;
+	this.theta = 0;
+
+	this.moveForward = false;
+	this.moveBackward = false;
+	this.moveLeft = false;
+	this.moveRight = false;
+
+	this.mouseDragOn = false;
+	this.mouseLook = false;
+
+	this.viewHalfX = 0;
+	this.viewHalfY = 0;
+
+	if ( this.domElement !== document ) {
+
+		this.domElement.setAttribute( 'tabindex', -1 );
+
+	}
+
+	this.handleResize = function () {
+
+		if ( this.domElement === document ) {
+
+			this.viewHalfX = window.innerWidth / 2;
+			this.viewHalfY = window.innerHeight / 2;
+
+		} else {
+
+			this.viewHalfX = this.domElement.offsetWidth / 2;
+			this.viewHalfY = this.domElement.offsetHeight / 2;
+
+		}
+
+	};
+
+	this.onMouseDown = function ( event ) {
+
+		if ( this.domElement === document ) {
+
+			this.mouseX = event.pageX - this.viewHalfX;
+			this.mouseY = event.pageY - this.viewHalfY;
+
+		} else {
+
+			this.mouseX = event.pageX - this.domElement.offsetLeft - this.viewHalfX;
+			this.mouseY = event.pageY - this.domElement.offsetTop - this.viewHalfY;
+
+		}
+				
+		this.lastMouseX = this.mouseX;
+		this.lastMouseY = this.mouseY;
+		this.mouseDragOn = true;
+
+	};
+
+	this.onMouseUp = function ( event ) {
+
+		this.mouseDragOn = false;
+
+	};
+
+	this.onMouseMove = function ( event ) {
+
+		if ( this.domElement === document ) {
+
+			this.mouseX = event.pageX - this.viewHalfX;
+			this.mouseY = event.pageY - this.viewHalfY;
+
+		} else {
+
+			this.mouseX = event.pageX - this.domElement.offsetLeft - this.viewHalfX;
+			this.mouseY = event.pageY - this.domElement.offsetTop - this.viewHalfY;
+
+		}
+
+	};
+
+	this.onKeyDown = function ( event ) {
+
+		//event.preventDefault();
+
+		switch ( event.keyCode ) {
+
+			case 38: /*up*/
+			case 87: /*W*/ this.moveForward = true; break;
+
+			case 37: /*left*/
+			case 65: /*A*/ this.moveLeft = true; break;
+
+			case 40: /*down*/
+			case 83: /*S*/ this.moveBackward = true; break;
+
+			case 39: /*right*/
+			case 68: /*D*/ this.moveRight = true; break;
+
+			case 82: /*R*/ this.moveUp = true; break;
+			case 70: /*F*/ this.moveDown = true; break;
+
+		}
+
+	};
+
+	this.onKeyUp = function ( event ) {
+
+		switch( event.keyCode ) {
+
+			case 38: /*up*/
+			case 87: /*W*/ this.moveForward = false; break;
+
+			case 37: /*left*/
+			case 65: /*A*/ this.moveLeft = false; break;
+
+			case 40: /*down*/
+			case 83: /*S*/ this.moveBackward = false; break;
+
+			case 39: /*right*/
+			case 68: /*D*/ this.moveRight = false; break;
+
+			case 82: /*R*/ this.moveUp = false; break;
+			case 70: /*F*/ this.moveDown = false; break;
+
+		}
+
+	};
+
+	this.update = function( delta ) {
+
+		this.startY = this.object.position.y;
+		
+		var actualMoveSpeed = delta * this.movementSpeed;
+
+		if ( this.moveForward || ( this.autoForward && !this.moveBackward ) ) 
+			this.object.translateZ( - actualMoveSpeed );
+		if ( this.moveBackward ) 
+			this.object.translateZ( actualMoveSpeed );
+
+		this.object.position.y = this.startY;
+		
+		if ( this.moveLeft ) 
+			this.object.translateX( - actualMoveSpeed );
+		if ( this.moveRight ) 
+			this.object.translateX( actualMoveSpeed );
+
+		if ( this.moveUp ) 
+			this.object.translateY( actualMoveSpeed );
+		if ( this.moveDown ) 
+			this.object.translateY( - actualMoveSpeed );
+
+		var actualLookSpeed = delta * this.lookSpeed;
+
+		var DRAG_DEAD_ZONE = 1;
+		
+		if (this.mouseDragOn || this.mouseLook) {
+			
+			var deltax = this.lastMouseX - this.mouseX;
+			if (Math.abs(deltax) < DRAG_DEAD_ZONE)
+				dlon = 0;
+			var dlon = deltax / this.viewHalfX * 900;
+			this.lon += dlon * this.lookSpeed;
+
+			var deltay = this.lastMouseY - this.mouseY;
+			if (Math.abs(deltay) < DRAG_DEAD_ZONE)
+				dlat = 0;
+			var dlat = deltay / this.viewHalfY * 900;
+			this.lat += dlat * this.lookSpeed;
+			
+			this.theta = THREE.Math.degToRad( this.lon );
+
+			this.lat = Math.max( - 85, Math.min( 85, this.lat ) );
+			this.phi = THREE.Math.degToRad( this.lat );
+
+			var targetPosition = this.target,
+				position = this.object.position;
+	
+			targetPosition.x = position.x - Math.sin( this.theta );
+			targetPosition.y = position.y + Math.sin( this.phi );
+			targetPosition.z = position.z - Math.cos( this.theta );
+	
+			this.object.lookAt( targetPosition );
+			
+			this.lastMouseX = this.mouseX;
+			this.lastMouseY = this.mouseY;
+		}
+		
+	};
+
+
+	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+
+	this.domElement.addEventListener( 'mousemove', bind( this, this.onMouseMove ), true );
+	this.domElement.addEventListener( 'mousedown', bind( this, this.onMouseDown ), false );
+	this.domElement.addEventListener( 'mouseup', bind( this, this.onMouseUp ), false );
+	this.domElement.addEventListener( 'keydown', bind( this, this.onKeyDown ), false );
+	this.domElement.addEventListener( 'keyup', bind( this, this.onKeyUp ), false );
+	this.domElement.addEventListener( 'resize', bind( this, this.handleResize ), false );
+	
+	function bind( scope, fn ) {
+
+		return function () {
+
+			fn.apply( scope, arguments );
+
+		};
+
+	};
+
+	this.handleResize();
+
+};
+/**
  * @author qiao / https://github.com/qiao
  * @author mrdoob / http://mrdoob.com
  * @author alteredq / http://alteredqualia.com/
@@ -48511,7 +49051,7 @@ Vizi.GraphicsThreeJS.prototype.initScene = function()
 //    scene.add( new THREE.AmbientLight(0xffffff) ); //  0x505050 ) ); // 
 	
     var camera = new THREE.PerspectiveCamera( 45, 
-    		this.container.offsetWidth / this.container.offsetHeight, 1, 4000 );
+    		this.container.offsetWidth / this.container.offsetHeight, 1, 10000 );
     camera.position.copy(Vizi.Camera.DEFAULT_POSITION);
 
     scene.add(camera);
@@ -48522,7 +49062,7 @@ Vizi.GraphicsThreeJS.prototype.initScene = function()
 	this.backgroundLayer = {};
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera( 45, 
-    		this.container.offsetWidth / this.container.offsetHeight, 1, 4000 );
+    		this.container.offsetWidth / this.container.offsetHeight, 0.01, 10000 );
     camera.position.set( 0, 0, 10 );	
     scene.add(camera);
     
@@ -48566,6 +49106,13 @@ Vizi.GraphicsThreeJS.prototype.initMouse = function()
 			function(e) { that.onDocumentMouseDown(e); }, false );
 	dom.addEventListener( 'mouseup', 
 			function(e) { that.onDocumentMouseUp(e); }, false );
+
+ 
+ 	dom.addEventListener( 'click', 
+			function(e) { that.onDocumentMouseClick(e); }, false );
+
+	dom.addEventListener( 'dblclick', 
+			function(e) { that.onDocumentMouseDoubleClick(e); }, false );
 	
 	$(dom).mousewheel(
 	        function(e, delta) {
@@ -48639,6 +49186,44 @@ Vizi.GraphicsThreeJS.prototype.objectFromMouse = function(event)
     	return { object : null, point : null, normal : null };
     }
 }
+
+Vizi.GraphicsThreeJS.prototype.objectFromRay = function(hierarchy, origin, direction, near, far)
+{
+    var raycaster = new THREE.Raycaster(origin, direction, near, far);
+
+    var objects = null;
+    if (hierarchy) {
+    	objects = hierarchy.transform.object.children; 
+    }
+    else {
+    	objects = this.scene.children;
+    }
+    
+	var intersects = raycaster.intersectObjects( objects, true );
+	
+    if ( intersects.length > 0 ) {
+    	var i = 0;
+    	while(i < intersects.length && (!intersects[i].object.visible || 
+    			intersects[i].object.ignoreCollision))
+    	{
+    		i++;
+    	}
+    	
+    	var intersected = intersects[i];
+    	
+    	if (i >= intersects.length)
+    	{
+        	return { object : null, point : null, normal : null };
+    	}
+    	
+    	return (this.findObjectFromIntersected(intersected.object, intersected.point, intersected.face ? intersected.face.normal : null));        	    	                             
+    }
+    else
+    {
+    	return { object : null, point : null, normal : null };
+    }
+}
+
 
 Vizi.GraphicsThreeJS.prototype.findObjectFromIntersected = function(object, point, normal)
 {
@@ -48745,7 +49330,7 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseMove = function(event)
 	var elty = event.pageY - offset.top;
 	
 	var evt = { type : event.type, pageX : event.pageX, pageY : event.pageY, 
-	    	elementX : eltx, elementY : elty };
+	    	elementX : eltx, elementY : elty, button:event.button };
 	
     Vizi.Mouse.instance.onMouseMove(evt);
     
@@ -48767,7 +49352,7 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseDown = function(event)
 	var elty = event.pageY - offset.top;
 	
 	var evt = { type : event.type, pageX : event.pageX, pageY : event.pageY, 
-	    	elementX : eltx, elementY : elty };
+	    	elementX : eltx, elementY : elty, button:event.button };
 	
     Vizi.Mouse.instance.onMouseDown(evt);
     
@@ -48789,7 +49374,7 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseUp = function(event)
 	var elty = event.pageY - offset.top;
 	
 	var evt = { type : event.type, pageX : event.pageX, pageY : event.pageY, 
-	    	elementX : eltx, elementY : elty };
+	    	elementX : eltx, elementY : elty, button:event.button };
     
     Vizi.Mouse.instance.onMouseUp(evt);
     
@@ -48799,6 +49384,50 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseUp = function(event)
     }	            
 
     Vizi.Application.handleMouseUp(evt);
+}
+
+Vizi.GraphicsThreeJS.prototype.onDocumentMouseClick = function(event)
+{
+    event.preventDefault();
+
+    var offset = $(this.renderer.domElement).offset();
+	
+	var eltx = event.pageX - offset.left;
+	var elty = event.pageY - offset.top;
+	
+	var evt = { type : event.type, pageX : event.pageX, pageY : event.pageY, 
+	    	elementX : eltx, elementY : elty, button:event.button };
+    
+    Vizi.Mouse.instance.onMouseClick(evt);
+    
+    if (Vizi.PickManager)
+    {
+    	Vizi.PickManager.handleMouseClick(evt);
+    }	            
+
+    Vizi.Application.handleMouseClick(evt);
+}
+
+Vizi.GraphicsThreeJS.prototype.onDocumentMouseDoubleClick = function(event)
+{
+    event.preventDefault();
+
+    var offset = $(this.renderer.domElement).offset();
+	
+	var eltx = event.pageX - offset.left;
+	var elty = event.pageY - offset.top;
+	
+	var evt = { type : event.type, pageX : event.pageX, pageY : event.pageY, 
+	    	elementX : eltx, elementY : elty, button:event.button };
+    
+    Vizi.Mouse.instance.onMouseDoubleClick(evt);
+    
+    if (Vizi.PickManager)
+    {
+    	Vizi.PickManager.handleMouseDoubleClick(evt);
+    }	            
+
+    Vizi.Application.handleMouseDoubleClick(evt);
 }
 
 Vizi.GraphicsThreeJS.prototype.onDocumentMouseScroll = function(event, delta)
@@ -49153,7 +49782,7 @@ Vizi.Application.prototype.realizeObjects = function()
 	
 Vizi.Application.prototype.onMouseMove = function(event)
 {
-	if (this.mouseDelegate)
+	if (this.mouseDelegate  && this.mouseDelegate.onMouseMove)
 	{
 		this.mouseDelegate.onMouseMove(event);
 	}
@@ -49161,7 +49790,7 @@ Vizi.Application.prototype.onMouseMove = function(event)
 
 Vizi.Application.prototype.onMouseDown = function(event)
 {
-	if (this.mouseDelegate)
+	if (this.mouseDelegate && this.mouseDelegate.onMouseDown)
 	{
 		this.mouseDelegate.onMouseDown(event);
 	}
@@ -49169,15 +49798,31 @@ Vizi.Application.prototype.onMouseDown = function(event)
 
 Vizi.Application.prototype.onMouseUp = function(event)
 {
-	if (this.mouseDelegate)
+	if (this.mouseDelegate && this.mouseDelegate.onMouseUp)
 	{
 		this.mouseDelegate.onMouseUp(event);
 	}
 }
 
+Vizi.Application.prototype.onMouseClick = function(event)
+{
+	if (this.mouseDelegate && this.mouseDelegate.onMouseClick)
+	{
+		this.mouseDelegate.onMouseClick(event);
+	}
+}
+
+Vizi.Application.prototype.onMouseDoubleClick = function(event)
+{
+	if (this.mouseDelegate && this.mouseDelegate.onMouseDoubleClick)
+	{
+		this.mouseDelegate.onMouseDoubleClick(event);
+	}
+}
+
 Vizi.Application.prototype.onMouseScroll = function(event)
 {
-	if (this.mouseDelegate)
+	if (this.mouseDelegate  && this.mouseDelegate.onMouseScroll)
 	{
 		this.mouseDelegate.onMouseScroll(event);
 	}
@@ -49185,7 +49830,7 @@ Vizi.Application.prototype.onMouseScroll = function(event)
 
 Vizi.Application.prototype.onKeyDown = function(event)
 {
-	if (this.keyboardDelegate)
+	if (this.keyboardDelegate && this.keyboardDelegate.onKeyDown)
 	{
 		this.keyboardDelegate.onKeyDown(event);
 	}
@@ -49193,7 +49838,7 @@ Vizi.Application.prototype.onKeyDown = function(event)
 
 Vizi.Application.prototype.onKeyUp = function(event)
 {
-	if (this.keyboardDelegate)
+	if (this.keyboardDelegate && this.keyboardDelegate.onKeyUp)
 	{
 		this.keyboardDelegate.onKeyUp(event);
 	}
@@ -49201,7 +49846,7 @@ Vizi.Application.prototype.onKeyUp = function(event)
 
 Vizi.Application.prototype.onKeyPress = function(event)
 {
-	if (this.keyboardDelegate)
+	if (this.keyboardDelegate  && this.keyboardDelegate.onKeyPress)
 	{
 		this.keyboardDelegate.onKeyPress(event);
 	}
@@ -49244,6 +49889,24 @@ Vizi.Application.handleMouseUp = function(event)
     	Vizi.Application.instance.onMouseUp(event);	            	
 }
 
+Vizi.Application.handleMouseClick = function(event)
+{
+    if (Vizi.PickManager && Vizi.PickManager.clickedObject)
+    	return;
+    
+    if (Vizi.Application.instance.onMouseClick)
+    	Vizi.Application.instance.onMouseClick(event);	            	
+}
+
+Vizi.Application.handleMouseDoubleClick = function(event)
+{
+    if (Vizi.PickManager && Vizi.PickManager.clickedObject)
+    	return;
+    
+    if (Vizi.Application.instance.onMouseDoubleClick)
+    	Vizi.Application.instance.onMouseDoubleClick(event);	            	
+}
+
 Vizi.Application.handleMouseScroll = function(event)
 {
     if (Vizi.PickManager && Vizi.PickManager.overObject)
@@ -49256,7 +49919,7 @@ Vizi.Application.handleMouseScroll = function(event)
 Vizi.Application.handleKeyDown = function(event)
 {
     if (Vizi.Application.instance.onKeyDown)
-    	Vizi.Application.instance.onKeyDown(kevent);	            	
+    	Vizi.Application.instance.onKeyDown(event);	            	
 }
 
 Vizi.Application.handleKeyUp = function(event)
@@ -49307,37 +49970,7 @@ Vizi.AnimationService.prototype.update = function()
 {
 	if (window.TWEEN)
 		THREE.glTFAnimator.update();
-}/**
- * @fileoverview Behavior component - base class for time-based behaviors
- * 
- * @author Tony Parisi
- */
-
-goog.provide('Vizi.Script');
-goog.require('Vizi.Component');
-
-Vizi.Script = function(param) {
-	param = param || {};
-    Vizi.Component.call(this, param);
 }
-
-goog.inherits(Vizi.Script, Vizi.Component);
-
-Vizi.Script.prototype._componentCategory = "scripts";
-
-Vizi.Script.prototype.realize = function()
-{
-	Vizi.Component.prototype.realize.call(this);
-}
-
-Vizi.Script.prototype.update = function()
-{
-	if (Vizi.Script.WARN_ON_ABSTRACT)
-		Vizi.System.warn("Abstract Script.evaluate called");
-}
-
-Vizi.Script.WARN_ON_ABSTRACT = true;
-
 goog.require('Vizi.Prefabs');
 
 Vizi.Prefabs.ModelController = function(param)
@@ -49466,6 +50099,97 @@ Vizi.ModelControllerScript.MAX_X_ROTATION = 0; // Math.PI / 12;
 Vizi.ModelControllerScript.MIN_X_ROTATION = -Math.PI / 2;
 Vizi.ModelControllerScript.MAX_Y_ROTATION = Math.PI * 2;
 Vizi.ModelControllerScript.MIN_Y_ROTATION = -Math.PI * 2;
+/**
+ * @fileoverview Object collects a group of Components that define an object and its behaviors
+ * 
+ * @author Tony Parisi
+ */
+
+
+goog.require('Vizi.Prefabs');
+
+Vizi.Prefabs.Skybox = function(param)
+{
+	param = param || {};
+	
+	var box = new Vizi.Object({layer:Vizi.Graphics.instance.backgroundLayer});
+
+	var textureCube = null;
+
+	var shader = THREE.ShaderLib[ "cube" ];
+	shader.uniforms[ "tCube" ].value = textureCube;
+
+	var material = new THREE.ShaderMaterial( {
+
+		fragmentShader: shader.fragmentShader,
+		vertexShader: shader.vertexShader,
+		uniforms: shader.uniforms,
+		side: THREE.BackSide
+
+	} );
+
+	var visual = new Vizi.Visual(
+			{ geometry: new THREE.CubeGeometry( 1, 1, 1 ),
+				material: material,
+			});
+	box.addComponent(visual);
+	
+	var script = new Vizi.SkyboxScript(param);
+	box.addComponent(script);
+	
+	box.realize();
+
+	return box;
+}
+
+goog.provide('Vizi.SkyboxScript');
+goog.require('Vizi.Script');
+
+Vizi.SkyboxScript = function(param)
+{
+	Vizi.Script.call(this, param);
+
+	this.maincampos = new THREE.Vector3; 
+	this.maincamrot = new THREE.Quaternion; 
+	this.maincamscale = new THREE.Vector3; 
+	
+    Object.defineProperties(this, {
+    	texture: {
+			get : function() {
+				return this.uniforms[ "tCube" ].value;
+			},
+			set: function(texture) {
+				this.uniforms[ "tCube" ].value = texture;
+			}
+		},
+    });
+}
+
+goog.inherits(Vizi.SkyboxScript, Vizi.Script);
+
+Vizi.SkyboxScript.prototype.realize = function()
+{
+	var visual = this._object.getComponent(Vizi.Visual);
+	this.uniforms = visual.material.uniforms;
+
+	this.camera = Vizi.Graphics.instance.backgroundLayer.camera;
+	this.camera.position.set(0, 0, 0);
+}
+
+Vizi.SkyboxScript.prototype.update = function()
+{
+	var maincam = Vizi.Graphics.instance.camera;
+	maincam.updateMatrixWorld();
+	maincam.matrixWorld.decompose(this.maincampos, this.maincamrot, this.maincamscale);
+	this.camera.quaternion.copy(this.maincamrot);
+	return;
+	
+	var dir = Vizi.Graphics.instance.camera.position.clone()
+		.negate().normalize(); // say that 3x fast
+	
+	Vizi.Graphics.instance.backgroundLayer.camera.lookAt(dir);
+}
+
 /**
  * @fileoverview General-purpose key frame animation
  * @author Tony Parisi
@@ -49797,7 +50521,7 @@ Vizi.SceneUtils.computeBoundingBox = function(obj) {
 					geometry.computeBoundingBox();
 				}
 				
-				var geometryBBox = geometry.boundingBox;
+				var geometryBBox = geometry.boundingBox.clone();
 				obj.updateMatrix();
 				geometryBBox.applyMatrix4(obj.matrix);
 				return geometryBBox;
@@ -49808,7 +50532,8 @@ Vizi.SceneUtils.computeBoundingBox = function(obj) {
 		}
 		else {
 			var i, len = obj.children.length;
-			var boundingBox = new THREE.Box3(new THREE.Vector3, new THREE.Vector3);
+			
+			var boundingBox = new THREE.Box3; // (new THREE.Vector3, new THREE.Vector3);
 			
 			for (i = 0; i < len; i++) {
 				var bbox = computeBoundingBox(obj.children[i]);
@@ -49849,8 +50574,10 @@ Vizi.SceneUtils.computeBoundingBox = function(obj) {
 				}
 			}
 
-			obj.updateMatrix();
-			// boundingBox.applyMatrix4(obj.matrix);
+			if (isFinite(boundingBox.min.x)) {
+				obj.updateMatrix();
+				boundingBox.applyMatrix4(obj.matrix);
+			}
 			return boundingBox;
 		}
 	}
@@ -49878,6 +50605,7 @@ Vizi.Picker = function(param) {
 	
     Vizi.Component.call(this, param);
     this.overCursor = param.overCursor;
+    this.enabled = (param.enabled !== undefined) ? param.enabled : true;
 }
 
 goog.inherits(Vizi.Picker, Vizi.Component);
@@ -49915,8 +50643,7 @@ Vizi.Picker.prototype.onMouseMove = function(event)
 		this.lastHitPoint.copy(event.point);
 		if (event.normal)
 			this.lastHitNormal.copy(event.normal);
-		else
-			this.lastHitNormal = null;
+
 		this.dispatchEvent("mousemove", event);
 	}
 }
@@ -49926,8 +50653,6 @@ Vizi.Picker.prototype.onMouseDown = function(event)
 	this.lastHitPoint.copy(event.point);
 	if (event.normal)
 		this.lastHitNormal.copy(event.normal);
-	else
-		this.lastHitNormal = null;
 	
     this.dispatchEvent("mousedown", event);
 }
@@ -49944,7 +50669,25 @@ Vizi.Picker.prototype.onMouseUp = function(event)
 
 	this.dispatchEvent("mouseup", event);
 }
+
+Vizi.Picker.prototype.onMouseClick = function(event)
+{
+	this.lastHitPoint.copy(event.point);
+	if (event.normal)
+		this.lastHitNormal.copy(event.normal);
+
+	this.dispatchEvent("click", event);
+}
 	        
+Vizi.Picker.prototype.onMouseDoubleClick = function(event)
+{
+	this.lastHitPoint.copy(event.point);
+	if (event.normal)
+		this.lastHitNormal.copy(event.normal);
+
+	this.dispatchEvent("dblclick", event);
+}
+	
 Vizi.Picker.prototype.onMouseScroll = function(event)
 {
     this.dispatchEvent("mousescroll", event);
@@ -50145,115 +50888,7 @@ Vizi.CameraManager.handleWindowResize = function(width, height)
 
 
 Vizi.CameraManager.cameraList = [];
-Vizi.CameraManager.activeCamera = null;goog.provide('Vizi.DirectionalLight');
-goog.require('Vizi.Light');
-
-Vizi.DirectionalLight = function(param)
-{
-	param = param || {};
-	
-	Vizi.Light.call(this, param);
-
-	if (param.object) {
-		this.object = param.object; 
-		this.direction = param.object.position.clone().negate();
-	}
-	else {
-		this.direction = param.direction || new THREE.Vector3(0, 0, -1);
-		this.object = new THREE.DirectionalLight(param.color, param.intensity, 0);
-	}
-}
-
-goog.inherits(Vizi.DirectionalLight, Vizi.Light);
-
-Vizi.DirectionalLight.prototype.realize = function() 
-{
-	Vizi.Light.prototype.realize.call(this);
-}
-
-Vizi.DirectionalLight.prototype.update = function() 
-{
-	// D'oh Three.js doesn't seem to transform light directions automatically
-	// Really bizarre semantics
-	this.position.copy(this.direction).negate();
- 	this.object.target.position.copy(this.direction).multiplyScalar(Vizi.Light.DEFAULT_RANGE);
-	var worldmat = this.object.parent.matrixWorld;
-	this.position.applyMatrix4(worldmat);
-	this.object.target.position.applyMatrix4(worldmat);
-	
-	Vizi.Light.prototype.update.call(this);
-}
-
-/**
- * @fileoverview Picker component - add one to get picking support on your object
- * 
- * @author Tony Parisi
- */
-
-goog.provide('Vizi.PlaneDragger');
-goog.require('Vizi.Picker');
-
-Vizi.PlaneDragger = function(param) {
-    Vizi.Picker.call(this, param);
-}
-
-goog.inherits(Vizi.PlaneDragger, Vizi.Picker);
-
-Vizi.PlaneDragger.prototype.realize = function()
-{
-	Vizi.Picker.prototype.realize.call(this);
-
-	// Create a projector object
-    this.projector = new THREE.Projector();
-	
-    // And some helpers
-    this.dragObject = null;
-	this.dragOffset = new THREE.Vector3;
-	this.dragHitPoint = new THREE.Vector3;
-	this.dragStartPoint = new THREE.Vector3;
-	this.dragPlane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0x000000 } ) );
-	this.dragPlane.visible = false;
-	this._object.transform.object.add(this.dragPlane);
-}
-
-Vizi.PlaneDragger.prototype.update = function()
-{
-}
-
-Vizi.PlaneDragger.prototype.onMouseMove = function(event)
-{
-	var intersection = Vizi.Graphics.instance.getObjectIntersection(event.elementX, event.elementY, this.dragPlane);
-	
-	if (intersection)
-	{
-		this.dragHitPoint.copy(intersection.point).sub(this.dragOffset);
-		this.dragHitPoint.add(this.dragStartPoint);
-		this.dispatchEvent("drag", {
-									type : "drag", 
-									object : this.dragObject, 
-									offset : this.dragHitPoint
-									}
-		);
-	}
-}
-
-Vizi.PlaneDragger.prototype.onMouseDown = function(event)
-{
-	Vizi.Picker.prototype.onMouseDown.call(this, event);
-	
-	var intersection = Vizi.Graphics.instance.getObjectIntersection(event.elementX, event.elementY, this.dragPlane);
-	
-	if (intersection)
-	{
-		this.dragOffset.copy(intersection.point); // .sub(this.dragPlane.position);
-		this.dragStartPoint.set(0, 0, 0);
-		this.dragStartPoint.applyMatrix4(event.object.object.matrixWorld);
-		this.dragObject = event.object;
-	}
-}
-
-
-/**
+Vizi.CameraManager.activeCamera = null;/**
  * @fileoverview Loader - loads level files
  * 
  * @author Tony Parisi
@@ -50500,7 +51135,179 @@ Vizi.Loader.prototype.convertScene = function(scene) {
 
 	return convert(scene);
 }
+goog.provide('Vizi.DirectionalLight');
+goog.require('Vizi.Light');
+
+Vizi.DirectionalLight = function(param)
+{
+	param = param || {};
+	
+	Vizi.Light.call(this, param);
+
+	if (param.object) {
+		this.object = param.object; 
+		this.direction = param.object.position.clone().negate();
+	}
+	else {
+		this.direction = param.direction || new THREE.Vector3(0, 0, -1);
+		this.object = new THREE.DirectionalLight(param.color, param.intensity, 0);
+	}
+}
+
+goog.inherits(Vizi.DirectionalLight, Vizi.Light);
+
+Vizi.DirectionalLight.prototype.realize = function() 
+{
+	Vizi.Light.prototype.realize.call(this);
+}
+
+Vizi.DirectionalLight.prototype.update = function() 
+{
+	// D'oh Three.js doesn't seem to transform light directions automatically
+	// Really bizarre semantics
+	this.position.copy(this.direction).negate();
+ 	this.object.target.position.copy(this.direction).multiplyScalar(Vizi.Light.DEFAULT_RANGE);
+	var worldmat = this.object.parent.matrixWorld;
+	this.position.applyMatrix4(worldmat);
+	this.object.target.position.applyMatrix4(worldmat);
+	
+	Vizi.Light.prototype.update.call(this);
+}
+
 /**
+ * @fileoverview Picker component - add one to get picking support on your object
+ * 
+ * @author Tony Parisi
+ */
+
+goog.provide('Vizi.PlaneDragger');
+goog.require('Vizi.Picker');
+
+Vizi.PlaneDragger = function(param) {
+    Vizi.Picker.call(this, param);
+}
+
+goog.inherits(Vizi.PlaneDragger, Vizi.Picker);
+
+Vizi.PlaneDragger.prototype.realize = function()
+{
+	Vizi.Picker.prototype.realize.call(this);
+
+	// Create a projector object
+    this.projector = new THREE.Projector();
+	
+    // And some helpers
+    this.dragObject = null;
+	this.dragOffset = new THREE.Vector3;
+	this.dragHitPoint = new THREE.Vector3;
+	this.dragStartPoint = new THREE.Vector3;
+	this.dragPlane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0x000000 } ) );
+	this.dragPlane.visible = false;
+	this._object.transform.object.add(this.dragPlane);
+}
+
+Vizi.PlaneDragger.prototype.update = function()
+{
+}
+
+Vizi.PlaneDragger.prototype.onMouseMove = function(event)
+{
+	var intersection = Vizi.Graphics.instance.getObjectIntersection(event.elementX, event.elementY, this.dragPlane);
+	
+	if (intersection)
+	{
+		this.dragHitPoint.copy(intersection.point).sub(this.dragOffset);
+		this.dragHitPoint.add(this.dragStartPoint);
+		this.dispatchEvent("drag", {
+									type : "drag", 
+									object : this.dragObject, 
+									offset : this.dragHitPoint
+									}
+		);
+	}
+}
+
+Vizi.PlaneDragger.prototype.onMouseDown = function(event)
+{
+	Vizi.Picker.prototype.onMouseDown.call(this, event);
+	
+	var intersection = Vizi.Graphics.instance.getObjectIntersection(event.elementX, event.elementY, this.dragPlane);
+	
+	if (intersection)
+	{
+		this.dragOffset.copy(intersection.point); // .sub(this.dragPlane.position);
+		this.dragStartPoint.set(0, 0, 0);
+		this.dragStartPoint.applyMatrix4(event.object.object.matrixWorld);
+		this.dragObject = event.object;
+	}
+}
+
+
+/**
+ * @fileoverview ScaleBehavior - simple scale up/down over time
+ * 
+ * @author Tony Parisi
+ */
+
+goog.provide('Vizi.ScaleBehavior');
+goog.require('Vizi.Behavior');
+
+Vizi.ScaleBehavior = function(param) {
+	param = param || {};
+	this.duration = (param.duration !== undefined) ? param.duration : 1;
+	this.startScale = (param.startScale !== undefined) ? param.startScale.clone() : 
+		new THREE.Vector3(1, 1, 1);
+	this.endScale = (param.endScale !== undefined) ? param.endScale.clone() : 
+		new THREE.Vector3(2, 2, 2);
+	this.tween = null;
+    Vizi.Behavior.call(this, param);
+}
+
+goog.inherits(Vizi.ScaleBehavior, Vizi.Behavior);
+
+Vizi.ScaleBehavior.prototype.start = function()
+{
+	if (this.running)
+		return;
+
+	this.scale = this.startScale.clone();
+	this.originalScale = this._object.transform.scale.clone();
+	this.tween = new TWEEN.Tween(this.scale).to(this.endScale, this.duration * 1000)
+	.easing(TWEEN.Easing.Quadratic.InOut)
+	.repeat(0)
+	.start();
+	
+	Vizi.Behavior.prototype.start.call(this);
+}
+
+Vizi.ScaleBehavior.prototype.evaluate = function(t)
+{
+	if (t >= this.duration)
+	{
+		this.stop();
+		if (this.loop) {
+			this.start();
+		}
+		else {
+			this.dispatchEvent("complete");
+		}
+	}
+	
+	var sx = this.originalScale.x * this.scale.x;
+	var sy = this.originalScale.y * this.scale.y;
+	var sz = this.originalScale.z * this.scale.z;
+	
+	this._object.transform.scale.set(sx, sy, sz);
+}
+
+
+Vizi.ScaleBehavior.prototype.stop = function()
+{
+	if (this.tween)
+		this.tween.stop();
+	
+	Vizi.Behavior.prototype.stop.call(this);
+}/**
  * @fileoverview Viewer class - Application Subclass for Model/Scene Viewer
  * @author Tony Parisi / http://www.tonyparisi.com
  */
@@ -50521,6 +51328,7 @@ Vizi.Viewer = function(param)
 	// Tuck away prefs based on param
 	this.loopAnimations = (param.loopAnimations !== undefined) ? param.loopAnimations : false;
 	this.headlightOn = (param.headlight !== undefined) ? param.headlight : true;
+	this.firstPerson = (param.firstPerson !== undefined) ? param.firstPerson : false;
 	this.showGrid = (param.showGrid !== undefined) ? param.showGrid : false;
 	this.showBoundingBox = (param.showBoundingBox !== undefined) ? param.showBoundingBox : false;
 	this.showBoundingBoxes = (param.showBoundingBoxes !== undefined) ? param.showBoundingBoxes : false;
@@ -50530,7 +51338,9 @@ Vizi.Viewer = function(param)
 	this.gridSize = param.gridSize || Vizi.Viewer.DEFAULT_GRID_SIZE;
 	this.gridStepSize = param.gridStepSize || Vizi.Viewer.DEFAULT_GRID_STEP_SIZE;
 	this.flipY = (param.flipY !== undefined) ? param.flipY : false;
-
+	this.highlightedObject = null;
+	this.highlightDecoration = null;
+	
 	// Set up backdrop objects for empty scene
 	this.initScene();
 
@@ -50551,11 +51361,18 @@ Vizi.Viewer.prototype.initScene = function()
 	this.gridRoot = new Vizi.Object;
 	this.addObject(this.gridRoot);
 	this.grid = null;	
+	this.gridPicker = null;	
 	this.createGrid();
 	
-	this.controller = Vizi.Prefabs.ModelController({active:true, headlight:true, 
-		allowPan:this.allowPan, allowZoom:this.allowZoom, oneButton:this.oneButton});
-	this.controllerScript = this.controller.getComponent(Vizi.ModelControllerScript);
+	if (this.firstPerson) {
+		this.controller = Vizi.Prefabs.FirstPersonController({active:true, headlight:true});
+		this.controllerScript = this.controller.getComponent(Vizi.FirstPersonControllerScript);
+	}
+	else {
+		this.controller = Vizi.Prefabs.ModelController({active:true, headlight:true, 
+			allowPan:this.allowPan, allowZoom:this.allowZoom, oneButton:this.oneButton});
+		this.controllerScript = this.controller.getComponent(Vizi.ModelControllerScript);
+	}
 	this.addObject(this.controller);
 
 	var viewpoint = new Vizi.Object;
@@ -50706,6 +51523,7 @@ Vizi.Viewer.prototype.replaceScene = function(data)
 		this.headlightOn = true;
 	}
 	
+	this.initHighlight();
 	this.fitToScene();
 	this.calcSceneStats();
 }
@@ -50716,10 +51534,14 @@ Vizi.Viewer.prototype.addToScene = function(data)
 	
 	if (!this.cameras.length)
 	{
-		this.cameras.push(this.createDefaultCamera());
-		this.camera = this.controllerScript.viewpoint.camera;
+		this.cameras = [];
+		this.cameraNames = [];
+		this.cameras.push(this.defaultCamera);
+		this.camera = this.defaultCamera;
 		this.cameraNames.push("[default]");
-		this.controllerScript.viewpoint.camera.active = true;
+
+		this.controllerScript.camera = this.defaultCamera;
+		this.controllerScript.camera.active = true;
 	}
 	
 	if (data.keyFrameAnimators)
@@ -50742,8 +51564,8 @@ Vizi.Viewer.prototype.addToScene = function(data)
 			camera.aspect = container.offsetWidth / container.offsetHeight;
 			
 			this.cameras.push(camera);
-			this.cameraNames.push(camera.name);
-		}
+			this.cameraNames.push(camera._object.name);
+		}		
 	}
 	
 	if (data.lights)
@@ -50771,18 +51593,10 @@ Vizi.Viewer.prototype.addToScene = function(data)
 			}
 			
 			this.lights.push(data.lights[i]);
-			this.lightNames.push(data.lights[i].name);
+			this.lightNames.push(data.lights[i]._object.name);
 			this.lightIntensities.push(data.lights[i].intensity);
 			this.lightColors.push(data.lights[i].color.clone());
-		}
-		
-		this.controllerScript.headlight.intensity = len ? 0 : 1;
-		this.headlightOn = len <= 0;
-	}
-	else
-	{
-		this.controllerScript.headlight.intensity = 1;
-		this.headlightOn = true;
+		}		
 	}
 	
 	this.scenes.push(data.scene);
@@ -50958,7 +51772,9 @@ Vizi.Viewer.prototype.setBoundingBoxesOn = function(on)
 	this.showBoundingBoxes = !this.showBoundingBoxes;
 	var that = this;
 	this.sceneRoot.map(Vizi.Decoration, function(o) {
-		o.object.visible = that.showBoundingBoxes;
+		if (!that.highlightedObject || (o != that.highlightDecoration)) {
+			o.object.visible = that.showBoundingBoxes;
+		}
 	});
 }
 
@@ -50972,17 +51788,57 @@ Vizi.Viewer.prototype.setFlipY = function(flip) {
 	this.flipY = flip;
 	if (this.flipY) {
 		this.sceneRoot.transform.rotation.x = -Math.PI / 2;
+		this.fitToScene();
 	}
 	else {
 		this.sceneRoot.transform.rotation.x = 0;
 	}
 }
 
+Vizi.Viewer.prototype.initHighlight = function() {
+	if (this.highlightedObject) {
+		this.highlightedObject.removeComponent(this.highlightDecoration);
+	}
+	this.highlightedObject = null;
+}
+
+Vizi.Viewer.prototype.highlightObject = function(object) {
+
+	if (this.highlightedObject) {
+		this.highlightedObject._parent.removeComponent(this.highlightDecoration);
+	}
+
+	if (object) {
+		var bbox = Vizi.SceneUtils.computeBoundingBox(object);
+				
+		var geo = new THREE.CubeGeometry(bbox.max.x - bbox.min.x,
+				bbox.max.y - bbox.min.y,
+				bbox.max.z - bbox.min.z);
+	
+		var mat = new THREE.MeshBasicMaterial({color:0xaaaa00, transparent:false, 
+			wireframe:true, opacity:1})
+	
+		var mesh = new THREE.Mesh(geo, mat);
+		mesh.ignorePick = true;	
+		this.highlightDecoration = new Vizi.Decoration({object:mesh});
+		object._parent.addComponent(this.highlightDecoration);
+	
+		var center = bbox.max.clone().add(bbox.min).multiplyScalar(0.5);
+		this.highlightDecoration.position.add(center);
+	}
+	
+	this.highlightedObject = object;
+}
+
 Vizi.Viewer.prototype.createGrid = function()
 {
-	if (this.gridRoot && this.grid)
+	if (this.gridRoot)
 	{
-		 this.gridRoot.removeComponent(this.grid);
+		if (this.grid)
+			this.gridRoot.removeComponent(this.grid);
+		
+		if (this.gridPicker)
+			this.gridRoot.removeComponent(this.gridPicker);
 	}
 
 	// Create a line geometry for the grid pattern
@@ -51002,11 +51858,17 @@ Vizi.Viewer.prototype.createGrid = function()
 		opacity:Vizi.Viewer.GRID_OPACITY } );
 	
 	var gridObject = new THREE.Line( geometry, line_material, THREE.LinePieces );
-	gridObject.ignorePick = true;
 	gridObject.visible = this.showGrid;
 	this.grid = new Vizi.Visual({ object : gridObject });
 
 	this.gridRoot.addComponent(this.grid);
+	
+	this.gridPicker = new Vizi.Picker;
+	var that = this;
+	this.gridPicker.addEventListener("mouseup", function(e) {
+		that.highlightObject(null);
+	});
+	this.gridRoot.addComponent(this.gridPicker);
 }
 
 Vizi.Viewer.prototype.fitToScene = function()
@@ -51016,18 +51878,16 @@ Vizi.Viewer.prototype.fitToScene = function()
 		}
 
 	this.boundingBox = Vizi.SceneUtils.computeBoundingBox(this.sceneRoot);
-	var scale = this.sceneRoot._children[0].transform.object.scale;
-	var mat = new THREE.Matrix4().scale(scale);
-	this.boundingBox.applyMatrix4(mat);
 	
-	// For default camera setup-- small scenes (COLLADA, cm)
+	// For default camera setups-- small scenes (COLLADA, cm), or not clip big scenes
 	// heuristic, who knows ?
+	this.controllerScript.controls.userPanSpeed = 1;
 	if (this.boundingBox.max.z < 1) {
 		this.controllerScript.camera.near = 0.01;
 		this.controllerScript.controls.userPanSpeed = 0.01;
 	}
-	else {
-		this.controllerScript.controls.userPanSpeed = 1;
+	else if (this.boundingBox.max.z > 1000) {
+		this.controllerScript.camera.far = 20000;
 	}
 	
 	var center = this.boundingBox.max.clone().add(this.boundingBox.min).multiplyScalar(0.5);
@@ -51042,37 +51902,27 @@ Vizi.Viewer.prototype.fitToScene = function()
 		var geo = new THREE.CubeGeometry(this.boundingBox.max.x - this.boundingBox.min.x,
 				this.boundingBox.max.y - this.boundingBox.min.y,
 				this.boundingBox.max.z - this.boundingBox.min.z);
-		var mat = new THREE.MeshBasicMaterial({color:0x888888, transparent:true, wireframe:true, opacity:.2})
-		var decoration = new Vizi.Decoration({geometry:geo, material:mat});
-		// decoration.position.add(center);
-//		var cube = new THREE.Mesh(geo, mat);
-//		cube.position.add(center);
-		this.sceneRoot.addComponent(decoration);
-		decoration.position.add(center);
-		decoration.object.visible = this.showBoundingBoxes;
+		var mat = new THREE.MeshBasicMaterial({color:0x00ff00, transparent:true, wireframe:true, opacity:.2});
+		var mesh = new THREE.Mesh(geo, mat)
+		mesh.ignorePick = true;
+		var decoration = new Vizi.Decoration({object:mesh});
 		
 		this.sceneRoot.map(Vizi.Object, function(o) {
-			var visuals = o.visuals;
-				if (visuals) {
-				var i, len = visuals.length;
-				for (i = 0; i < len; i++) {
-					var visual = visuals[i];
-					if (!visual.geometry.boundingBox)
-						visual.geometry.computeBoundingBox();
-
-					var bbox = visual.geometry.boundingBox;
-					
-					var geo = new THREE.CubeGeometry(bbox.max.x - bbox.min.x,
-							bbox.max.y - bbox.min.y,
-							bbox.max.z - bbox.min.z);
-					var mat = new THREE.MeshBasicMaterial({color:0x888888, transparent:true, wireframe:true, opacity:.2})
-					var decoration = new Vizi.Decoration({geometry:geo, material:mat});
-					o.addComponent(decoration);
-
-					var center = bbox.max.clone().add(bbox.min).multiplyScalar(0.5);
-					decoration.position.add(center);
-					decoration.object.visible = this.showBoundingBoxes;
-				}
+			if (o._parent) {
+				var bbox = Vizi.SceneUtils.computeBoundingBox(o);
+				
+				var geo = new THREE.CubeGeometry(bbox.max.x - bbox.min.x,
+						bbox.max.y - bbox.min.y,
+						bbox.max.z - bbox.min.z);
+				var mat = new THREE.MeshBasicMaterial({color:0x00ff00, transparent:true, wireframe:true, opacity:.2})
+				var mesh = new THREE.Mesh(geo, mat)
+				mesh.ignorePick = true;
+				var decoration = new Vizi.Decoration({object:mesh});
+				o._parent.addComponent(decoration);
+		
+				var center = bbox.max.clone().add(bbox.min).multiplyScalar(0.5);
+				decoration.position.add(center);
+				decoration.object.visible = this.showBoundingBoxes;
 			}
 		});
 	}
@@ -51110,6 +51960,18 @@ Vizi.Viewer.prototype.calcSceneStats = function()
 	this.sceneStats.boundingBox = this.boundingBox;
 	
 	this.dispatchEvent("scenestats", this.sceneStats);	
+}
+
+Vizi.Viewer.prototype.setController = function(type) {
+	var center = this.boundingBox.max.clone().add(this.boundingBox.min).multiplyScalar(0.5);
+	switch (type) {
+		case "model" :
+			break;
+		case "FPS" :
+			center.y = 0;
+			break;
+	}
+	this.controllerScript.center = center;
 }
 
 Vizi.Viewer.DEFAULT_GRID_SIZE = 100;
@@ -51278,10 +52140,13 @@ goog.require('Vizi.FadeBehavior');
 goog.require('Vizi.HighlightBehavior');
 goog.require('Vizi.MoveBehavior');
 goog.require('Vizi.RotateBehavior');
+goog.require('Vizi.ScaleBehavior');
 goog.require('Vizi.Camera');
 goog.require('Vizi.CameraManager');
 goog.require('Vizi.PerspectiveCamera');
+goog.require('Vizi.FirstPersonControls');
 goog.require('Vizi.OrbitControls');
+goog.require('Vizi.FirstPersonControllerScript');
 goog.require('Vizi.ModelControllerScript');
 goog.require('Vizi.EventDispatcher');
 goog.require('Vizi.EventService');
@@ -51298,6 +52163,7 @@ goog.require('Vizi.DirectionalLight');
 goog.require('Vizi.PointLight');
 goog.require('Vizi.SpotLight');
 goog.require('Vizi.Loader');
+goog.require('Vizi.SkyboxScript');
 goog.require('Vizi.Prefabs');
 goog.require('Vizi.Decoration');
 goog.require('Vizi.SceneComponent');
