@@ -15,8 +15,6 @@ buildSceneTree = function(scene, tree) {
 			title: object.name ? object.name : noname,
 			expand: level <= 1,
 			activeVisible:true,
-			tooltip: "object",
-			isFolder: false,
 			vizi:object,
 		});
 
