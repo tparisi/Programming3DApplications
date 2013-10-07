@@ -30,33 +30,13 @@ buildSceneTree = function(scene, tree) {
 	
 	build(scene, tree, 0);
 	
-	
-	//return map;
-	
-	// tree.childList[0].activate();
-	/*
-	var childNode = rootNode.addChild({
-		title: "Programatically addded nodes",
-		tooltip: "This folder and all child nodes were added programmatically.",
-		isFolder: false,
-	});
-	childNode.addChild({
-		title: "Document using a custom icon",
-	});
-	*/
 }
 
 var selectedSceneNode = null;
 
 selectSceneNode = function(viewer, node) {
 	
-	if (selectedSceneNode) {
-//		selectedSceneNode.activate(false);
-//		selectedSceneNode.select(false);
-	}
-	
 	if (node.data.vizi) {
-//		alert("Node " + node.data.vizi.name + " selected.");
 		
 		setTimeout(function() {
 			viewer.highlightObject(node.data.vizi);
@@ -321,20 +301,13 @@ sceneNodeInfo = function(viewer, node) {
 					group : group
 				}
 		};
-		
-		//	info.object.name + "<br>" + info.object.id + "<br>" + info.object.components.transform;
 	}
 
 	return info;
 }
 
 selectSceneNodeFromId = function(viewer, id) {
-	
-	if (selectedSceneNode) {
-//		selectedSceneNode.activate(false);
-//		selectedSceneNode.select(false);
-	}
-	
+		
 	var node = sceneTreeMap[id];
 	
 	if (node) {
