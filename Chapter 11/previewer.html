@@ -520,15 +520,12 @@
 	var infoPopupVisible = false;
 	
 	function onPickerMouseOver(viewer, o, event) {
-//		console.log("Mouse over: ", o.name);
 	}
 
 	function onPickerMouseOut(viewer, o, event) {
-//		console.log("Mouse out: ", o.name);
 	}
 
 	function onPickerMouseUp(viewer, o, event) {
-//		console.log("Mouse up: ", o.name);
 		if (event.button == 0) {
 			viewer.highlightObject(o);
 			node = selectSceneNodeFromId(viewer, o._id);

@@ -51,9 +51,9 @@ goog.inherits(FuturgoDashboardScript, Vizi.Script);
 
 FuturgoDashboardScript.prototype.realize = function()
 {
-	// Set up the guages
-	var guage = this._object.findNode("head_light_L1");
-	var visual = guage.visuals[0];
+	// Set up the gauges
+	var gauge = this._object.findNode("head_light_L1");
+	var visual = gauge.visuals[0];
 	var texture = visual.material.map;
 	
     var canvas = document.createElement("canvas");
