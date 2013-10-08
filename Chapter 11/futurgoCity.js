@@ -103,6 +103,11 @@ FuturgoCity.prototype.addBackground = function() {
 
 	var envMap = THREE.ImageUtils.loadTextureCube( urls );
 	
+	var skybox = Vizi.Prefabs.Skybox();
+	var skyboxScript = skybox.getComponent(Vizi.SkyboxScript);
+	skyboxScript.texture = envMap;
+	this.viewer.addObject(skybox);
+	
 	this.scene.map(/Tower.*|Office.*/, function(o) {
 
 		var visuals = o.visuals;
@@ -126,11 +131,6 @@ FuturgoCity.prototype.addBackground = function() {
 		}
 	});
 
-	var skybox = Vizi.Prefabs.Skybox(); // {texture:textureCube});
-	var skyboxScript = skybox.getComponent(Vizi.SkyboxScript);
-	skyboxScript.texture = envMap;
-	this.viewer.addObject(skybox);
-	
 	this.envMap = envMap;
 
 }
