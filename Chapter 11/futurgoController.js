@@ -12,7 +12,6 @@ FuturgoController = function(param)
 	this.enabled = (param.enabled !== undefined) ? param.enabled : true;
 	this.scene = param.scene || null;
 	
-	this.moveSpeed = 13;
 	this.turnSpeed = Math.PI / 2; // 90 degs/sec
 
 	this.moveForward = false;
@@ -122,9 +121,7 @@ FuturgoController.prototype.updateSpeed = function(now, deltat) {
 
 FuturgoController.prototype.updatePosition = function(now, deltat) {
 
-	this.moveSpeed = this.speed;
-	
-	var actualMoveSpeed = deltat / 1000 * this.moveSpeed;
+	var actualMoveSpeed = deltat / 1000 * this.speed;
 	var actualTurnSpeed = deltat / 1000 * this.turnSpeed;
 
 	// Translate in Z...
