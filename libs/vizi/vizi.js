@@ -48516,23 +48516,18 @@ Vizi.FirstPersonControls = function ( object, domElement ) {
 		
 		var actualMoveSpeed = delta * this.movementSpeed;
 
-		if ( this.moveForward || ( this.autoForward && !this.moveBackward ) ) 
+		if ( this.moveForward ) 
 			this.object.translateZ( - actualMoveSpeed );
 		if ( this.moveBackward ) 
 			this.object.translateZ( actualMoveSpeed );
 
-		this.object.position.y = this.startY;
-		
 		if ( this.moveLeft ) 
 			this.object.translateX( - actualMoveSpeed );
 		if ( this.moveRight ) 
 			this.object.translateX( actualMoveSpeed );
 
-		if ( this.moveUp ) 
-			this.object.translateY( actualMoveSpeed );
-		if ( this.moveDown ) 
-			this.object.translateY( - actualMoveSpeed );
-
+		this.object.position.y = this.startY;
+		
 		var actualLookSpeed = delta * this.lookSpeed;
 
 		var DRAG_DEAD_ZONE = 1;
