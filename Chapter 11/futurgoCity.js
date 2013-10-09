@@ -11,8 +11,6 @@ FuturgoCity = function(param) {
 	this.mouseOverCallback = param.mouseOverCallback;
 	this.mouseOutCallback = param.mouseOutCallback;
 	this.mouseClickCallback = param.mouseClickCallback;
-	this.startTestDriveCallback = param.startTestDriveCallback;
-	this.endTestDriveCallback = param.startTestDriveCallback;
 	this.part_materials = [];
 	this.testDriveRunning = false;
 	this.wheelsMoving = false;
@@ -396,9 +394,6 @@ FuturgoCity.prototype.startTestDrive = function(event) {
 
 	}, 2000);
 	
-	
-	if (this.startTestDriveCallback)
-		this.startTestDriveCallback();
 }
 
 FuturgoCity.prototype.endTestDrive = function(event) {
@@ -451,10 +446,6 @@ FuturgoCity.prototype.endTestDrive = function(event) {
 		that.playCloseAnimations(); 
 	}, 2000);
 	
-	
-	if (this.endTestDriveCallback)
-		this.endTestDriveCallback();
-
 }
 
 FuturgoCity.prototype.tour = function() {
