@@ -54,12 +54,13 @@ FuturgoDashboardScript.prototype.realize = function()
 	// Set up the gauges
 	var gauge = this._object.findNode("head_light_L1");
 	var visual = gauge.visuals[0];
-	var texture = visual.material.map;
-	
+
+	// Create a new canvas element for drawing
     var canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;
     
+    // Create a new Three.js texture with the canvas
 	var texture = new THREE.Texture(canvas);
 	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 	visual.material.map = texture;
@@ -68,6 +69,7 @@ FuturgoDashboardScript.prototype.realize = function()
 	this.canvas = canvas;
 	this.context = canvas.getContext("2d");
 
+	// Load the textures for the dashboard and dial
 	this.dashboardImage = null;
 	this.dialImage = null;
 	
@@ -86,6 +88,7 @@ FuturgoDashboardScript.prototype.realize = function()
     }  
     image2.src = FuturgoDashboardScript.dialURL;
 
+    // Force an initial update
     this.needsUpdate = true;
 }
 
