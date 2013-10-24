@@ -67,7 +67,8 @@
 		        var map = THREE.ImageUtils.loadTexture(mapUrl);
 		        
 		        // Now, create a Phong material to show shading; pass in the map
-		        var material = new THREE.MeshPhongMaterial({ map: map });
+		        var material = new THREE.MeshPhongMaterial({ map: map,
+			        color: 0xffffff });
 
 		        // Create the cube geometry
 		        var geometry = new THREE.CubeGeometry(2, 2, 2);
