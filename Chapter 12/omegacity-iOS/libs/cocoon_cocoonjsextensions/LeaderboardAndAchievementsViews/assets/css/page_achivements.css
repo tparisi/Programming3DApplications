@@ -1,0 +1,209 @@
+.page_achivements {
+}
+
+	.page_achivements #data {
+		padding-top: 50px;
+		color: #9aafcc;
+	}
+	
+	.page_achivements #data ul {
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		border-top: 1px solid #9aafcc;
+	}
+	
+	.page_achivements #data li {
+		position: relative;
+		float: left;
+		overflow: hidden;
+		border-bottom: 1px solid #9aafcc;
+		width: 50%;
+		padding: 20px 60px 20px 170px;
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;	
+	}
+
+	.page_achivements #data li:nth-child(odd) {
+		border-right: 1px solid #9aafcc;
+	}
+	
+	.page_achivements #data li .image {
+		float: left;
+		width: 100px;
+		margin-left: -145px;
+		border-radius: 55px;
+		border: 5px solid #9aafcc;
+	}
+	
+		.page_achivements #data li .image img {
+			display: block;
+			width: 100px;
+			height: auto;
+			border-radius: 50px;
+		}
+	
+	.page_achivements #data li .title {
+		font-size: 100%;
+		line-height: 1.2em;
+		margin: 0 0 0.3em 0;
+		padding: 1.25em 0 0 0;
+		text-transform: uppercase;
+		overflow: hidden;
+	}
+	
+		.page_achivements #data li .title span {
+			float: left;
+			background: #9aafcc;
+			color: #fff;
+			padding: 0.15em 0.3em;
+		}
+	
+	.page_achivements #data li .text {
+		font-size: 80%;
+		line-height: 1.3em;
+	}
+
+	.page_achivements #data li .goal {
+		position: absolute;
+		top: 5px;
+		right: 10px;
+		font-weight: bold;
+		font-size: 150%;
+		line-height: 1.2em;
+	}
+
+	.page_achivements #data li.locked {
+		background: #9aafcc;
+		color: #e6ebf1;
+		border-right-color: #fff;
+		border-bottom-color: #fff;
+	}	
+		.page_achivements #data li.locked .image {
+			margin-left: -140px;
+		}
+
+		.page_achivements #data li.locked .title span {
+			padding: 0;
+		}
+
+
+
+
+
+
+@media only screen
+and (max-width : 960px)
+{
+	.page_achivements #data li {
+		padding-left: 110px;
+	}
+
+	.page_achivements #data li .image, .page_achivements #data li.locked .image {
+		width: 70px;
+		margin-left: -95px;
+		border-radius: 45px;
+	}
+
+		.page_achivements #data li .image img, .page_achivements #data li.locked .image img {
+			width: 70px;
+			border-radius: 35px;
+		}
+
+	.page_achivements #data li .title {
+		padding-top: 0.5em;
+	}
+
+	.page_achivements #data li .goal {
+		font-size: 120%;
+	}
+}
+
+/* Smartphones (portrait and landscape)  */
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px)
+{
+	.page_achivements #data {
+		padding-top: 25px;
+	}
+}
+
+
+/* Smartphones (landscape)  */
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px)
+and (orientation: landscape)
+{
+	.page_achivements #data {
+		padding-top: 25px;
+	}
+
+	.page_achivements #data li {
+		padding: 5px 10px 5px 60px;
+	}
+
+	.page_achivements #data li .image, .page_achivements #data li.locked .image {
+		width: 34px;
+		margin-top: 3px;
+		margin-left: -53px;
+		border-radius: 17px;
+		border-width: 2px;
+	}
+
+		.page_achivements #data li .image img, .page_achivements #data li.locked .image img {
+			width: 34px;
+			border-radius: 15px;
+			border-width: 2px;
+		}
+
+	.page_achivements #data li .title {
+		padding-top: 0.5em;
+	}
+
+	.page_achivements #data li .text {
+		font-size: 90%;
+	}
+	
+	.page_achivements #data li .goal {
+		font-size: 100%;
+		top: 2px;
+		right: 5px;
+	}
+}
+
+
+/* Smartphones (portrait)  */
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px)
+{
+	.page_achivements #data li {
+		padding-right: 40px;
+		float: none;
+		overflow: hidden;
+		border-bottom: 1px solid #9aafcc;
+		width: 100%;
+		font-size: 130%;
+	}
+
+	.page_achivements #data li:nth-child(odd) {
+		border-right: 0;
+	}
+
+	.page_achivements #data li .goal {
+		top: 2px;
+		right: 5px;
+	}
+
+	.page_achivements #data li .text {
+		font-size: 90%;
+	}	
+}
+

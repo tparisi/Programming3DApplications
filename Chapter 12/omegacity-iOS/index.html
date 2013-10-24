@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Omega City</title>
+
+</head>
+<body onload="handleLoad();">
+
+	<!--  Game rendering area  -->
+	<div id="container" style="width:100%;height:100%;position:absolute;"></div>
+	<!--  Audio, should work? -->
+	<!--  Audio content  -->
+	<!--  WORKAROUND for CocoonJS - they don't parse these tags;
+			do it in code
+			
+	<audio volume="0.0" id="entry_noise">
+	  <source src="./sounds/entrynoise.ogg" type="audio/ogg" />
+	  Your browser does not support OGG files in the audio element.
+	</audio>
+	<audio volume="0.0" id="entry_music">
+	  <source src="./sounds/entrymusic.mp3" type="audio/mp3" />
+	  Your browser does not support MP3 files in the audio element.
+	</audio>
+	<audio volume="0.0" id="engines">
+	  <source src="./sounds/enginesturbinesone.ogg" type="audio/ogg" />
+	  Your browser does not support OGG files in the audio element.
+	</audio>
+	<audio volume="0.0" id="laser">
+	  <source src="./sounds/shortlaser.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	<audio volume="0.0" id="missile">
+	  <source src="./sounds/missile-firing-fl.mp3" type="audio/mp3" />
+	  Your browser does not support MP3 files in the audio element.
+	</audio>
+	<audio volume="0.0" id="power_up">
+	  <source src="./sounds/flash-sound-jet.ogg" type="audio/ogg" />
+	  Your browser does not support OGG files in the audio element.
+	</audio>
+	<audio volume="0.0" id="missile_locked_on">
+	  <source src="./sounds/missile-lock-on-sound.mp3" type="audio/mp3" />
+	  Your browser does not support MP3 files in the audio element.
+	</audio>
+	<audio volume="0.0" id="explosion">
+	  <source src="./sounds/explosion4-trimmed.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	<audio volume="0.0" id="proximity_alert">
+	  <source src="./sounds/proximity-alert.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	<audio volume="0.0" id="no_information">
+	  <source src="./sounds/no-information.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	 -->
+	<script src="./libs/cocoon_cocoonjsextensions/CocoonJS.js"></script>
+	<script src="./libs/cocoon_cocoonjsextensions/CocoonJS_App.js"></script>
+	<script src="./libs/cocoon_cocoonjsextensions/CocoonJS_App_ForCocoonJS.js"></script>
+	<script src="./libs/vizi/vizi.js"></script>
+	<script src="omegacity.js"></script>
+	<script src="omegacityProxyHUD.js"></script>
+	<script src="omegacitySound.js"></script>
+	<script>
+
+   	var game = null;
+   	var hud = null;
+   	var sound = null;
+   	var gameLoadComplete = false;
+   	var wvLoadComplete = false;
+   	
+	var handleLoad = function() {
+
+		var container = document.getElementById("container");
+		
+		game = new OmegaCity({ container : container,
+				loadCallback : onLoadComplete,
+				loadProgressCallback : onLoadProgress,
+			 });	
+
+		hud = new ProxyHUD({game : game});
+
+		sound = new OmegaCitySound({game : game});
+
+		setTimeout(function() {
+			
+			CocoonJS.App.onLoadInTheWebViewSucceed.addEventListener(
+					function(url) {
+						CocoonJS.App.showTheWebView();
+						Vizi.System.log("load web view succeeded.");
+						wvLoadComplete = true;
+											
+						if (gameLoadComplete) {
+							gameReady();
+						}
+					}
+					);
+			CocoonJS.App.onLoadInTheWebViewFailed.addEventListener(
+					function(url) {
+						Vizi.System.log("load web view failed.", url);
+					}
+					);
+			CocoonJS.App.loadInTheWebView("wv.html");
+		}, 10);
+				
+		sound.enterState("load");
+		game.load();
+
+	}
+
+	
+	function onLoadComplete(loadTime)
+	{
+		console.log("Loaded " + loadTime.toFixed(2) + " seconds.");
+		gameLoadComplete = true;
+		if (wvLoadComplete) {
+			gameReady();
+		}
+	}
+
+	function gameReady() {
+		hud.enterState("start");
+		sound.enterState("start");
+	}
+
+	function onLoadProgress(percentProgress)
+	{
+//		loadStatus.innerHTML = "Loading scene... " + percentProgress.toFixed(0) + " %";
+	}
+
+	function playGame() {
+		sound.enterState("play");
+		Vizi.System.log("In playGame()");
+		game.play();
+	}
+
+	function soundEnterState(state, data) {
+		console.log("Sound enter state: ", state, data);
+		sound.enterState(state, data);
+	}
+		
+	</script>
+	
+</body>
+</html>

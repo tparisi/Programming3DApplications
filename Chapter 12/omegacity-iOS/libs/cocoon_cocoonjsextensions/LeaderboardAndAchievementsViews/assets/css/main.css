@@ -1,0 +1,65 @@
+@import url('style.css');
+@import url('page_leaderboards.css');
+@import url('page_achivements.css');
+
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+body {
+	background: #fff;
+	color: #ff0;
+	font-family: "Lucida Grande", Lucida, Verdana, Arial, sans-serif;
+	font-size: 16px;
+	line-height: 1.2em;
+	color: #476faa;
+}
+
+#container {
+	width: 100%;
+	height: 100%;
+}
+
+
+
+#close {
+	margin: 0;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 30px;
+	height: 30px;
+}
+	#close a {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: url(../images/close.png) no-repeat 50% 50%;
+		background-size: 100% 100%;
+		text-align: left; text-indent: -999999px; overflow: hidden;
+	}
+
+
+
+/* Smartphones (portrait and landscape)  */
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px)
+{
+
+    body {
+	    font-size: 9px;
+    }
+    		
+	#close {
+		top: 5px;
+		right: 5px;
+		width: 15px;
+		height: 15px;
+	}
+
+}
+

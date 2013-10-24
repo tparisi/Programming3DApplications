@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" 
+  content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Futurgo LTD</title>
+
+	<!-- Google font: PT Sans http://www.google.com/fonts#UsePlace:use/Collection:PT+Sans  -->
+	<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+	<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+	<link href='../css/fonts.css' rel='stylesheet' type='text/css'>
+	<link href="../css/futurgo.css" rel="stylesheet" type='text/css'/> 
+</head>
+<body>
+	<div id="top_frame"></div>
+	<div id="menubar">
+	    <div id="menuORDER" class="menuItem" onclick="onMenuCommand(this.id);">ORDER</div>
+	    <div id="menuTEST_DRIVE" class="menuItem" onclick="onMenuCommand(this.id);">TEST DRIVE</div>
+	    <div id="menuFEATURES" class="menuItem" onclick="onMenuCommand(this.id);">FEATURES</div>
+	    <div id="menuSPECS" class="menuItem" onclick="onMenuCommand(this.id);">SPECS</div>
+	    <div id="menuCHARGING" class="menuItem" onclick="onMenuCommand(this.id);">CHARGING</div>
+	    <div id="menuGALLERY" class="menuItem" onclick="onMenuCommand(this.id);">GALLERY</div>
+	    <div id="menuVIDEO" class="menuItem" onclick="onMenuCommand(this.id);">VIDEO</div>
+	    <div id="menuFAQ" class="menuItem" onclick="onMenuCommand(this.id);">QUESTIONS?</div>
+	    <span></span>
+  	</div>
+	<div id="bot_frame"></div>
+	<div id="left_banner_bg"></div>
+	<div id="futurgo_logo"></div>
+	<div id="ltd_model"></div>
+	<div id="left_banner_title">Lifestyle Transportation Device</div>
+	<div id="left_banner_copy">
+	Get where you need to go in style, in <i>Futurgo&trade;</i>'s revolutionary
+	new personal transportation system!<p></p>
+	The LTD&reg; features sleek styling, ergonomic design and a 
+	patent-pending drive train that really moves.<p></p>
+	Experience the future in personal transportation... TODAY!<p></p>
+	</div>
+	<div id="tabbar_right">
+		<div id="tab01"><div class="tabLink" onclick=""></div></div>
+		<div id="tab02"><div class="tabLink" onclick=""></div></div>
+		<div id="tab03"><div class="tabLink" onclick="toggleInterior();"></div></div>
+		<div id="tab04"><div class="tabLink" onclick="toggleWheelAnimations();"></div></div>
+		<div id="tab05"><div class="tabLink" onclick=""></div></div>
+	</div>
+	<div id="bottom_legend">The World's First All-Electric Personal Vehicle. 
+	Zero Emissions. 4.9 Sec 0-60 Max Acceleration.
+	</div>
+	<div id="vizi_powered"></div>
+	<div id="container"></div>
+	<div id="loadStatus" style="display:none">
+	Loading scene...
+	</div>
+	<div id="overlay" style="display:none">
+		<div id="overlayContents">overlay contents</div>
+		<div id="overlayLogo"></div>
+	</div>
+
+    <script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+    <script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+	<script src="../libs/colorpicker/js/colorpicker.js"></script>
+	<script src="../libs/vizi/vizi.js"></script>
+	<script src="futurgo.js"></script>
+	<script>
+
+   	var futurgo = null;
+   	var overlay = null;
+   	var overlayContents = null;
+   	var loadStatus = null;
+   	var part_materials = [];
+   	
+	$(document).ready(function() {
+
+		initControls();
+		overlay = document.getElementById("overlay");
+		overlayContents = document.getElementById("overlayContents");
+		loadStatus = document.getElementById("loadStatus");
+		var container = document.getElementById("container");
+		futurgo = new Futurgo({ container : container,
+				loadCallback : onLoadComplete,
+				loadProgressCallback : onLoadProgress,
+				mouseOverCallback : onMouseOver,
+				mouseOutCallback : onMouseOut,
+			 });	
+
+		loadStatus.style.display = 'block';
+		futurgo.go();
+	}
+	);
+
+	function initControls() {
+		$('#tab02').ColorPicker({
+			color: '#ffffff',
+			onBeforeShow: function () {
+				var color = futurgo.getBodyColor();
+				$(this).ColorPickerSetColor(color);
+			},
+			onShow: function (colpkr) {
+				$(colpkr).fadeIn(250);
+				return false;
+			},
+			onHide: function (colpkr) {
+				$(colpkr).fadeOut(250);
+				return false;
+			},
+			onChange: function (hsb, hex, rgb) {
+				futurgo.setBodyColor(rgb.r, rgb.g, rgb.b);
+			},
+			onSubmit: function(hsb, hex, rgb, el) {
+				$(el).val(hex);
+				futurgo.setBodyColor(rgb.r, rgb.g, rgb.b);
+				$(el).ColorPickerHide();
+			},
+		});
+	}
+	
+	function onLoadComplete(loadTime)
+	{
+		// Hide the loader bar
+		loadStatus.style.display = 'none';		
+		console.log("Loaded " + loadTime.toFixed(2) + " seconds.");
+	}
+
+	function onLoadProgress(percentProgress)
+	{
+		loadStatus.innerHTML = "Loading scene... " + percentProgress.toFixed(0) + " %";
+	}
+
+	function onMenuCommand(id) {
+		console.log("Menu command: ", id);
+	}
+
+	function toggleInterior() {
+		futurgo.toggleInterior();
+	}
+
+	function toggleWheelAnimations() {
+		futurgo.toggleWheelAnimations();
+	}
+	
+	var glassHTML = "LightAdjust&trade; Windshield<br>Automatically Changes to Match Day/Night Conditions";
+	var bodyHTML = "LightFrame&trade; Titanium Alloy<br>Built for Speed, with the Highest Safety Rating";
+	var wheelsHTML = "LightSpeed&trade; Drive Train<br>Ride in High Style at High Speeds";
+	var overlayCopy = {
+		glass : glassHTML,
+		body : bodyHTML,
+		wheels : wheelsHTML,
+	};
+	
+	var overlayFadeDuration = 1000; // ms
+	var overlayFadeDelay = 3000; // ms
+	
+	function showOverlay(what, e) {
+		var html = overlayCopy[what];
+		if (html) {
+			overlay.style.display = 'block';
+			overlayContents.innerHTML= html;
+			overlay.style.top = e.pageY + "px";
+		}
+	}
+
+	function hideOverlay() {
+		overlay.style.display = 'none';
+	}
+
+	function onMouseOver(what, event) {
+		//console.log("Mouse over", what, event);
+		showOverlay(what, event);
+	}
+
+	function onMouseOut(what, event) {
+		//console.log("Mouse out", what, event);
+		hideOverlay();
+	}
+
+	</script>
+	
+</body>
+</html>

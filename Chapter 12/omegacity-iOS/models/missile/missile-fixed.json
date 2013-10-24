@@ -1,0 +1,306 @@
+{
+    "animations": {},
+    "asset": {
+        "generator": "collada2gltf@8ffb01efe30653c6a629c9403833575252cb5bec"
+    },
+    "attributes": {
+        "attribute_23": {
+            "bufferView": "bufferView_29",
+            "byteOffset": 0,
+            "byteStride": 12,
+            "count": 32072,
+            "max": [
+                4.98147,
+                1.41319,
+                1.41463
+            ],
+            "min": [
+                -4.73288,
+                -1.41319,
+                -1.40745
+            ],
+            "type": "FLOAT_VEC3"
+        },
+        "attribute_25": {
+            "bufferView": "bufferView_29",
+            "byteOffset": 384864,
+            "byteStride": 12,
+            "count": 32072,
+            "max": [
+                1,
+                1,
+                1
+            ],
+            "min": [
+                -0.999969,
+                -1,
+                -1
+            ],
+            "type": "FLOAT_VEC3"
+        },
+        "attribute_27": {
+            "bufferView": "bufferView_29",
+            "byteOffset": 769728,
+            "byteStride": 8,
+            "count": 32072,
+            "max": [
+                0.982115,
+                0.909098
+            ],
+            "min": [
+                0.0131842,
+                0.0312823
+            ],
+            "type": "FLOAT_VEC2"
+        }
+    },
+    "bufferViews": {
+        "bufferView_29": {
+            "buffer": "missile-fixed.bin",
+            "byteLength": 1026304,
+            "byteOffset": 0,
+            "target": "ARRAY_BUFFER"
+        },
+        "bufferView_30": {
+            "buffer": "missile-fixed.bin",
+            "byteLength": 96216,
+            "byteOffset": 1026304,
+            "target": "ELEMENT_ARRAY_BUFFER"
+        }
+    },
+    "buffers": {
+        "missile-fixed.bin": {
+            "byteLength": 1122520,
+            "path": "missile-fixed.bin"
+        }
+    },
+    "images": {
+        "image_0": {
+            "path": "Texture.png"
+        }
+    },
+    "indices": {
+        "indices_21": {
+            "bufferView": "bufferView_30",
+            "byteOffset": 0,
+            "count": 48108,
+            "type": "UNSIGNED_SHORT"
+        }
+    },
+    "materials": {
+        "Missile-effect": {
+            "instanceTechnique": {
+                "technique": "technique1",
+                "values": [
+                    {
+                        "parameter": "ambient",
+                        "value": [
+                            0,
+                            0,
+                            0,
+                            1
+                        ]
+                    },
+                    {
+                        "parameter": "diffuse",
+                        "value": "texture_image_0"
+                    },
+                    {
+                        "parameter": "emission",
+                        "value": [
+                            0,
+                            0,
+                            0,
+                            1
+                        ]
+                    },
+                    {
+                        "parameter": "shininess",
+                        "value": 50
+                    },
+                    {
+                        "parameter": "specular",
+                        "value": [
+                            0.5,
+                            0.5,
+                            0.5,
+                            1
+                        ]
+                    }
+                ]
+            },
+            "name": "Missile"
+        }
+    },
+    "meshes": {
+        "Circle-mesh": {
+            "name": "Circle-mesh",
+            "primitives": [
+                {
+                    "indices": "indices_21",
+                    "material": "Missile-effect",
+                    "primitive": "TRIANGLES",
+                    "semantics": {
+                        "NORMAL": "attribute_25",
+                        "POSITION": "attribute_23",
+                        "TEXCOORD_0": "attribute_27"
+                    }
+                }
+            ]
+        }
+    },
+    "nodes": {
+        "Missile": {
+            "children": [],
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "meshes": [
+                "Circle-mesh"
+            ],
+            "name": "Missile"
+        }
+    },
+    "profile": "WebGL 1.0",
+    "programs": {
+        "program_0": {
+            "fragmentShader": "missile-fixed0FS",
+            "vertexShader": "missile-fixed0VS"
+        }
+    },
+    "samplers": {
+        "sampler_0": {
+            "magFilter": "LINEAR",
+            "minFilter": "LINEAR",
+            "wrapS": "REPEAT",
+            "wrapT": "REPEAT"
+        }
+    },
+    "scene": "defaultScene",
+    "scenes": {
+        "defaultScene": {
+            "nodes": [
+                "Missile"
+            ]
+        }
+    },
+    "shaders": {
+        "missile-fixed0FS": {
+            "path": "missile-fixed0FS.glsl"
+        },
+        "missile-fixed0VS": {
+            "path": "missile-fixed0VS.glsl"
+        }
+    },
+    "skins": {},
+    "techniques": {
+        "technique1": {
+            "parameters": {
+                "diffuse": {
+                    "type": "SAMPLER_2D"
+                },
+                "emission": {
+                    "type": "FLOAT_VEC4"
+                },
+                "normal": {
+                    "semantic": "NORMAL",
+                    "type": "FLOAT_VEC3"
+                },
+                "normalMatrix": {
+                    "semantic": "WORLDVIEWINVERSETRANSPOSE",
+                    "type": "FLOAT_MAT3"
+                },
+                "position": {
+                    "semantic": "POSITION",
+                    "type": "FLOAT_VEC3"
+                },
+                "projectionMatrix": {
+                    "semantic": "PROJECTION",
+                    "type": "FLOAT_MAT4"
+                },
+                "texcoord0": {
+                    "semantic": "TEXCOORD_0",
+                    "type": "FLOAT_VEC2"
+                },
+                "worldViewMatrix": {
+                    "semantic": "WORLDVIEW",
+                    "type": "FLOAT_MAT4"
+                }
+            },
+            "pass": "defaultPass",
+            "passes": {
+                "defaultPass": {
+                    "details": {
+                        "commonProfile": {
+                            "extras": {
+                                "doubleSided": true
+                            },
+                            "lightingModel": "Phong",
+                            "parameters": [
+                                "diffuse",
+                                "emission",
+                                "normalMatrix",
+                                "projectionMatrix",
+                                "worldViewMatrix"
+                            ],
+                            "texcoordBindings": {
+                                "diffuse": "TEXCOORD_0"
+                            }
+                        },
+                        "type": "COLLADA-1.4.1/commonProfile"
+                    },
+                    "instanceProgram": {
+                        "attributes": {
+                            "a_normal": "normal",
+                            "a_position": "position",
+                            "a_texcoord0": "texcoord0"
+                        },
+                        "program": "program_0",
+                        "uniforms": {
+                            "u_diffuse": "diffuse",
+                            "u_emission": "emission",
+                            "u_normalMatrix": "normalMatrix",
+                            "u_projectionMatrix": "projectionMatrix",
+                            "u_worldViewMatrix": "worldViewMatrix"
+                        }
+                    },
+                    "states": {
+                        "blendEnable": true,
+                        "blendEquation": "FUNC_ADD",
+                        "blendFunc": {
+                            "dfactor": "ONE_MINUS_SRC_ALPHA",
+                            "sfactor": "SRC_ALPHA"
+                        },
+                        "cullFaceEnable": false,
+                        "depthMask": false,
+                        "depthTestEnable": true
+                    }
+                }
+            }
+        }
+    },
+    "textures": {
+        "texture_image_0": {
+            "format": "RGBA",
+            "internalFormat": "RGBA",
+            "sampler": "sampler_0",
+            "source": "image_0",
+            "target": "TEXTURE_2D"
+        }
+    }
+}

@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+
+@font-face {
+  font-family: 'Aldrich';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Aldrich'), url(../fonts/aldrich/v3/VWXaIPGrUapL_Y2vGs0lKALUuEpTyoUstqEm5AMlJo4.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Pathway Gothic One';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Pathway Gothic One'), local('PathwayGothicOne-Regular'), url(../fonts/pathwaygothicone/v1/Lqv9ztoTUV8Q0FmQZzPqaCwPNT-0fYl5GOmbcpnDW5g.woff) format('woff');
+}

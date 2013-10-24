@@ -1,0 +1,372 @@
+@CHARSET "UTF-8";
+* {
+	font-family: 'Aldrich', sans-serif;
+}
+
+body {
+	background-color:rgba(0, 0, 0, 0);
+	color:#11F4F7;
+	padding:0;
+	margin-left:0;
+	margin-right:0;
+	overflow:hidden;
+}
+	
+#menubar {
+	font-size:18px;
+	color:Black;
+	text-align: justify;
+	width:55%;
+	padding-left:360px;
+	padding-top:30px;
+}
+
+#container {
+	z-index:-2;
+	width: 1133px;
+	height:673px;
+	top:1%;
+	left:1%;
+	border:1px solid black;
+	box-shadow: 4px 4px 2px #888888;
+	position:absolute;
+	background:url(../images/loadscreenbg.png);
+	background-size:100% 100%;
+}
+
+:focus { outline: none; }
+
+#loadStatus {
+	font-size:96px;
+	width: 100%;
+	height: 30%;
+	top: 40%;
+	margin-left:10px;
+	margin-top:62px;
+	text-align:center;
+	position:absolute;
+}
+
+@-webkit-keyframes blinker {  
+  from { opacity: 1.0; }
+  to { opacity: 0.0; }
+}
+
+.blinker {
+  -webkit-animation-name: blinker;  
+  -webkit-animation-iteration-count: infinite;  
+  -webkit-animation-timing-function: cubic-bezier(.5, 0, 1, 1);
+  -webkit-animation-duration: .7s; 
+}
+
+#logowtext {
+	width:300px;
+	height:196px;
+	left:400px;
+	top:10px;
+	position:absolute;	
+	background:url(../images/logowtext.png);
+	background-size:100% 100%;
+}
+
+#startScreen {
+	width: 95%;
+	height: 100%;
+	top: 0%;
+	text-align:center;
+	position:absolute;
+}
+
+#startScreenText {
+	font-size:28px;
+	font-weight:bold;
+	color:white;
+	width: 40%;
+	height: 23%;
+	top: 33%;
+	left:30%;
+	text-align:center;
+	position:absolute;
+}
+
+#startGameLabel {
+	font-size:96px;
+	width: 100%;
+	height: 100%;
+	top: 69%;
+	left:0px;
+	text-align:center;
+	position:absolute;
+}
+
+#playScreen {
+	z-index:1;
+	width: 98%;
+	height:98%;
+	top:1%;
+	left:1%;
+	position:absolute;
+}
+
+#inventory {
+	width: 208px;
+	height:40px;
+	top:20px;
+	left:130px;
+	position:absolute;
+	background:url(../images/menubutton_Inventory.png);
+	background-size:100% 100%;
+	display:none;
+}
+
+#nav {
+	width: 208px;
+	height:40px;
+	top:66px;
+	left:130px;
+	position:absolute;
+	background:url(../images/menubutton_Nav.png);
+	background-size:100% 100%;
+	display:none;
+}
+
+#objectives {
+	width: 208px;
+	height:40px;
+	top:20px;
+	right:116px;
+	position:absolute;
+	background:url(../images/menubutton_Objectives.png);
+	background-size:100% 100%;
+	display:none;
+}
+
+#menu {
+	width: 208px;
+	height:40px;
+	top:66px;
+	right:116px;
+	position:absolute;
+	background:url(../images/menubutton_Menu.png);
+	background-size:100% 100%;
+	display:none;
+}
+
+#message {
+	width: 500px;
+	height:236px;
+	top:0;
+	left:342px;
+	position:absolute;
+	background:url(../images/message_Background.png);
+	background-size:100% 100%;
+	overflow:hidden;
+	display:none;
+}
+
+#message_portrait {
+	width: 55%;
+	height:66%;
+	top:9%;
+	left:10%;
+	border:none;
+	position:absolute;
+	background:url(../images/message_Portrait.png);
+	background-size:100% 100%;
+	display:none;
+}
+
+@-webkit-keyframes scroller {  
+  from { left: 98%; }
+  to { left: 40%; }
+}
+
+.scroller {
+  -webkit-animation-name: scroller;  
+  -webkit-animation-iteration-count: 1;  
+  -webkit-animation-timing-function: cubic-bezier(.5, 0, 1, 1);
+  -webkit-animation-duration: 1s; 
+}
+
+#message_content {
+	width: 44%;
+	height: 55%;
+	top:18%;
+	left: 40%;
+	position:absolute;
+	font-size:18px;
+	font-weight:bold;
+	overflow:hidden;
+	display:none;
+}
+
+#message_alert {
+	width: 44%;
+	height: 20%;
+	top:60.3%;
+	left: 40%;
+	position:absolute;
+	font-size:18px;
+	font-weight:bold;
+	color:red;
+	display:none;
+}
+
+#ammo {
+	top:17.33%;
+	left: 0%;
+	width:292px;
+	height:180px;
+	position:absolute;
+	background:url(../images/ammo.png);
+	display:none;
+}
+
+#ammo_count {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:32px;
+	top:70px;
+	left: 120px;
+	color:White;
+	position:absolute;
+	display:none;
+}
+
+#ammo_label {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:18px;
+	top:106px;
+	left: 132px;
+	position:absolute;
+	display:none;
+}
+
+#speed {
+	bottom:204px; /*x.y%;*/
+	left:0%;
+	width:292px;
+	height:76px;
+	position:absolute;
+	background:url(../images/speed.png);
+	display:none;
+}
+
+#speed_value {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:32px;
+	top:20px;
+	left: 132px;
+	color:White;
+	position:absolute;
+	display:none;
+}
+
+#speed_label {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:14px;
+	top:40px;
+	left: 178px;
+	position:absolute;
+	display:none;
+}
+
+#fuel {
+	bottom:132px; /*15.333%;*/
+	left:0%;
+	width:292px;
+	height:72px;
+	position:absolute;
+	background:url(../images/fuel.png);
+	display:none;
+}
+
+#fuel_value {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:32px;
+	top:0px;
+	left: 132px;
+	color:White;
+	position:absolute;
+	display:none;
+}
+
+#map {
+	top:17.33%;
+	right:0%;
+	width:200px;
+	height:192px;
+	position:absolute;
+	background:url(../images/map.png);
+	display:none;
+}
+
+#shields {
+	bottom:132px; /*15.333%;*/
+	right:0%;
+	width:304px;
+	height:144px;
+	position:absolute;
+	background:url(../images/shields.png);
+	display:none;
+}
+
+#health_label {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:14px;
+	top:10px;
+	left: 78px;
+	position:absolute;
+	display:none;
+}
+
+#health_value {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:32px;
+	top:24px;
+	left: 78px;
+	color:White;
+	position:absolute;
+	display:none;
+}
+
+#shields_label {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:14px;
+	top:60px;
+	left: 78px;
+	position:absolute;
+	display:none;
+}
+
+#shields_value {
+	font-family: 'Pathway Gothic One', sans-serif;
+	font-size:32px;
+	top:74px;
+	left: 78px;
+	color:White;
+	position:absolute;
+	display:none;
+}
+
+#target {
+	top:40%;
+	left:44%;
+	width:13%;
+	height:17%;
+	position:absolute;
+	background:url(../images/target.png);
+	background-size:100% 100%;
+	display:none;
+}
+
+#help_text {
+	font-size:12px;
+	color:black;
+	bottom:6px;
+	text-align:center;
+	width:100%;
+	position:absolute;
+	display:none;
+}
+	
+

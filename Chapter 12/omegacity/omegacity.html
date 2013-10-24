@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" 
+  content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Omega City</title>
+
+	<!-- Google font: PT Sans http://www.google.com/fonts#UsePlace:use/Collection:PT+Sans  -->
+	<link href='./css/fonts.css' rel='stylesheet' type='text/css'>
+	<link href="./css/omegacity.css" rel="stylesheet" type='text/css'/> 
+</head>
+<body>
+
+	<!--  Page content  -->
+	<div id="stats"></div>
+	<!--  Game rendering area  -->
+	<div id="container"></div>
+	<!--  Loading message  -->
+	<div id="loadStatus" style="display:none">
+	Loading...
+	</div>
+	<!--  Click-to-start screen  -->
+	<div id="startScreen" style="display:none">
+	<!--  Logo -->
+	<div id="logowtext"></div>
+	<div id="startScreenText">
+	Welcome to Omega City, the frontier outpost of the galaxy. You and your squad are humanity's
+	last best hope as aliens attack.<br></br>
+	To save the city... you may have to destroy it!
+	</div>
+	<label id="startGameLabel" class="blinker" onclick="startGame();">START</label>
+	</div>
+	<!--  Game HUD  -->
+		<div id="inventory"></div>
+		<div id="nav"></div>
+		<div id="objectives"></div>
+		<div id="menu"></div>
+		<div id="message">
+			<div id="message_portrait"></div>
+			<div id="message_content">
+			</div>
+			<!-- Lipsum placeholder for when doing layout
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+			Aenean euismod nibh ut velit dictum, eu scelerisque purus adipiscing. 
+			Duis quis est ut dolor tincidunt sodales sed a erat. 
+			Proin vitae sem nec arcu mattis ullamcorper. Duis dignissim, nisl sed 
+			laoreet aliquam, nisl massa fringilla neque, rhoncus facilisis sem 
+			enim a orci. Etiam sit amet risus est. Vivamus ornare velit lorem, vel 
+			euismod turpis faucibus ut. Cras dignissim fermentum quam sit amet 
+			pellentesque. Curabitur porta non tortor quis ultricies.
+			 -->
+			<div id="message_alert" class="blinker">
+			</div>
+		</div>
+		<div id="ammo">
+			<div id="ammo_count">x25</div>
+			<div id="ammo_label">Seeking Missiles</div>
+		</div>
+		<div id="speed">
+			<div id="speed_value">661</div>
+			<div id="speed_label">km/h</div>
+		</div>
+		<div id="fuel">
+			<div id="fuel_value">34%</div>
+		</div>
+		<div id="map">
+		</div>
+		<div id="shields">
+			<div id="health_label">Health</div>
+			<div id="health_value">87%</div>
+			<div id="shields_label">Shields</div>
+			<div id="shields_value">65%</div>
+		</div>
+		<div id="target">
+		</div>
+		<div id="help_text">
+		UP-ARROW: fire lasers. SPACE: fire missile.
+		</div>
+
+	<!--  Audio content  -->
+	<audio volume="0.0" id="entry_noise">
+	  <source src="./sounds/entrynoise.ogg" type="audio/ogg" />
+	  Your browser does not support OGG files in the audio element.
+	</audio>
+	<audio volume="0.0" id="entry_music">
+	  <source src="./sounds/entrymusic.mp3" type="audio/mp3" />
+	  Your browser does not support MP3 files in the audio element.
+	</audio>
+	<audio volume="0.0" id="engines">
+	  <source src="./sounds/enginesturbinesone.ogg" type="audio/ogg" />
+	  Your browser does not support OGG files in the audio element.
+	</audio>
+	<audio volume="0.0" id="laser">
+	  <source src="./sounds/shortlaser.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	<audio volume="0.0" id="missile">
+	  <source src="./sounds/missile-firing-fl.mp3" type="audio/mp3" />
+	  Your browser does not support MP3 files in the audio element.
+	</audio>
+	<audio volume="0.0" id="power_up">
+	  <source src="./sounds/flash-sound-jet.ogg" type="audio/ogg" />
+	  Your browser does not support OGG files in the audio element.
+	</audio>
+	<audio volume="0.0" id="missile_locked_on">
+	  <source src="./sounds/missile-lock-on-sound.mp3" type="audio/mp3" />
+	  Your browser does not support MP3 files in the audio element.
+	</audio>
+	<audio volume="0.0" id="explosion">
+	  <source src="./sounds/explosion4-trimmed.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	<audio volume="0.0" id="proximity_alert">
+	  <source src="./sounds/proximity-alert.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	<audio volume="0.0" id="no_information">
+	  <source src="./sounds/no-information.wav" type="audio/wav" />
+	  Your browser does not support WAV files in the audio element.
+	</audio>
+	
+    <script src="../../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+    <script src="../../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+	<script src="../../libs/vizi/vizi.js"></script>
+	<script src="omegacity.js"></script>
+	<script src="omegacityHUD.js"></script>
+	<script src="omegacitySound.js"></script>
+	<script>
+
+   	var game = null;
+   	var hud = null;
+   	var sound = null;
+   	
+	$(document).ready(function() {
+
+		var container = document.getElementById("container");
+		var loadStatus = document.getElementById("loadStatus");
+		var startScreen = document.getElementById("startScreen");
+		
+		game = new OmegaCity({ container : container,
+				loadCallback : onLoadComplete,
+				loadProgressCallback : onLoadProgress,
+			 });	
+		
+		hud = new OmegaCityHUD({game : game});
+
+		sound = new OmegaCitySound({game : game});
+		
+		hud.enterState("load");
+		sound.enterState("load");
+		game.load();
+	}
+	);
+	
+	function onLoadComplete(loadTime)
+	{
+		console.log("Loaded " + loadTime.toFixed(2) + " seconds.");
+
+		hud.enterState("start");
+		sound.enterState("start");
+	}
+
+	function onLoadProgress(percentProgress)
+	{
+		loadStatus.innerHTML = "Loading scene... " + percentProgress.toFixed(0) + " %";
+	}
+
+	function startGame() {
+		hud.enterState("play");
+		sound.enterState("play");
+		game.play();
+	}
+
+	</script>
+	
+</body>
+</html>

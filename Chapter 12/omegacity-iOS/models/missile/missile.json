@@ -1,0 +1,626 @@
+{
+    "animations": {},
+    "asset": {
+        "generator": "collada2gltf@8ffb01efe30653c6a629c9403833575252cb5bec"
+    },
+    "attributes": {
+        "attribute_23": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 0,
+            "byteStride": 12,
+            "count": 96,
+            "max": [
+                0.935009,
+                5.13177,
+                0.392334
+            ],
+            "min": [
+                -0.938587,
+                -5.37623,
+                -17.1258
+            ],
+            "type": "FLOAT_VEC3"
+        },
+        "attribute_25": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 1152,
+            "byteStride": 12,
+            "count": 96,
+            "max": [
+                0.99824,
+                1,
+                1
+            ],
+            "min": [
+                -0.99824,
+                -1,
+                -1
+            ],
+            "type": "FLOAT_VEC3"
+        },
+        "attribute_27": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 2304,
+            "byteStride": 8,
+            "count": 96,
+            "max": [
+                0.484973,
+                0.875133
+            ],
+            "min": [
+                0.0135462,
+                0.123675
+            ],
+            "type": "FLOAT_VEC2"
+        },
+        "attribute_50": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 3072,
+            "byteStride": 12,
+            "count": 32072,
+            "max": [
+                4.98147,
+                1.41319,
+                1.41463
+            ],
+            "min": [
+                -4.73288,
+                -1.41319,
+                -1.40745
+            ],
+            "type": "FLOAT_VEC3"
+        },
+        "attribute_52": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 387936,
+            "byteStride": 12,
+            "count": 32072,
+            "max": [
+                1,
+                1,
+                1
+            ],
+            "min": [
+                -0.999969,
+                -1,
+                -1
+            ],
+            "type": "FLOAT_VEC3"
+        },
+        "attribute_54": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 772800,
+            "byteStride": 8,
+            "count": 32072,
+            "max": [
+                0.982115,
+                0.909098
+            ],
+            "min": [
+                0.0131842,
+                0.0312823
+            ],
+            "type": "FLOAT_VEC2"
+        }
+    },
+    "bufferViews": {
+        "bufferView_57": {
+            "buffer": "missile.bin",
+            "byteLength": 1029376,
+            "byteOffset": 0,
+            "target": "ARRAY_BUFFER"
+        },
+        "bufferView_58": {
+            "buffer": "missile.bin",
+            "byteLength": 96504,
+            "byteOffset": 1029376,
+            "target": "ELEMENT_ARRAY_BUFFER"
+        }
+    },
+    "buffers": {
+        "missile.bin": {
+            "byteLength": 1125880,
+            "path": "missile.bin"
+        }
+    },
+    "cameras": {
+        "camera_0": {
+            "aspect_ratio": 1,
+            "projection": "perspective",
+            "xfov": 49.1343,
+            "zfar": 100,
+            "znear": 0.1
+        }
+    },
+    "images": {
+        "image_0": {
+            "path": "Texture.png"
+        }
+    },
+    "indices": {
+        "indices_21": {
+            "bufferView": "bufferView_58",
+            "byteOffset": 0,
+            "count": 144,
+            "type": "UNSIGNED_SHORT"
+        },
+        "indices_48": {
+            "bufferView": "bufferView_58",
+            "byteOffset": 288,
+            "count": 48108,
+            "type": "UNSIGNED_SHORT"
+        }
+    },
+    "lights": {
+        "Lamp-light": {
+            "id": "Lamp-light",
+            "spot": {
+                "color": [
+                    1,
+                    1,
+                    1
+                ],
+                "constantAttenuation": 1,
+                "fallOffAngle": 115,
+                "fallOffExponent": 0.695977,
+                "linearAttenuation": 0.0333333,
+                "quadraticAttenuation": 0
+            },
+            "type": "spot"
+        },
+        "Lamp_001-light": {
+            "id": "Lamp_001-light",
+            "spot": {
+                "color": [
+                    0.525611,
+                    0.513837,
+                    0.6
+                ],
+                "constantAttenuation": 1,
+                "fallOffAngle": 115,
+                "fallOffExponent": 0.695977,
+                "linearAttenuation": 0.0333333,
+                "quadraticAttenuation": 0
+            },
+            "type": "spot"
+        },
+        "Lamp_002-light": {
+            "id": "Lamp_002-light",
+            "spot": {
+                "color": [
+                    0.343585,
+                    0.35,
+                    0.272753
+                ],
+                "constantAttenuation": 1,
+                "fallOffAngle": 115,
+                "fallOffExponent": 0.695977,
+                "linearAttenuation": 0.0333333,
+                "quadraticAttenuation": 0
+            },
+            "type": "spot"
+        }
+    },
+    "materials": {
+        "Missile-effect": {
+            "instanceTechnique": {
+                "technique": "technique1",
+                "values": [
+                    {
+                        "parameter": "ambient",
+                        "value": [
+                            0,
+                            0,
+                            0,
+                            1
+                        ]
+                    },
+                    {
+                        "parameter": "diffuse",
+                        "value": "texture_image_0"
+                    },
+                    {
+                        "parameter": "emission",
+                        "value": [
+                            0,
+                            0,
+                            0,
+                            1
+                        ]
+                    },
+                    {
+                        "parameter": "shininess",
+                        "value": 50
+                    },
+                    {
+                        "parameter": "specular",
+                        "value": [
+                            0.5,
+                            0.5,
+                            0.5,
+                            1
+                        ]
+                    }
+                ]
+            },
+            "name": "Missile"
+        }
+    },
+    "meshes": {
+        "Circle-mesh": {
+            "name": "Circle-mesh",
+            "primitives": [
+                {
+                    "indices": "indices_48",
+                    "material": "Missile-effect",
+                    "primitive": "TRIANGLES",
+                    "semantics": {
+                        "NORMAL": "attribute_52",
+                        "POSITION": "attribute_50",
+                        "TEXCOORD_0": "attribute_54"
+                    }
+                }
+            ]
+        },
+        "Cube-mesh": {
+            "name": "Cube-mesh",
+            "primitives": [
+                {
+                    "indices": "indices_21",
+                    "material": "Missile-effect",
+                    "primitive": "TRIANGLES",
+                    "semantics": {
+                        "NORMAL": "attribute_25",
+                        "POSITION": "attribute_23",
+                        "TEXCOORD_0": "attribute_27"
+                    }
+                }
+            ]
+        }
+    },
+    "nodes": {
+        "Camera": {
+            "camera": "camera_0",
+            "children": [],
+            "matrix": [
+                0.633418,
+                -0.662833,
+                -0.399293,
+                0,
+                0.533243,
+                -3.11395e-05,
+                0.845962,
+                0,
+                -0.560744,
+                -0.748767,
+                0.353431,
+                0,
+                -5.38927,
+                -6.17183,
+                3.08869,
+                1
+            ],
+            "name": "Camera"
+        },
+        "Lamp": {
+            "children": [],
+            "lights": [
+                "Lamp-light"
+            ],
+            "matrix": [
+                -0.710537,
+                0.644029,
+                -0.283486,
+                0,
+                -0.176198,
+                -0.552882,
+                -0.814418,
+                0,
+                -0.681243,
+                -0.528724,
+                0.50632,
+                0,
+                -6.45944,
+                -7.22399,
+                4.04434,
+                1
+            ],
+            "name": "Lamp"
+        },
+        "Lamp_001": {
+            "children": [],
+            "lights": [
+                "Lamp_001-light"
+            ],
+            "matrix": [
+                -0.919435,
+                -0.272534,
+                -0.283486,
+                0,
+                0.380874,
+                -0.437789,
+                -0.814418,
+                0,
+                0.0978494,
+                -0.856777,
+                0.50632,
+                0,
+                1.13042,
+                -10.0809,
+                5.95198,
+                1
+            ],
+            "name": "Lamp_001"
+        },
+        "Lamp_002": {
+            "children": [],
+            "lights": [
+                "Lamp_002-light"
+            ],
+            "matrix": [
+                0.542068,
+                0.448196,
+                -0.710833,
+                0,
+                -0.463962,
+                -0.545653,
+                -0.697855,
+                0,
+                -0.700644,
+                0.708084,
+                -0.0878349,
+                0,
+                -9.80174,
+                7.75617,
+                1.29932,
+                1
+            ],
+            "name": "Lamp_002"
+        },
+        "Missile": {
+            "children": [],
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "meshes": [
+                "Circle-mesh"
+            ],
+            "name": "Missile"
+        },
+        "Missile_side_Ext": {
+            "children": [],
+            "matrix": [
+                1.52306,
+                0,
+                0,
+                0,
+                0,
+                0.0946669,
+                0,
+                0,
+                0,
+                0,
+                0.0567844,
+                0,
+                0.506167,
+                0.0132819,
+                0.472583,
+                1
+            ],
+            "meshes": [
+                "Cube-mesh"
+            ],
+            "name": "Missile_side_Ext"
+        }
+    },
+    "profile": "WebGL 1.0",
+    "programs": {
+        "program_0": {
+            "fragmentShader": "missile0FS",
+            "vertexShader": "missile0VS"
+        }
+    },
+    "samplers": {
+        "sampler_0": {
+            "magFilter": "LINEAR",
+            "minFilter": "LINEAR",
+            "wrapS": "REPEAT",
+            "wrapT": "REPEAT"
+        }
+    },
+    "scene": "defaultScene",
+    "scenes": {
+        "defaultScene": {
+            "nodes": [
+                "Missile_side_Ext",
+                "Lamp_002",
+                "Lamp_001",
+                "Missile",
+                "Lamp",
+                "Camera"
+            ]
+        }
+    },
+    "shaders": {
+        "missile0FS": {
+            "path": "missile0FS.glsl"
+        },
+        "missile0VS": {
+            "path": "missile0VS.glsl"
+        }
+    },
+    "skins": {},
+    "techniques": {
+        "technique1": {
+            "parameters": {
+                "ambient": {
+                    "type": "FLOAT_VEC4"
+                },
+                "diffuse": {
+                    "type": "SAMPLER_2D"
+                },
+                "emission": {
+                    "type": "FLOAT_VEC4"
+                },
+                "light0Color": {
+                    "type": "FLOAT_VEC3",
+                    "value": [
+                        0.343585,
+                        0.35,
+                        0.272753
+                    ]
+                },
+                "light0Transform": {
+                    "source": "Lamp_002",
+                    "type": "FLOAT_MAT4"
+                },
+                "light1Color": {
+                    "type": "FLOAT_VEC3",
+                    "value": [
+                        0.525611,
+                        0.513837,
+                        0.6
+                    ]
+                },
+                "light1Transform": {
+                    "source": "Lamp_001",
+                    "type": "FLOAT_MAT4"
+                },
+                "light2Color": {
+                    "type": "FLOAT_VEC3",
+                    "value": [
+                        1,
+                        1,
+                        1
+                    ]
+                },
+                "light2Transform": {
+                    "source": "Lamp",
+                    "type": "FLOAT_MAT4"
+                },
+                "normal": {
+                    "semantic": "NORMAL",
+                    "type": "FLOAT_VEC3"
+                },
+                "normalMatrix": {
+                    "semantic": "WORLDVIEWINVERSETRANSPOSE",
+                    "type": "FLOAT_MAT3"
+                },
+                "position": {
+                    "semantic": "POSITION",
+                    "type": "FLOAT_VEC3"
+                },
+                "projectionMatrix": {
+                    "semantic": "PROJECTION",
+                    "type": "FLOAT_MAT4"
+                },
+                "shininess": {
+                    "type": "FLOAT"
+                },
+                "specular": {
+                    "type": "FLOAT_VEC4"
+                },
+                "texcoord0": {
+                    "semantic": "TEXCOORD_0",
+                    "type": "FLOAT_VEC2"
+                },
+                "worldViewMatrix": {
+                    "semantic": "WORLDVIEW",
+                    "type": "FLOAT_MAT4"
+                }
+            },
+            "pass": "defaultPass",
+            "passes": {
+                "defaultPass": {
+                    "details": {
+                        "commonProfile": {
+                            "extras": {
+                                "doubleSided": true
+                            },
+                            "lightingModel": "Phong",
+                            "parameters": [
+                                "ambient",
+                                "diffuse",
+                                "emission",
+                                "light0Color",
+                                "light0Transform",
+                                "light1Color",
+                                "light1Transform",
+                                "light2Color",
+                                "light2Transform",
+                                "normalMatrix",
+                                "projectionMatrix",
+                                "shininess",
+                                "specular",
+                                "worldViewMatrix"
+                            ],
+                            "texcoordBindings": {
+                                "diffuse": "TEXCOORD_0"
+                            }
+                        },
+                        "type": "COLLADA-1.4.1/commonProfile"
+                    },
+                    "instanceProgram": {
+                        "attributes": {
+                            "a_normal": "normal",
+                            "a_position": "position",
+                            "a_texcoord0": "texcoord0"
+                        },
+                        "program": "program_0",
+                        "uniforms": {
+                            "u_ambient": "ambient",
+                            "u_diffuse": "diffuse",
+                            "u_emission": "emission",
+                            "u_light0Color": "light0Color",
+                            "u_light0Transform": "light0Transform",
+                            "u_light1Color": "light1Color",
+                            "u_light1Transform": "light1Transform",
+                            "u_light2Color": "light2Color",
+                            "u_light2Transform": "light2Transform",
+                            "u_normalMatrix": "normalMatrix",
+                            "u_projectionMatrix": "projectionMatrix",
+                            "u_shininess": "shininess",
+                            "u_specular": "specular",
+                            "u_worldViewMatrix": "worldViewMatrix"
+                        }
+                    },
+                    "states": {
+                        "blendEnable": true,
+                        "blendEquation": "FUNC_ADD",
+                        "blendFunc": {
+                            "dfactor": "ONE_MINUS_SRC_ALPHA",
+                            "sfactor": "SRC_ALPHA"
+                        },
+                        "cullFaceEnable": false,
+                        "depthMask": false,
+                        "depthTestEnable": true
+                    }
+                }
+            }
+        }
+    },
+    "textures": {
+        "texture_image_0": {
+            "format": "RGBA",
+            "internalFormat": "RGBA",
+            "sampler": "sampler_0",
+            "source": "image_0",
+            "target": "TEXTURE_2D"
+        }
+    }
+}
