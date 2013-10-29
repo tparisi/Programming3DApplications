@@ -49001,24 +49001,31 @@ Vizi.OrbitControls = function ( object, domElement ) {
 	}
 
 	function onTouchStart( event ) {
-		// synthesize a left mouse button event
-		var mouseEvent = {
-			'type': 'mousedown',
-		    'view': event.view,
-		    'bubbles': event.bubbles,
-		    'cancelable': event.cancelable,
-		    'detail': event.detail,
-		    'screenX': event.touches[0].screenX,
-		    'screenY': event.touches[0].screenY,
-		    'clientX': event.touches[0].clientX,
-		    'clientY': event.touches[0].clientY,
-		    'pageX': event.touches[0].pageX,
-		    'pageY': event.touches[0].pageY,
-		    'button': 0,
-		    'preventDefault' : function() {}
-			};
-		
-		onMouseDown(mouseEvent);
+		if ( event.touches.length > 1 ) {
+			scope.touchDistance = calcDistance(event.touches[0], event.touches[1]);
+			scope.touchId0 = event.touches[0].identifier;
+			scope.touchId1 = event.touches[1].identifier;
+		}
+		else {
+			// synthesize a left mouse button event
+			var mouseEvent = {
+				'type': 'mousedown',
+			    'view': event.view,
+			    'bubbles': event.bubbles,
+			    'cancelable': event.cancelable,
+			    'detail': event.detail,
+			    'screenX': event.touches[0].screenX,
+			    'screenY': event.touches[0].screenY,
+			    'clientX': event.touches[0].clientX,
+			    'clientY': event.touches[0].clientY,
+			    'pageX': event.touches[0].pageX,
+			    'pageY': event.touches[0].pageY,
+			    'button': 0,
+			    'preventDefault' : function() {}
+				};
+			
+			onMouseDown(mouseEvent);
+		}
 	}
 		
 	function onMouseMove( event ) {
@@ -49066,26 +49073,56 @@ Vizi.OrbitControls = function ( object, domElement ) {
 	}
 
 	function onTouchMove( event ) {
-		// synthesize a left mouse button event
-		var mouseEvent = {
-			'type': 'mousemove',
-		    'view': event.view,
-		    'bubbles': event.bubbles,
-		    'cancelable': event.cancelable,
-		    'detail': event.detail,
-		    'screenX': event.touches[0].screenX,
-		    'screenY': event.touches[0].screenY,
-		    'clientX': event.touches[0].clientX,
-		    'clientY': event.touches[0].clientY,
-		    'pageX': event.touches[0].pageX,
-		    'pageY': event.touches[0].pageY,
-		    'button': 0,
-		    'preventDefault' : function() {}
-			};
-		
-		onMouseMove(mouseEvent);
+		if ( event.changedTouches.length > 1 ) {
+			var touch0 = null;
+			var touch1 = null;
+			for (var i = 0; i < event.changedTouches.length; i++) {
+				if (event.changedTouches[i].identifier == scope.touchId0)
+					touch0 = event.changedTouches[i];
+				else if (event.changedTouches[i].identifier == scope.touchId1)
+					touch1 = event.changedTouches[i];
+					
+			}
+			if (touch0 && touch1) {
+				 var touchDistance = calcDistance(event.touches[0], event.touches[1]);
+				 var deltaDistance = touchDistance - scope.touchDistance;
+				 if (deltaDistance < 0) {
+					 scope.zoomIn();
+				 }
+				 else if (deltaDistance > 0) {
+					 scope.zoomOut();
+				 }
+				 scope.touchDistance = touchDistance;
+			}
+		}
+		else {
+			// synthesize a left mouse button event
+			var mouseEvent = {
+				'type': 'mousemove',
+			    'view': event.view,
+			    'bubbles': event.bubbles,
+			    'cancelable': event.cancelable,
+			    'detail': event.detail,
+			    'screenX': event.changedTouches[0].screenX,
+			    'screenY': event.changedTouches[0].screenY,
+			    'clientX': event.changedTouches[0].clientX,
+			    'clientY': event.changedTouches[0].clientY,
+			    'pageX': event.changedTouches[0].pageX,
+			    'pageY': event.changedTouches[0].pageY,
+			    'button': 0,
+			    'preventDefault' : function() {}
+				};
+			
+			onMouseMove(mouseEvent);
+		}
 	}
-		
+
+	function calcDistance( touch0, touch1 ) {
+		var dx = touch1.clientX - touch0.clientX;
+		var dy = touch1.clientY - touch0.clientY;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+	
 	function onMouseUp( event ) {
 
 		if ( scope.enabled === false ) return;
@@ -49102,24 +49139,29 @@ Vizi.OrbitControls = function ( object, domElement ) {
 
 	
 	function onTouchEnd( event ) {
-		// synthesize a left mouse button event
-		var mouseEvent = {
-			'type': 'mouseup',
-		    'view': event.view,
-		    'bubbles': event.bubbles,
-		    'cancelable': event.cancelable,
-		    'detail': event.detail,
-		    'screenX': event.changedTouches[0].screenX,
-		    'screenY': event.changedTouches[0].screenY,
-		    'clientX': event.changedTouches[0].clientX,
-		    'clientY': event.changedTouches[0].clientY,
-		    'pageX': event.changedTouches[0].pageX,
-		    'pageY': event.changedTouches[0].pageY,
-		    'button': 0,
-		    'preventDefault' : function() {}
-		};
-		
-		onMouseUp(mouseEvent);
+		if ( event.changedTouches.length > 1 ) {
+			// nothing to do
+		}
+		else {
+			// synthesize a left mouse button event
+			var mouseEvent = {
+				'type': 'mouseup',
+			    'view': event.view,
+			    'bubbles': event.bubbles,
+			    'cancelable': event.cancelable,
+			    'detail': event.detail,
+			    'screenX': event.changedTouches[0].screenX,
+			    'screenY': event.changedTouches[0].screenY,
+			    'clientX': event.changedTouches[0].clientX,
+			    'clientY': event.changedTouches[0].clientY,
+			    'pageX': event.changedTouches[0].pageX,
+			    'pageY': event.changedTouches[0].pageY,
+			    'button': 0,
+			    'preventDefault' : function() {}
+			};
+			
+			onMouseUp(mouseEvent);
+		}
 	}
 		
 	function onMouseWheel( event ) {
