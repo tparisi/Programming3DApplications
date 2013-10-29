@@ -49084,7 +49084,7 @@ Vizi.OrbitControls = function ( object, domElement ) {
 					
 			}
 			if (touch0 && touch1) {
-				 var touchDistance = calcDistance(event.touches[0], event.touches[1]);
+				 var touchDistance = calcDistance(touch0, touch1);
 				 var deltaDistance = touchDistance - scope.touchDistance;
 				 if (deltaDistance > 0) {
 					 scope.zoomIn();
