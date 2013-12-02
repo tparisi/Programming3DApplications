@@ -1,0 +1,120 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; 3D Transforms</title>
+<link rel="stylesheet" href="../css/3dtransforms.css" />
+
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	cube = null;
+	
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+    }
+    
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("webglcanvas");
+
+		        // Create the Three.js renderer and attach it to our canvas
+			    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+			    // Set the viewport size
+			    renderer.setSize(canvas.width, canvas.height);
+
+			    // Create a new Three.js scene
+			    scene = new THREE.Scene();
+
+			    // Add  a camera so we can view the scene
+		        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+		        camera.position.z = 12;
+		        camera.position.y = 2;
+		        camera.lookAt(new THREE.Vector3);
+				scene.add(camera);
+
+		        // Add a directional light to show off the object
+				var light = new THREE.DirectionalLight( 0xffffff, 1.5);
+
+				// Position the light out from the scene, pointing at the origin
+				light.position.set(0, .1, 1);
+				scene.add( light );
+				
+		        // Create a Phong material
+		        var material = new THREE.MeshPhongMaterial({ color:0xaa0000 });
+
+		        // Create the cube geometry
+		        var geometry = new THREE.CubeGeometry(2, 2, 2);
+
+		        // And put the geometry and material together into a mesh
+		        cube = new THREE.Mesh(geometry, material);
+
+		        // Move the mesh to the left and rotate it
+		        cube.position.x = -4;
+		        cube.rotation.x = Math.PI / 8;
+		        cube.rotation.y = Math.PI / 5;
+
+		        // Finally, add the mesh to our scene
+		        scene.add( cube );
+
+		        // Create a Phong material
+		        var material = new THREE.MeshPhongMaterial({ color:0x008800 });
+
+		        // Create the cube geometry
+		        var geometry = new THREE.CubeGeometry(2, 2, 2);
+
+		        // And put the geometry and material together into a mesh
+		        cube = new THREE.Mesh(geometry, material);
+
+		        // Finally, add the mesh to our scene
+		        scene.add( cube );
+
+		        // Create a Phong material
+		        var material = new THREE.MeshPhongMaterial({ color:0x000088 });
+
+		        // Create the cube geometry
+		        var geometry = new THREE.CubeGeometry(2, 2, 2);
+
+		        // And put the geometry and material together into a mesh
+		        cube = new THREE.Mesh(geometry, material);
+
+		        // Move the mesh to the right and scale it
+		        cube.position.x = 4;
+		        cube.scale.set(1.5, 1.5, 1.5);
+		        
+		        // Finally, add the mesh to our scene
+		        scene.add( cube );
+		        
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+    <canvas id="webglcanvas" style="border: none;background-color:#aaaaaa" width="800" height="600"></canvas>
+    <div id="legend-left" class="legend">
+    Translate [-4, 0, 0]<br></br>Rotate [PI / 8, PI / 5, 0]
+    
+    </div>
+    <div id="legend-right" class="legend">
+    Scale [1.5, 1.5, 1.5]
+    
+    </div>
+
+</body>
+
+</html>
