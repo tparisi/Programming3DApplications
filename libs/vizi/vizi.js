@@ -48207,6 +48207,7 @@ Vizi.PickManager.objectFromMouse = function(event)
 	var intersected = Vizi.Graphics.instance.objectFromMouse(event);
 	if (intersected.object)
 	{
+		event.face = intersected.face;
 		event.normal = intersected.normal;
 		event.point = intersected.point;
 		event.object = intersected.object;
@@ -49440,7 +49441,7 @@ Vizi.GraphicsThreeJS.prototype.objectFromMouse = function(event)
         	return { object : null, point : null, normal : null };
     	}
     	
-    	return (this.findObjectFromIntersected(intersected.object, intersected.point, intersected.face ? intersected.face.normal : null));        	    	                             
+    	return (this.findObjectFromIntersected(intersected.object, intersected.point, intersected.face));        	    	                             
     }
     else
     {
@@ -49477,7 +49478,7 @@ Vizi.GraphicsThreeJS.prototype.objectFromRay = function(hierarchy, origin, direc
         	return { object : null, point : null, normal : null };
     	}
     	
-    	return (this.findObjectFromIntersected(intersected.object, intersected.point, intersected.face ? intersected.face.normal : null));        	    	                             
+    	return (this.findObjectFromIntersected(intersected.object, intersected.point, intersected.face));        	    	                             
     }
     else
     {
@@ -49486,7 +49487,7 @@ Vizi.GraphicsThreeJS.prototype.objectFromRay = function(hierarchy, origin, direc
 }
 
 
-Vizi.GraphicsThreeJS.prototype.findObjectFromIntersected = function(object, point, normal)
+Vizi.GraphicsThreeJS.prototype.findObjectFromIntersected = function(object, point, face)
 {
 	if (object.data)
 	{
@@ -49494,15 +49495,16 @@ Vizi.GraphicsThreeJS.prototype.findObjectFromIntersected = function(object, poin
 		modelMat.getInverse(object.matrixWorld);
 		var hitPointWorld = point.clone();
 		point.applyMatrix4(modelMat);
-		return { object: object.data, point: point, hitPointWorld : hitPointWorld, normal: normal };
+		var normal = face ? face.normal : null
+		return { object: object.data, point: point, hitPointWorld : hitPointWorld, face: face, normal: normal };
 	}
 	else if (object.parent)
 	{
-		return this.findObjectFromIntersected(object.parent, point, normal);
+		return this.findObjectFromIntersected(object.parent, point, face);
 	}
 	else
 	{
-		return { object : null, point : null, normal : null };
+		return { object : null, point : null, face : null, normal : null };
 	}
 }
 
@@ -49581,14 +49583,25 @@ Vizi.GraphicsThreeJS.prototype.getObjectIntersection = function(x, y, object)
 		
 }
 
+Vizi.GraphicsThreeJS.prototype.calcElementOffset = function(offset) {
+
+	offset.left = this.renderer.domElement.offsetLeft;
+	offset.top = this.renderer.domElement.offsetTop;
+	
+	var parent = this.renderer.domElement.offsetParent;
+	while(parent) {
+		offset.left += parent.offsetLeft;
+		offset.top += parent.offsetTop;
+		parent = parent.offsetParent;
+	}
+}
+
 Vizi.GraphicsThreeJS.prototype.onDocumentMouseMove = function(event)
 {
     event.preventDefault();
     
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var eltx = event.pageX - offset.left;
 	var elty = event.pageY - offset.top;
@@ -49610,14 +49623,12 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseDown = function(event)
 {
     event.preventDefault();
     
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var eltx = event.pageX - offset.left;
 	var elty = event.pageY - offset.top;
-	
+		
 	var evt = { type : event.type, pageX : event.pageX, pageY : event.pageY, 
 	    	elementX : eltx, elementY : elty, button:event.button };
 	
@@ -49635,10 +49646,8 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseUp = function(event)
 {
     event.preventDefault();
 
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var eltx = event.pageX - offset.left;
 	var elty = event.pageY - offset.top;
@@ -49660,13 +49669,8 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseClick = function(event)
 {
     event.preventDefault();
 
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
-	
-	var eltx = event.pageX - offset.left;
-	var elty = event.pageY - offset.top;
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var eltx = event.pageX - offset.left;
 	var elty = event.pageY - offset.top;
@@ -49688,10 +49692,8 @@ Vizi.GraphicsThreeJS.prototype.onDocumentMouseDoubleClick = function(event)
 {
     event.preventDefault();
 
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var eltx = event.pageX - offset.left;
 	var elty = event.pageY - offset.top;
@@ -49762,10 +49764,8 @@ Vizi.GraphicsThreeJS.prototype.onDocumentTouchStart = function(event)
 {
     event.preventDefault();
     
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 
 	var touches = [];
 	var i, len = event.touches.length;
@@ -49787,10 +49787,8 @@ Vizi.GraphicsThreeJS.prototype.onDocumentTouchMove = function(event)
 {
     event.preventDefault();
     
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var touches = [];
 	var i, len = event.touches.length;
@@ -49818,10 +49816,8 @@ Vizi.GraphicsThreeJS.prototype.onDocumentTouchEnd = function(event)
 {
     event.preventDefault();
 
-	var offset = {
-			left : this.renderer.domElement.offsetLeft, 
-			top : this.renderer.domElement.offsetTop,
-	};
+	var offset = {};
+	this.calcElementOffset(offset);
 	
 	var touches = [];
 	var i, len = event.touches.length;
@@ -51071,6 +51067,7 @@ Vizi.Picker.prototype.realize = function()
 	
     this.lastHitPoint = new THREE.Vector3;
     this.lastHitNormal = new THREE.Vector3;
+    this.lastHitFace = new THREE.Face3;
 }
 
 Vizi.Picker.prototype.update = function()
@@ -51105,6 +51102,8 @@ Vizi.Picker.prototype.onMouseDown = function(event)
 	this.lastHitPoint.copy(event.point);
 	if (event.normal)
 		this.lastHitNormal.copy(event.normal);
+	if (event.face)
+		this.lastHitFace = event.face;
 	
     this.dispatchEvent("mousedown", event);
 }
@@ -51116,6 +51115,7 @@ Vizi.Picker.prototype.onMouseUp = function(event)
 	{
 		event.point = this.lastHitPoint;
 		event.normal = this.lastHitNormal;
+		event.face = this.lastHitNormal;
 		this.dispatchEvent("mouseout", event);
 	}
 
@@ -51127,6 +51127,8 @@ Vizi.Picker.prototype.onMouseClick = function(event)
 	this.lastHitPoint.copy(event.point);
 	if (event.normal)
 		this.lastHitNormal.copy(event.normal);
+	if (event.face)
+		this.lastHitFace = event.face;
 
 	this.dispatchEvent("click", event);
 }
@@ -51136,6 +51138,8 @@ Vizi.Picker.prototype.onMouseDoubleClick = function(event)
 	this.lastHitPoint.copy(event.point);
 	if (event.normal)
 		this.lastHitNormal.copy(event.normal);
+	if (event.face)
+		this.lastHitFace = event.face;
 
 	this.dispatchEvent("dblclick", event);
 }
@@ -52066,8 +52070,15 @@ Vizi.Viewer.prototype.addToScene = function(data)
 			this.lightColors.push(data.lights[i].color.clone());
 		}		
 	}
+	else if (!this.lights.length)
+	{
+		this.controllerScript.headlight.intensity = 1;
+		this.headlightOn = true;
+	}
 	
 	this.scenes.push(data.scene);
+	this.initHighlight();
+	this.fitToScene();
 	this.calcSceneStats();
 }
 
@@ -52359,11 +52370,13 @@ Vizi.Viewer.prototype.fitToScene = function()
 	
 	var center = this.boundingBox.max.clone().add(this.boundingBox.min).multiplyScalar(0.5);
 	this.controllerScript.center = center;
-	var campos = new THREE.Vector3(0, this.boundingBox.max.y, this.boundingBox.max.z * 2);
-	this.controllerScript.camera.position.copy(campos);
-	this.controllerScript.camera.position.z *= 2;
-	this.cameras[0].position.copy(this.controllerScript.camera.position);
-
+	if (this.scenes.length == 1) {
+		var campos = new THREE.Vector3(0, this.boundingBox.max.y, this.boundingBox.max.z * 2);
+		this.controllerScript.camera.position.copy(campos);
+		this.controllerScript.camera.position.z *= 2;
+		this.cameras[0].position.copy(this.controllerScript.camera.position);
+	}
+	
 	// Bounding box display
 	if (true) {
 		
