@@ -1,0 +1,242 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Rendering Models with the Three.js Canvas Renderer</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejscanvasmodel.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/three.js.r58/loaders/ColladaLoader.js"></script>
+<script src="../libs/three.js.r58/libs/stats.min.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+
+	var container = null,
+	renderer = null,
+	canvas = null,
+	scene = null,
+	stats = null,
+	useCanvasRenderer = true,
+	animating = true;
+
+	function run() {
+        requestAnimationFrame(function() { run(); });
+
+        	// Animate the scene
+        	animate(scene);
+
+        	// Render the scene
+			renderer.render( scene.scene, scene.camera );
+
+			// Update the camera controller
+			orbitControls.update();
+        	
+			// Update the fps counter
+			stats.update();
+	}
+
+	var lastFrameTime = 0;
+	
+	function animate(scene) {
+
+		if (animating) {
+
+			var now = Date.now();
+			var deltat = (now - lastFrameTime) / 1000; // sec
+			lastFrameTime = now;
+			
+			scene.root.rotation.y -= deltat / Math.PI * 2;
+			scene.group1.rotation.x += deltat  / Math.PI;
+			scene.group2.rotation.z -= deltat / Math.PI;
+			scene.group3.rotation.x -= deltat / Math.PI;
+		}
+	}	
+	
+	var url1 = "../models/Cottus_Elec/cottus_elec.DAE";
+	var url2 = "../models/Cottus_Rktlauncher/cottus_rktlauncher.DAE";
+	var url3 = "../models/Cottus_Twincannon/cottus_twincannon.DAE";
+	
+	function createScene(canvas) {
+		
+	    // Create a new Three.js scene
+	    var scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        var camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.set(0, 0, 8);
+		scene.add(camera);
+		
+		// Create a group to hold all the objects
+		var root = new THREE.Object3D;
+		
+        // Add a directional light to show off the object
+		var directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
+
+		// Create and add all the lights
+		directionalLight.position.set(0, 1, 2);
+		root.add(directionalLight);
+
+		var ambientLight = new THREE.AmbientLight ( 0x888888 );
+		root.add(ambientLight);
+
+		// Create groups to hold the objects
+		var group1 = new THREE.Object3D;
+		group1.position.set(-3, 0, -1);
+		root.add(group1);
+
+		var group2 = new THREE.Object3D;
+		group2.position.set(0, 2, 1);
+		root.add(group2);
+
+		var group3 = new THREE.Object3D;
+		group3.position.set(3, -1, 0);
+		root.add(group3);
+		
+		var loader = new THREE.ColladaLoader();
+		loader.load( url1, function(data) {
+			handleSceneLoaded(data, group1); });
+
+		var loader = new THREE.ColladaLoader();
+		loader.load( url2, function(data) {
+			handleSceneLoaded(data, group2); });
+
+		var loader = new THREE.ColladaLoader();
+		loader.load( url3, function(data) {
+			handleSceneLoaded(data, group3); });
+		
+        // Now add the group to our scene
+        scene.add( root );
+
+        return  {
+            scene : scene,
+            camera : camera,
+            root : root,
+            group1 : group1,
+            group2 : group2,
+            group3 : group3
+        };
+    }
+
+    function createRenderer(container, useCanvas)
+    {
+        if (useCanvas) {
+			renderer = new THREE.CanvasRenderer( {  } );
+        }
+        else {
+	        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        }
+            
+        container.appendChild( renderer.domElement );
+
+	    // Set the viewport size
+	    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    }
+
+	function processNodes(n)
+	{
+		if (n instanceof THREE.Mesh)
+		{
+			n.material.overdraw = false;
+		}
+	}
+	
+	function handleSceneLoaded(data, parent)
+	{
+        // Add the mesh to our group
+        parent.add( data.scene );
+        data.scene.traverse(function(n) { processNodes(n) });
+	}
+		
+	function initControls()
+	{
+		// The stats counter
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+
+		container.appendChild( stats.domElement );
+
+		// Add radio button callback
+		$("input[name=rendererRBGroup]").click(
+				function() {
+					var type = $("input[name=rendererRBGroup]:checked").attr('value');
+					if (type == "Canvas") {
+						useCanvasRenderer = true;
+					}
+					else {
+						useCanvasRenderer = false;
+					}
+					
+					init(useCanvasRenderer);
+				}
+			);
+
+		// Add check box callback
+		$("#animateCheckbox").click(
+				function() { 
+					animating = !animating;
+				}
+			);
+		
+	}
+
+	function init(useCanvas)
+	{
+		container = document.getElementById("container");
+		
+		if (container && renderer)
+		{
+			container.removeChild(renderer.domElement);
+		}
+		
+		// create the renderer
+		createRenderer(container, useCanvas);
+		
+		// create the scene
+		scene = createScene(renderer.domElement);		
+
+		// create the camera controller
+		orbitControls = new THREE.OrbitControls(scene.camera, renderer.domElement);		
+	}	
+
+	$(document).ready(
+			function() {
+
+				init(useCanvasRenderer);
+
+				// initialize the controls
+				initControls();
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+	<div id="title">
+		Rendering Models with the Three.js Canvas Renderer
+	</div>
+
+</div>
+<div id="rendererPicker">
+Renderer
+<div id="rendererRBGroup">
+<input type="radio" name="rendererRBGroup" value="Canvas" checked>Canvas<br>
+<input type="radio" name="rendererRBGroup" value="WebGL" >WebGL<br>
+</div>
+</div>
+<div id="animate">
+Animate<input type="checkbox" id="animateCheckbox" checked>
+</div>
+
+</html>
