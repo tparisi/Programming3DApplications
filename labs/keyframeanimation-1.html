@@ -1,0 +1,173 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Simple Key Frame Animation</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/keyframeanimation.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/tween.js/tween.min.js"></script>
+<script src="../libs/keyframe.js/keyframe.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	directionalLight = null,
+	root = null,
+	group = null,
+	cube = null;
+		
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			// Update the animations
+			KF.update();
+
+			// Update the camera controller
+			orbitControls.update();
+	}
+
+	function createScene(canvas) {
+		
+		// Create the Three.js renderer and attach it to our canvas
+		renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.set(0, 0, 8);
+		scene.add(camera);
+
+        // Add a directional light to show off the object
+		directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
+
+		// Create a group to hold all the objects
+		root = new THREE.Object3D;
+		
+		// Create and add all the lights
+		directionalLight.position.set(0, 1, 2);
+		root.add(directionalLight);
+		
+		// Create a group to hold the objects
+		group = new THREE.Object3D;
+		root.add(group);
+
+        // And put some geometry and material together into a mesh
+        geometry = new THREE.CubeGeometry(2, 2, 2);
+        var color = 0xffffff;
+        ambient = 0x888888;
+        cube = new THREE.Mesh(geometry, 
+                new THREE.MeshPhongMaterial({color:color}));
+        //cube.rotation.x = Math.PI / 4;
+		
+        // Add the mesh to our group
+        group.add( cube );
+		
+        // Now add the group to our scene
+        scene.add( root );
+    }
+
+	   	
+	var animator = null,
+	duration = 1, // sec
+	loopAnimation = false;
+
+	function initAnimations() {
+		animator = new KF.KeyFrameAnimator;
+		// LAB: add position interpolator to move:
+		// 2 to the right for the first half second;
+		// 1 up for the next quarter second;
+		// back to the original position for the final
+		// quarter second
+		// and rotate: about Y
+		animator.init({ 
+			interps:
+				[
+				    { 
+				    	keys:[0, .5, 1], 
+				    	values:[
+				    	        { y : 0 },
+				    	        { y : Math.PI  },
+				    	        { y : Math.PI * 2 },
+				    	        ],
+				    	target:group.rotation
+				    },
+				    { 
+				    	keys:[0, .5, .75, 1], 
+				    	values:[
+				    	        { x : 0, y : 0 },
+				    	        { x : 2, y : 0 },
+				    	        { x : 2, y : 1 },
+				    	        { x : 0, y : 0 },
+				    	        ],
+				    	target:group.position
+				    },
+				],
+			loop: loopAnimation,
+			duration:duration * 1000,
+		});
+ 	}
+	
+	function playAnimations()
+	{
+		animator.start();
+			
+	}
+	
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+
+				// set up the animations
+				initAnimations();
+
+				// create the animations
+				playAnimations();
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+	<div id="title">
+		Key Frame Animation Template
+	</div>
+
+	<div id="prompt">
+		Drag the mouse to rotate the camera<br>Use the scroll wheel to zoom.
+	</div>
+</div>
+
+<button id="playButton" onClick="playAnimations();">Play</button>
+
+</div>
+
+</html>

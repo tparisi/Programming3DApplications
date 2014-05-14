@@ -1,0 +1,234 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Tweening with Tween.js</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/tweenjstweens.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/three.js.r58/controls/OrbitControls.js"></script>
+<script src="../libs/tween.js/tween.min.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	root = null,
+	group = null,
+	cube = null,
+	directionalLight = null;
+	
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			// Update the animations
+			TWEEN.update();
+
+			// Update the camera controller
+			orbitControls.update();
+	}
+
+	function createScene(canvas) {
+		
+		// Create the Three.js renderer and attach it to our canvas
+		renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.set(0, 4, 10);
+		scene.add(camera);
+		
+		// Create a group to hold all the objects
+		root = new THREE.Object3D;
+		
+        // Add a directional light to show off the object
+		directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
+
+		// Create and add all the lights
+		directionalLight.position.set(0, 1, 2);
+		root.add(directionalLight);
+
+		// Create a group to hold the objects
+		group = new THREE.Object3D;
+		root.add(group);
+
+        // Create the cube geometry
+		map = THREE.ImageUtils.loadTexture("../images/wooden_crate_1_store.jpg");		
+        geometry = new THREE.CubeGeometry(4, 4, 4);
+        
+        // And put the geometry and material together into a mesh
+        var color = 0xffffff;
+        cube = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:color}));
+		
+        // Add the mesh to our group
+        group.add( cube );
+		
+        // Now add the group to our scene
+        scene.add( root );
+    }
+
+	var easingFunctions = {
+			none : TWEEN.Easing.Linear.None,
+			quadratic : TWEEN.Easing.Quadratic.InOut,
+			cubic : TWEEN.Easing.Cubic.InOut,
+			quartic : TWEEN.Easing.Quartic.InOut,
+			quintic : TWEEN.Easing.Quintic.InOut,
+			sinusoidal : TWEEN.Easing.Sinusoidal.InOut,
+			exponential : TWEEN.Easing.Exponential.InOut,
+			circular : TWEEN.Easing.Circular.InOut,
+			elastic : TWEEN.Easing.Elastic.InOut,
+			back : TWEEN.Easing.Back.InOut,
+			bounce : TWEEN.Easing.Bounce.InOut,
+	};
+	
+	function initControls()
+	{
+		orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+
+		$("#delaySlider").slider({min: 0, max: 1, value: delayTime, step: 0.05, animate: false});
+		$("#delaySlider").on("slide", function(e, u) {
+				delayTime = u.value;
+				$("#delayValue").html(delayTime + "s");
+				
+			});
+		$("#delaySlider").on("slidechange", function(e, u) {
+				delayTime = u.value;
+				playAnimations();
+		});
+		
+		
+		$("#durationSlider").slider({min: 0.2, max: 5, value: duration, step: 0.1, animate: false});
+		$("#durationSlider").on("slide", function(e, u) {
+				duration = u.value;
+				$("#durationValue").html(duration + "s");				
+			});
+		$("#durationSlider").on("slidechange", function(e, u) {
+				duration = u.value;
+				playAnimations();
+		});
+		
+		$("#tweenPositionCheckbox").click(
+				function() { 
+					tweenPosition = !tweenPosition;
+					playAnimations();
+				}
+			);
+
+		$("#tweenRotationCheckbox").click(
+				function() {
+					tweenRotation = !tweenRotation;
+					playAnimations();
+				}
+			);
+
+		$("#tweenColorCheckbox").click(
+				function() {
+					tweenColor = !tweenColor;
+					playAnimations();
+				}
+			);
+
+		$("#tweenOpacityCheckbox").click(
+				function() {
+					tweenOpacity = !tweenOpacity;
+					playAnimations();
+					}
+			);
+
+		$("#loopCheckbox").click(
+				function() {
+					repeatCount = isFinite(repeatCount) ? Infinity : 0;
+					playAnimations();
+					}
+			);
+		
+		
+		$("input[name=easingRBGroup]").click(
+				function() {
+					var id = $("input[name=easingRBGroup]:checked").attr('value');
+					easingFunction = easingFunctions[id];
+					playAnimations();
+				}
+			);
+	}
+
+   	// LAB: duration of one second
+	var duration = 1, // sec
+	positionTween = null;
+
+	function createAnimations()
+	{
+		positionTween = 
+
+		// LAB: tween up 2 units along Y axis with
+		// quadratic easing
+		new TWEEN.Tween( group.position ).to( { y: 2 }, duration * 1000).
+			easing(TWEEN.Easing.Quadratic.InOut)
+			;
+		
+	}
+
+	function playAnimations()
+	{
+		// reset to original position
+		group.position.set(0, 0, 0);
+		// run the tween
+		positionTween.start();
+	}
+	
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+				
+				// create the animations
+				createAnimations();
+
+				// play the animations
+				playAnimations();
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+	<div id="title">
+		Tweening with Tween.js
+	</div>
+
+	<div id="prompt">
+		Drag the mouse to rotate the camera<br>Use the scroll wheel to zoom.
+	</div>
+</div>
+
+<button id="playButton" style="position:absolute; left: 500px;" onClick="playAnimations();">Play</button>
+
+</div>
+
+</html>
