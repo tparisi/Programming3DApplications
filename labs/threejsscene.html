@@ -1,0 +1,225 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Scene Graph</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejsscene.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	cubeGroup = null,
+	cube = null,
+	sphereGroup = null,
+	sphere = null,
+	cone = null;
+	
+    var duration = 5000; // ms
+    var currentTime = Date.now();
+	function animate() {
+
+        var now = Date.now();
+        var deltat = now - currentTime;
+        currentTime = now;
+        var fract = deltat / duration;
+        var angle = Math.PI * 2 * fract;
+
+        // Rotate the cube about its Y axis
+		cube.rotation.y += angle;
+
+		// Rotate the sphere group about its Y axis
+		sphereGroup.rotation.y -= angle / 2;
+
+		// Rotate the cone about its X axis (tumble forward)
+		cone.rotation.x += angle;
+	}
+
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			// Spin the cube for next frame
+			animate();
+				
+    }
+
+    function createScene(canvas) {
+        
+        // Create the Three.js renderer and attach it to our canvas
+	    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.z = 10;
+		scene.add(camera);
+
+		// Create a group to hold all the objects
+		cubeGroup = new THREE.Object3D;
+		
+        // Add a directional light to show off the objects
+		var light = new THREE.DirectionalLight( 0xffffff, 1.5);
+		// Position the light out from the scene, pointing at the origin
+		light.position.set(.5, .2, 1);
+		cubeGroup.add(light);
+
+        // Create a textre phong material for the cube
+        // First, create the texture map
+        var mapUrl = "../images/ash_uvgrid01.jpg";
+        var map = THREE.ImageUtils.loadTexture(mapUrl);
+        var material = new THREE.MeshPhongMaterial({ map: map });
+
+        // Create the cube geometry
+        var geometry = new THREE.CubeGeometry(2, 2, 2);
+
+        // And put the geometry and material together into a mesh
+        cube = new THREE.Mesh(geometry, material);
+
+        // Tilt the mesh toward the viewer
+        cube.rotation.x = Math.PI / 5;
+        cube.rotation.y = Math.PI / 5;
+
+        // Add the cube mesh to our group
+        cubeGroup.add( cube );
+
+        // Create a group for the sphere
+        sphereGroup = new THREE.Object3D;
+        cubeGroup.add(sphereGroup);
+        
+        // Move the sphere group up and back from the cube
+        sphereGroup.position.set(0, 3, -4);
+
+        // Create the sphere geometry
+        geometry = new THREE.SphereGeometry(1, 20, 20);
+        
+        // And put the geometry and material together into a mesh
+        sphere = new THREE.Mesh(geometry, material);
+
+        // Add the sphere mesh to our group
+        sphereGroup.add( sphere );
+
+        // Create the cone geometry
+        geometry = new THREE.CylinderGeometry(0, .333, .444, 20, 5);
+
+        // And put the geometry and material together into a mesh
+        cone = new THREE.Mesh(geometry, material);
+
+        // Move the cone up and out from the sphere
+        cone.position.set(1, 1, -.667);
+            
+        // Add the cone mesh to our group
+        sphereGroup.add( cone );
+        
+        // Now add the group to our scene
+        scene.add( cubeGroup );
+    }
+
+    function rotateScene(deltax)
+    {
+        cubeGroup.rotation.y += deltax / 100;
+		$("#rotation").html("rotation: 0," + cubeGroup.rotation.y.toFixed(2) + ",0");
+    }
+    
+    function scaleScene(scale)
+    {
+        cubeGroup.scale.set(scale, scale, scale);
+		$("#scale").html("scale: " + scale);
+    }
+        
+    var mouseDown = false,
+    pageX = 0;
+
+    function onMouseMove(evt)
+    {
+        if (!mouseDown)
+            return;
+
+        evt.preventDefault();
+        
+        var deltax = evt.pageX - pageX;
+        pageX = evt.pageX;
+        rotateScene(deltax);
+    }
+
+    function onMouseDown(evt)
+    {
+        evt.preventDefault();
+        
+        mouseDown = true;
+        pageX = evt.pageX;
+    }
+
+    function onMouseUp(evt)
+    {
+        evt.preventDefault();
+        
+        mouseDown = false;
+    }
+    
+    function addMouseHandler(canvas)
+    {
+    	canvas.addEventListener( 'mousemove', 
+    			function(e) { onMouseMove(e); }, false );
+    	canvas.addEventListener( 'mousedown', 
+    			function(e) { onMouseDown(e); }, false );
+    	canvas.addEventListener( 'mouseup', 
+    			function(e) { onMouseUp(e); }, false );
+    }
+    
+	$(document).ready(
+			function() {
+
+				$("#slider").slider({min: 0, max: 2, value: 1, step: 0.01, animate: false});
+				$("#slider").on("slide", function(e, u) {
+					scaleScene(u.value);
+					});
+				
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				// add mouse handling so we can rotate the scene
+				addMouseHandler(canvas);
+				
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+	<div id="container">
+	    <canvas id="webglcanvas" width=800 height=600></canvas>
+		<div id="title">
+			Three.js Scene Graph/Transform Hierarchy
+		</div>
+		<div id="prompt">
+			Drag the mouse to rotate the scene<br>Drag the slider to scale.
+		</div>
+	    <div id="status">
+		    <div id="rotation">rotation: 0,0,0</div>
+		    <div id="scale">scale: 1</div>
+	    </div>
+	</div>
+	<div id="slider"></div>
+</body>
+
+</html>

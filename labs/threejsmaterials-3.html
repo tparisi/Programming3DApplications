@@ -1,0 +1,218 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Programming 3D Applications in HTML5 and WebGL &mdash; Three.js Materials</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui-1.10.3.custom/css/ui-lightness/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" media="screen" type="text/css" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejsmaterials.css" />
+<script src="../libs/jquery-1.9.1/jquery-1.9.1.js"></script>
+<script src="../libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
+<script src="../libs/three.js.r58/three.js"></script>
+<script src="../libs/requestAnimationFrame/RequestAnimationFrame.js"></script>
+<script src="../libs/colorpicker/js/colorpicker.js"></script>
+<script type="text/javascript">
+
+	var renderer = null, 
+	scene = null, 
+	camera = null,
+	root = null,
+	group = null,
+	geometry = null,
+	material = null,
+	sphere = null;
+		
+    var duration = 10000; // ms
+    var currentTime = Date.now();
+	function animate() {
+
+        var now = Date.now();
+        var deltat = now - currentTime;
+        currentTime = now;
+        var fract = deltat / duration;
+        var angle = Math.PI * 2 * fract;
+
+		// Rotate the sphere group about its Y axis
+		group.rotation.y += angle;
+	}
+
+	function run() {
+        requestAnimationFrame(function() { run(); });
+        
+			// Render the scene
+			renderer.render( scene, camera );
+
+			// Spin the cube for next frame
+			animate();
+    }
+
+   function createScene(canvas) {
+        
+        // Create the Three.js renderer and attach it to our canvas
+	    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+	    // Set the viewport size
+	    renderer.setSize(canvas.width, canvas.height);
+
+	    // Create a new Three.js scene
+	    scene = new THREE.Scene();
+
+	    // Add  a camera so we can view the scene
+        camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
+        camera.position.z = 10;
+		scene.add(camera);
+		
+		// Create a group to hold all the objects
+		root = new THREE.Object3D;
+		
+        // Add a directional light to show off the object
+		var light = new THREE.DirectionalLight( 0xffffff, 2);
+
+		// Position the light out from the scene, pointing at the origin
+		light.position.set(.5, 0, 1);
+		root.add( light );
+
+		light = new THREE.AmbientLight ( 0x222222 );
+		root.add(light);
+		
+		// Create a group to hold the sphere
+		group = new THREE.Object3D;
+		root.add(group);
+
+        // Create the sphere geometry
+        geometry = new THREE.SphereGeometry(2, 20, 20);
+
+        // LAB: make a blue, phong-shaded, textured material for the sphere
+        // draw it in wireframe mode
+		var mapUrl = "../images/moon_1024.jpg";
+        map = THREE.ImageUtils.loadTexture(mapUrl);
+        material = new THREE.MeshPhongMaterial({color:0x0000ff,
+            map:map, wireframe:true});
+            
+        // And put the geometry and material together into a mesh
+        sphere = new THREE.Mesh(geometry, material);
+        group.add(sphere);
+
+        // Now add the group to our scene
+        scene.add( root );
+    }
+
+   function rotateScene(deltax)
+   {
+       root.rotation.y += deltax / 100;
+		$("#rotation").html("rotation: 0," + root.rotation.y.toFixed(2) + ",0");
+   }
+   
+   function scaleScene(scale)
+   {
+       root.scale.set(scale, scale, scale);
+		$("#scale").html("scale: " + scale);
+   }
+       
+   var mouseDown = false,
+   pageX = 0;
+   
+   function onMouseMove(evt)
+   {
+       if (!mouseDown)
+           return;
+
+       evt.preventDefault();
+       
+       var deltax = evt.pageX - pageX;
+       pageX = evt.pageX;
+       rotateScene(deltax);
+   }
+
+   function onMouseDown(evt)
+   {
+       evt.preventDefault();
+       
+       mouseDown = true;
+       pageX = evt.pageX;
+   }
+
+   function onMouseUp(evt)
+   {
+       evt.preventDefault();
+       
+       mouseDown = false;
+   }
+
+   function addMouseHandler(canvas)
+   {
+   	canvas.addEventListener( 'mousemove', 
+   			function(e) { onMouseMove(e); }, false );
+   	canvas.addEventListener( 'mousedown', 
+   			function(e) { onMouseDown(e); }, false );
+   	canvas.addEventListener( 'mouseup', 
+   			function(e) { onMouseUp(e); }, false );
+   }
+
+  
+	$(document).ready(
+			function() {
+
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				// add mouse handling so we can rotate the scene
+				addMouseHandler(canvas);
+
+		        // Run the run loop
+		        run();
+			}
+	);
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+	<div id="title">
+		Three.js Materials
+	</div>
+	<div id="prompt">
+		Drag the mouse to rotate the scene<br>Drag the slider to scale.
+	</div>
+    <div id="status">
+	    <div id="rotation">rotation: 0,0,0</div>
+	    <div id="scale">scale: 1</div>
+    </div>
+	<div id="slider"></div>
+</div>
+
+<div id="properties">
+Use these controls to change properties
+<div id="materialPicker">
+Material
+<div id="materialRBGroup">
+<input type="radio" name="materialRBGroup" value="basic"> Basic (Unlit)<br>
+<input type="radio" name="materialRBGroup" value="phong" checked> Phong<br>
+<input type="radio" name="materialRBGroup" value="lambert"> Lambert
+</div>
+<div id="materialWireframe">
+<input type="checkbox" id="wireframeCheckbox">Wireframe</input>
+</div>
+</div>
+
+
+<div id="texturePicker">
+Texture 
+<input type="checkbox" checked id="textureCheckbox"></input> 
+<div id="textureUrl"></div> 
+<div id="texture" class="ui-widget-content ui-corner-all swatch"></div>
+</div> 
+
+<div id="diffuseColor" class="colorSelector">Diffuse color<div style="background-color: #00ff00"></div></div>
+<div id="specularColor" class="colorSelector">Specular color<div style="background-color: #00ff00"></div></div>
+
+</div>
+
+
+</html>
